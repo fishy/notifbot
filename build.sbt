@@ -11,7 +11,7 @@ instrumentTestRunner :=
 
 platformTarget := "android-25"
 
-minSdkVersion := "21"
+minSdkVersion := "23"
 
 javacOptions in Compile ++= "-source" :: "1.7" :: "-target" :: "1.7" :: Nil
 

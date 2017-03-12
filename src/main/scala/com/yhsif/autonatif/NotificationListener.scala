@@ -1,17 +1,26 @@
 package com.yhsif.autonatif
 
+import android.app.PendingIntent
 import android.app.usage.UsageStatsManager
 import android.app.usage.UsageStatsManager.INTERVAL_DAILY
 import android.content.Context.USAGE_STATS_SERVICE
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Icon
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationCompat.CarExtender
 import android.support.v4.app.NotificationCompat.CarExtender.UnreadConversation
 import android.support.v4.app.NotificationManagerCompat
+import android.support.v4.app.RemoteInput
 import android.util.Log
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable.Map
 
 class NotificationListener extends NotificationListenerService {
   val Tag = "AutoNotif"
@@ -20,9 +29,14 @@ class NotificationListener extends NotificationListenerService {
   val PkgAndroidAuto = "com.google.android.projection.gearhead"
   val PkgSet = Set("com.smartthings.android")
 
+  val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not used
+  val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not used
+
   val UsageTimeframe = 24 * 60 * 60 * 1000 // 24 hours
 
   var connected = false
+  var lastId: Int = 0
+  var notifMap: Map[String, Int] = Map()
 
   override def onListenerConnected(): Unit = {
     connected = true
@@ -35,41 +49,131 @@ class NotificationListener extends NotificationListenerService {
     handleNotif(sbn)
   }
 
+  override def onNotificationRemoved(sbn: StatusBarNotification): Unit = {
+    cancelNotif(sbn)
+  }
+
   def handleNotif(sbn: StatusBarNotification): Unit = {
     val manager = getPackageManager()
     if (connected && isInAndroidAuto) {
       val pkg = sbn.getPackageName().toLowerCase()
-      Log.d(Tag, s"notification package name ${pkg}")
-      if (pkg != PkgSelf) {
-        if (PkgSet(pkg) && !sbn.isOngoing()) {
-          val notif = sbn.getNotification()
-          val key = sbn.getKey()
-          val appInfo = manager.getApplicationInfo(pkg, 0)
-          val label: String = Option(manager.getApplicationLabel(appInfo)) match {
-            case Some(s) => s.toString()
-            case None => ""
+      Log.e(Tag, s"notification package name ${pkg}")
+      if (checkPackage(pkg, sbn)) {
+        val notif = sbn.getNotification()
+        val key = sbn.getKey()
+        val appInfo = manager.getApplicationInfo(pkg, 0)
+        val label: String = Option(manager.getApplicationLabel(appInfo)) match {
+          case Some(s) => s.toString()
+          case None => ""
+        }
+        val text: String = Option(notif.tickerText) match {
+          case Some(s) => s.toString()
+          case None => ""
+        }
+        Log.e(Tag, s"key = ${key}, label = ${label}, text = ${text}")
+
+        if (text != "") {
+          val replyIntent: Intent = new Intent().setAction(ReplyAction)
+          val replyPendingIntent: PendingIntent = PendingIntent.getBroadcast(
+            this, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+          val remoteInput: RemoteInput = new RemoteInput.Builder(ReplyKey)
+            .setLabel(getString(R.string.notif_reply))
+            .build()
+
+          val convBuilder = new UnreadConversation.Builder(label)
+            .setReplyAction(replyPendingIntent, remoteInput)
+            .addMessage(text)
+            .setLatestTimestamp(System.currentTimeMillis())
+
+          val notifBuilder = new NotificationCompat.Builder(this)
+            .setSmallIcon(R.drawable.icon_notif)
+            .setContentText(text)
+            .extend(new CarExtender().setUnreadConversation(convBuilder.build()))
+
+          getBitmap(Option(notif.getLargeIcon()), Option(notif.getSmallIcon())) match {
+            case Some(bitmap) =>
+              notifBuilder.setLargeIcon(bitmap)
+            case None => ()
           }
-          val text = notif.tickerText.toString()
-          Log.d(Tag, s"key = ${key}, label = ${label}, text = ${text}")
 
-          if (text != "") {
-            val convBuilder = new UnreadConversation.Builder(label)
-              .addMessage(notif.tickerText.toString())
-              .setLatestTimestamp(System.currentTimeMillis())
-
-            val notifBuilder = new NotificationCompat.Builder(this)
-              .setSmallIcon(R.drawable.icon_notif)
-              .setContentText(notif.tickerText.toString())
-              .extend(new CarExtender().setUnreadConversation(convBuilder.build()))
-
-            NotificationManagerCompat.from(this).notify(key, 0, notifBuilder.build())
-          }
+          lastId = lastId + 1
+          notifMap(key) = lastId
+          NotificationManagerCompat.from(this).notify(lastId, notifBuilder.build())
         }
       }
     }
   }
 
+  def cancelNotif(sbn: StatusBarNotification): Unit = {
+    val manager = getPackageManager()
+    if (connected) {
+      val pkg = sbn.getPackageName().toLowerCase()
+      Log.e(Tag, s"notification package name ${pkg}")
+      if (checkPackage(pkg, sbn)) {
+        Log.e(Tag, "here!")
+        val key = sbn.getKey()
+        notifMap.get(key) match {
+          case Some(id) =>
+            NotificationManagerCompat.from(this).cancel(id)
+          case None => ()
+        }
+      }
+    }
+  }
+
+  def checkPackage(pkg: String, sbn: StatusBarNotification): Boolean = {
+    // pkg != PkgSelf
+    PkgSet(pkg) && !sbn.isOngoing()
+  }
+
+  def getBitmap(large: Option[Icon], small: Option[Icon]): Option[Bitmap] = {
+    large match {
+      case Some(icon) => convertIconToBitmap(icon)
+      case None =>
+        small match {
+          case Some(icon) => convertIconToBitmap(icon)
+          case None => None
+        }
+    }
+  }
+
+  def convertIconToBitmap(icon: Icon): Option[Bitmap] = {
+    val drawable = icon.loadDrawable(this)
+
+    if (drawable.isInstanceOf[BitmapDrawable]) {
+      Option(drawable.asInstanceOf[BitmapDrawable].getBitmap()) match {
+        case Some(bitmap) =>
+          return Option(bitmap)
+        case None => ()
+      }
+    }
+
+    var bitmap: Option[Bitmap] = None
+    if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+      bitmap = Option(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+    } else {
+      bitmap = Option(Bitmap.createBitmap(
+        drawable.getIntrinsicWidth(),
+        drawable.getIntrinsicHeight(),
+        Bitmap.Config.ARGB_8888))
+    }
+
+    bitmap match {
+      case Some(bmp) => {
+        val canvas = new Canvas(bmp)
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        drawable.draw(canvas)
+        return Option(bmp)
+      }
+      case None => None
+    }
+  }
+
   def isInAndroidAuto(): Boolean = {
+    // Temporarily disable this check
+    return true
+
     val manager =
       getSystemService(USAGE_STATS_SERVICE).asInstanceOf[UsageStatsManager]
     val time = System.currentTimeMillis()
@@ -89,7 +193,7 @@ class NotificationListener extends NotificationListenerService {
     }
     result match {
       case Some(pkg) => {
-        Log.d(Tag, s"Foreground app is ${pkg}")
+        Log.e(Tag, s"Foreground app is ${pkg}")
         return pkg == PkgAndroidAuto
       }
       case None =>
