@@ -18,14 +18,11 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable.Map
 
 class NotificationListener extends NotificationListenerService {
-  val Tag = "AutoNotif"
-
   val PkgSelf = "com.yhsif.autonotif"
-  val PkgAndroidAuto = "com.google.android.projection.gearhead"
   val PkgSet = Set("com.smartthings.android")
 
-  val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not used
-  val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not used
+  val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not really used
+  val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not really used
 
   var connected = false
   var lastId: Int = 0
@@ -38,7 +35,9 @@ class NotificationListener extends NotificationListenerService {
     }
   }
 
-  override def onNotificationPosted(sbn: StatusBarNotification, rm: NotificationListenerService.RankingMap): Unit = {
+  override def onNotificationPosted(
+      sbn: StatusBarNotification,
+      rm: NotificationListenerService.RankingMap): Unit = {
     handleNotif(sbn)
   }
 
@@ -80,9 +79,12 @@ class NotificationListener extends NotificationListenerService {
           val notifBuilder = new NotificationCompat.Builder(this)
             .setSmallIcon(R.drawable.icon_notif)
             .setContentText(text)
-            .extend(new CarExtender().setUnreadConversation(convBuilder.build()))
+            .extend(
+                new CarExtender().setUnreadConversation(convBuilder.build()))
 
-          getBitmap(Option(notif.getLargeIcon()), Option(notif.getSmallIcon())) match {
+          getBitmap(
+              Option(notif.getLargeIcon()),
+              Option(notif.getSmallIcon())) match {
             case Some(bitmap) =>
               notifBuilder.setLargeIcon(bitmap)
             case None => ()
@@ -90,7 +92,8 @@ class NotificationListener extends NotificationListenerService {
 
           lastId = lastId + 1
           notifMap(key) = lastId
-          NotificationManagerCompat.from(this).notify(lastId, notifBuilder.build())
+          NotificationManagerCompat.from(this).notify(
+              lastId, notifBuilder.build())
         }
       }
     }
@@ -139,7 +142,8 @@ class NotificationListener extends NotificationListenerService {
     }
 
     var bitmap: Option[Bitmap] = None
-    if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+    if (drawable.getIntrinsicWidth() <= 0 ||
+        drawable.getIntrinsicHeight() <= 0) {
       bitmap = Option(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
     } else {
       bitmap = Option(Bitmap.createBitmap(
