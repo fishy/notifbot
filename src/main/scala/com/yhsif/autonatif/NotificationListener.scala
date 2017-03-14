@@ -1,9 +1,6 @@
 package com.yhsif.autonatif
 
 import android.app.PendingIntent
-import android.app.usage.UsageStatsManager
-import android.app.usage.UsageStatsManager.INTERVAL_DAILY
-import android.content.Context.USAGE_STATS_SERVICE
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -30,8 +27,6 @@ class NotificationListener extends NotificationListenerService {
   val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not used
   val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not used
 
-  val UsageTimeframe = 24 * 60 * 60 * 1000 // 24 hours
-
   var connected = false
   var lastId: Int = 0
   var notifMap: Map[String, Int] = Map()
@@ -53,7 +48,7 @@ class NotificationListener extends NotificationListenerService {
 
   def handleNotif(sbn: StatusBarNotification): Unit = {
     val manager = getPackageManager()
-    if (connected && isInAndroidAuto) {
+    if (connected) {
       val pkg = sbn.getPackageName().toLowerCase()
       if (checkPackage(pkg, sbn)) {
         val notif = sbn.getNotification()
@@ -161,37 +156,6 @@ class NotificationListener extends NotificationListenerService {
         return Option(bmp)
       }
       case None => None
-    }
-  }
-
-  def isInAndroidAuto(): Boolean = {
-    // Temporarily disable this check
-    return true
-
-    val manager =
-      getSystemService(USAGE_STATS_SERVICE).asInstanceOf[UsageStatsManager]
-    val time = System.currentTimeMillis()
-    val apps =
-      manager.queryUsageStats(INTERVAL_DAILY, time - UsageTimeframe, time)
-    var max: Long = 0
-    var result: Option[String] = None
-    if (apps != null) {
-      for (app <- apps.asScala) {
-        val pkg = app.getPackageName().toLowerCase()
-        val timestamp = app.getLastTimeUsed()
-        if ((pkg != PkgSelf) && (timestamp > max)) {
-          max = timestamp
-          result = Some(pkg)
-        }
-      }
-    }
-    result match {
-      case Some(pkg) =>
-        return pkg == PkgAndroidAuto
-      case None =>
-        // This is most likely that we don't have the permission.
-        // In this case, always assume we are in Android Auto.
-        return true
     }
   }
 }
