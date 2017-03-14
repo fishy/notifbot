@@ -6,7 +6,6 @@ import android.app.usage.UsageStatsManager.INTERVAL_DAILY
 import android.content.Context.USAGE_STATS_SERVICE
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Icon
@@ -17,7 +16,6 @@ import android.support.v4.app.NotificationCompat.CarExtender
 import android.support.v4.app.NotificationCompat.CarExtender.UnreadConversation
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.app.RemoteInput
-import android.util.Log
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.Map
@@ -57,7 +55,6 @@ class NotificationListener extends NotificationListenerService {
     val manager = getPackageManager()
     if (connected && isInAndroidAuto) {
       val pkg = sbn.getPackageName().toLowerCase()
-      Log.e(Tag, s"notification package name ${pkg}")
       if (checkPackage(pkg, sbn)) {
         val notif = sbn.getNotification()
         val key = sbn.getKey()
@@ -70,7 +67,6 @@ class NotificationListener extends NotificationListenerService {
           case Some(s) => s.toString()
           case None => ""
         }
-        Log.e(Tag, s"key = ${key}, label = ${label}, text = ${text}")
 
         if (text != "") {
           val replyIntent: Intent = new Intent().setAction(ReplyAction)
@@ -109,9 +105,7 @@ class NotificationListener extends NotificationListenerService {
     val manager = getPackageManager()
     if (connected) {
       val pkg = sbn.getPackageName().toLowerCase()
-      Log.e(Tag, s"notification package name ${pkg}")
       if (checkPackage(pkg, sbn)) {
-        Log.e(Tag, "here!")
         val key = sbn.getKey()
         notifMap.get(key) match {
           case Some(id) =>
@@ -192,10 +186,8 @@ class NotificationListener extends NotificationListenerService {
       }
     }
     result match {
-      case Some(pkg) => {
-        Log.e(Tag, s"Foreground app is ${pkg}")
+      case Some(pkg) =>
         return pkg == PkgAndroidAuto
-      }
       case None =>
         // This is most likely that we don't have the permission.
         // In this case, always assume we are in Android Auto.
