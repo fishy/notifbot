@@ -53,21 +53,21 @@ class NotificationListener extends NotificationListenerService {
         val notif = sbn.getNotification()
         val key = sbn.getKey()
         val appInfo = manager.getApplicationInfo(pkg, 0)
-        val label: String = Option(manager.getApplicationLabel(appInfo)) match {
+        val label = Option(manager.getApplicationLabel(appInfo)) match {
           case Some(s) => s.toString()
           case None => ""
         }
-        val text: String = Option(notif.tickerText) match {
+        val text = Option(notif.tickerText) match {
           case Some(s) => s.toString()
           case None => ""
         }
 
         if (text != "") {
-          val replyIntent: Intent = new Intent().setAction(ReplyAction)
-          val replyPendingIntent: PendingIntent = PendingIntent.getBroadcast(
+          val replyIntent = new Intent().setAction(ReplyAction)
+          val replyPendingIntent = PendingIntent.getBroadcast(
             this, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-          val remoteInput: RemoteInput = new RemoteInput.Builder(ReplyKey)
+          val remoteInput = new RemoteInput.Builder(ReplyKey)
             .setLabel(getString(R.string.notif_reply))
             .build()
 
