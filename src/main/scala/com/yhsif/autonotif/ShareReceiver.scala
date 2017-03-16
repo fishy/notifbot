@@ -19,32 +19,27 @@ class ShareReceiver extends Activity {
   val IdQuery = "id"
 
   override def onResume(): Unit = {
-    Option(getIntent()) match {
-      case Some(intent) => {
-        if (intent.getAction() == Intent.ACTION_SEND) {
-          Option(intent.getStringExtra(Intent.EXTRA_TEXT)) match {
-            case Some(text) =>
-              try {
-                val url = new URL(text)
-                val valid = url.getProtocol() match {
-                  case MarketProtocol => true
-                  case HttpsProtocol | HttpProtocol => url.getHost() == PlayHost
-                  case _ => false
-                }
-                if (valid) {
-                  findPackageName(Option(url.getQuery())) match {
-                    case Some(pkg) => addPackage(pkg)
-                    case None => illegalText(text)
-                  }
-                } else illegalText(text)
-              } catch {
-                case _: Throwable => illegalText(text)
+    Option(getIntent()).foreach { intent =>
+      if (intent.getAction() == Intent.ACTION_SEND) {
+        Option(intent.getStringExtra(Intent.EXTRA_TEXT)).foreach { text =>
+          try {
+            val url = new URL(text)
+            val valid = url.getProtocol() match {
+              case MarketProtocol => true
+              case HttpsProtocol | HttpProtocol => url.getHost() == PlayHost
+              case _ => false
+            }
+            if (valid) {
+              findPackageName(Option(url.getQuery())) match {
+                case Some(pkg) => addPackage(pkg)
+                case None => illegalText(text)
               }
-            case None =>
+            } else illegalText(text)
+          } catch {
+            case _: Throwable => illegalText(text)
           }
         }
       }
-      case None =>
     }
     finish()
     super.onResume()
@@ -72,14 +67,12 @@ class ShareReceiver extends Activity {
 
   def showToast(text: String): Unit = {
     val toast = Toast.makeText(this, text, Toast.LENGTH_LONG)
-    Option(toast.getView().findViewById(android.R.id.message)) match {
-      case Some(view) => {
-        // Put the icon on the right
-        val v = view.asInstanceOf[TextView]
-        v.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
-        v.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.toast_padding))
-      }
-      case None =>
+    Option(toast.getView().findViewById(android.R.id.message)).foreach { v =>
+      // Put the icon on the right
+      val view = v.asInstanceOf[TextView]
+      view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
+      view.setCompoundDrawablePadding(
+        getResources().getDimensionPixelSize(R.dimen.toast_padding))
     }
     toast.show()
   }

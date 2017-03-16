@@ -65,7 +65,10 @@ class NotificationListener extends NotificationListenerService {
         if (text != "") {
           val replyIntent = new Intent().setAction(ReplyAction)
           val replyPendingIntent = PendingIntent.getBroadcast(
-            this, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            this,
+            0,
+            replyIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT)
 
           val remoteInput = new RemoteInput.Builder(ReplyKey)
             .setLabel(getString(R.string.notif_reply))
@@ -80,20 +83,18 @@ class NotificationListener extends NotificationListenerService {
             .setSmallIcon(R.drawable.icon_notif)
             .setContentText(text)
             .extend(
-                new CarExtender().setUnreadConversation(convBuilder.build()))
+              new CarExtender().setUnreadConversation(convBuilder.build()))
 
-          getBitmap(
-              Option(notif.getLargeIcon()),
-              Option(notif.getSmallIcon())) match {
-            case Some(bitmap) =>
+          getBitmap(Option(notif.getLargeIcon()), Option(notif.getSmallIcon()))
+            .foreach { bitmap =>
               notifBuilder.setLargeIcon(bitmap)
-            case None =>
-          }
+            }
 
           lastId = lastId + 1
           notifMap(key) = lastId
-          NotificationManagerCompat.from(this).notify(
-              lastId, notifBuilder.build())
+          NotificationManagerCompat
+            .from(this)
+            .notify(lastId, notifBuilder.build())
         }
       }
     }
@@ -105,10 +106,8 @@ class NotificationListener extends NotificationListenerService {
       val pkg = sbn.getPackageName().toLowerCase()
       if (checkPackage(pkg, sbn)) {
         val key = sbn.getKey()
-        notifMap.get(key) match {
-          case Some(id) =>
-            NotificationManagerCompat.from(this).cancel(id)
-          case None =>
+        notifMap.get(key).foreach { id =>
+          NotificationManagerCompat.from(this).cancel(id)
         }
       }
     }
@@ -146,10 +145,11 @@ class NotificationListener extends NotificationListenerService {
         drawable.getIntrinsicHeight() <= 0) {
       bitmap = Option(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
     } else {
-      bitmap = Option(Bitmap.createBitmap(
-        drawable.getIntrinsicWidth(),
-        drawable.getIntrinsicHeight(),
-        Bitmap.Config.ARGB_8888))
+      bitmap = Option(
+        Bitmap.createBitmap(
+          drawable.getIntrinsicWidth(),
+          drawable.getIntrinsicHeight(),
+          Bitmap.Config.ARGB_8888))
     }
 
     bitmap match {
