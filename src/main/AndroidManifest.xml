@@ -24,6 +24,18 @@
       </intent-filter>
     </activity>
 
+    <activity
+        android:name="ShareReceiver"
+        android:theme="@android:style/Theme.NoDisplay"
+        android:label="@string/share_receiver_name"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.SEND" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <data android:mimeType="text/plain" />
+      </intent-filter>
+    </activity>
+
     <service
         android:name=".NotificationListener"
         android:label="@string/service_name"

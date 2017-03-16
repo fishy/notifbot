@@ -2,6 +2,7 @@
 <resources>
   <string name="app_name">AutoNotif</string>
   <string name="service_name">AutoNotifService</string>
+  <string name="share_receiver_name">Add to AutoNotif</string>
 
   <string name="notif_reply">Quick reply</string>
 </resources>
