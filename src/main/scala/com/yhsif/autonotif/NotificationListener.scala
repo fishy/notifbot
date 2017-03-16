@@ -87,7 +87,7 @@ class NotificationListener extends NotificationListenerService {
               Option(notif.getSmallIcon())) match {
             case Some(bitmap) =>
               notifBuilder.setLargeIcon(bitmap)
-            case None => ()
+            case None =>
           }
 
           lastId = lastId + 1
@@ -108,7 +108,7 @@ class NotificationListener extends NotificationListenerService {
         notifMap.get(key) match {
           case Some(id) =>
             NotificationManagerCompat.from(this).cancel(id)
-          case None => ()
+          case None =>
         }
       }
     }
@@ -137,7 +137,7 @@ class NotificationListener extends NotificationListenerService {
       Option(drawable.asInstanceOf[BitmapDrawable].getBitmap()) match {
         case Some(bitmap) =>
           return Option(bitmap)
-        case None => ()
+        case None =>
       }
     }
 

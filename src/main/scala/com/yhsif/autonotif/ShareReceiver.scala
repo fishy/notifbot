@@ -39,11 +39,11 @@ class ShareReceiver extends Activity {
               } catch {
                 case _: Throwable => illegalText(text)
               }
-            case None => {}
+            case None =>
           }
         }
       }
-      case None => {}
+      case None =>
     }
     finish()
     super.onResume()
