@@ -1,4 +1,4 @@
-package com.yhsif.autonatif;
+package com.yhsif.autonotif;
 
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.rule.ActivityTestRule;

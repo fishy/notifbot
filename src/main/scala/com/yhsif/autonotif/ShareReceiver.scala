@@ -1,4 +1,4 @@
-package com.yhsif.autonatif
+package com.yhsif.autonotif
 
 import android.app.Activity
 import android.content.Intent
