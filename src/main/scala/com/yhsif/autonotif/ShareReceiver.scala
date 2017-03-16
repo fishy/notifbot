@@ -2,6 +2,7 @@ package com.yhsif.autonotif
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.TextView
 import android.widget.Toast
 
 import java.net.URL
@@ -70,6 +71,16 @@ class ShareReceiver extends Activity {
   }
 
   def showToast(text: String): Unit = {
-    Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+    val toast = Toast.makeText(this, text, Toast.LENGTH_LONG)
+    Option(toast.getView().findViewById(android.R.id.message)) match {
+      case Some(view) => {
+        // Put the icon on the right
+        val v = view.asInstanceOf[TextView]
+        v.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
+        v.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.toast_padding))
+      }
+      case None =>
+    }
+    toast.show()
   }
 }
