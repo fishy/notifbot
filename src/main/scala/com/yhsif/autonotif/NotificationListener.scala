@@ -1,6 +1,7 @@
 package com.yhsif.autonotif
 
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -20,6 +21,20 @@ import scala.collection.mutable.Map
 object NotificationListener {
   val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not really used
   val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not really used
+
+  def getPackageName(ctx: Context, pkg: String, empty: Boolean): String = {
+    val manager = ctx.getPackageManager()
+    Option(manager.getApplicationInfo(pkg, 0)).foreach { appInfo =>
+      Option(manager.getApplicationLabel(appInfo)).foreach {
+        s => return s.toString()
+      }
+    }
+    if (empty) {
+      ""
+    } else {
+      pkg
+    }
+  }
 }
 
 class NotificationListener extends NotificationListenerService {
@@ -51,69 +66,65 @@ class NotificationListener extends NotificationListenerService {
   }
 
   def handleNotif(sbn: StatusBarNotification): Unit = {
-    val manager = getPackageManager()
-    if (connected) {
-      val pkg = sbn.getPackageName().toLowerCase()
-      if (checkPackage(pkg, sbn)) {
-        val notif = sbn.getNotification()
-        val key = sbn.getKey()
-        val appInfo = manager.getApplicationInfo(pkg, 0)
-        val label = Option(manager.getApplicationLabel(appInfo)) match {
-          case Some(s) => s.toString()
-          case None => ""
-        }
-        val text = Option(notif.tickerText) match {
-          case Some(s) => s.toString()
-          case None => ""
-        }
+    if (!connected) {
+      return
+    }
+    val pkg = sbn.getPackageName().toLowerCase()
+    if (checkPackage(pkg, sbn)) {
+      val notif = sbn.getNotification()
+      val key = sbn.getKey()
+      val label = NotificationListener.getPackageName(this, pkg, true)
+      val text = Option(notif.tickerText) match {
+        case Some(s) => s.toString()
+        case None => ""
+      }
 
-        if (text != "") {
-          val replyIntent = new Intent().setAction(ReplyAction)
-          val replyPendingIntent = PendingIntent.getBroadcast(
-            this,
-            0,
-            replyIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT)
+      if (text != "") {
+        val replyIntent = new Intent().setAction(ReplyAction)
+        val replyPendingIntent = PendingIntent.getBroadcast(
+          this,
+          0,
+          replyIntent,
+          PendingIntent.FLAG_UPDATE_CURRENT)
 
-          val remoteInput = new RemoteInput.Builder(ReplyKey)
-            .setLabel(getString(R.string.notif_reply))
-            .build()
+        val remoteInput = new RemoteInput.Builder(ReplyKey)
+          .setLabel(getString(R.string.notif_reply))
+          .build()
 
-          val convBuilder = new UnreadConversation.Builder(label)
-            .setReplyAction(replyPendingIntent, remoteInput)
-            .addMessage(text)
-            .setLatestTimestamp(System.currentTimeMillis())
+        val convBuilder = new UnreadConversation.Builder(label)
+          .setReplyAction(replyPendingIntent, remoteInput)
+          .addMessage(text)
+          .setLatestTimestamp(System.currentTimeMillis())
 
-          val notifBuilder = new NotificationCompat.Builder(this)
-            .setSmallIcon(R.drawable.icon_notif)
-            .setContentText(text)
-            .extend(
-              new CarExtender().setUnreadConversation(convBuilder.build()))
+        val notifBuilder = new NotificationCompat.Builder(this)
+          .setSmallIcon(R.drawable.icon_notif)
+          .setContentText(text)
+          .extend(
+            new CarExtender().setUnreadConversation(convBuilder.build()))
 
-          getBitmap(Option(notif.getLargeIcon()), Option(notif.getSmallIcon()))
-            .foreach { bitmap =>
-              notifBuilder.setLargeIcon(bitmap)
-            }
+        getBitmap(Option(notif.getLargeIcon()), Option(notif.getSmallIcon()))
+          .foreach { bitmap =>
+            notifBuilder.setLargeIcon(bitmap)
+          }
 
-          lastId = lastId + 1
-          notifMap(key) = lastId
-          NotificationManagerCompat
-            .from(this)
-            .notify(lastId, notifBuilder.build())
-        }
+        lastId = lastId + 1
+        notifMap(key) = lastId
+        NotificationManagerCompat
+          .from(this)
+          .notify(lastId, notifBuilder.build())
       }
     }
   }
 
   def cancelNotif(sbn: StatusBarNotification): Unit = {
-    val manager = getPackageManager()
-    if (connected) {
-      val pkg = sbn.getPackageName().toLowerCase()
-      if (checkPackage(pkg, sbn)) {
-        val key = sbn.getKey()
-        notifMap.get(key).foreach { id =>
-          NotificationManagerCompat.from(this).cancel(id)
-        }
+    if (!connected) {
+      return
+    }
+    val pkg = sbn.getPackageName().toLowerCase()
+    if (checkPackage(pkg, sbn)) {
+      val key = sbn.getKey()
+      notifMap.get(key).foreach { id =>
+        NotificationManagerCompat.from(this).cancel(id)
       }
     }
   }
