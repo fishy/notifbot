@@ -7,6 +7,9 @@ import android.widget.Toast
 
 import java.net.URL
 
+import scala.collection.JavaConversions
+import scala.collection.mutable.Set
+
 class ShareReceiver extends Activity {
   // The URL should be either
   // http(s)://play.google.com/store/apps/details?id=<package_name>
@@ -57,8 +60,18 @@ class ShareReceiver extends Activity {
   }
 
   def addPackage(pkg: String): Unit = {
-    // TODO: real work here
-    showToast(getString(R.string.receiver_added_pkg, pkg))
+    val name = NotificationListener.getPackageName(this, pkg, false)
+    val pkgSet = Set.empty ++= NotificationListener.getPkgSet(this)
+    if (pkgSet(pkg)) {
+      showToast(getString(R.string.receiver_pkg_exists, name))
+      return
+    }
+    pkgSet += pkg
+    val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
+    editor.putStringSet(
+      MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
+    editor.commit()
+    showToast(getString(R.string.receiver_added_pkg, name))
   }
 
   def illegalText(text: String): Unit = {

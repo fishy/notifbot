@@ -15,7 +15,8 @@ import android.support.v4.app.NotificationCompat.CarExtender.UnreadConversation
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.app.RemoteInput
 
-import scala.collection.JavaConverters._
+import scala.collection.JavaConversions
+import scala.collection.immutable.Set
 import scala.collection.mutable.Map
 
 object NotificationListener {
@@ -25,8 +26,8 @@ object NotificationListener {
   def getPackageName(ctx: Context, pkg: String, empty: Boolean): String = {
     val manager = ctx.getPackageManager()
     Option(manager.getApplicationInfo(pkg, 0)).foreach { appInfo =>
-      Option(manager.getApplicationLabel(appInfo)).foreach {
-        s => return s.toString()
+      Option(manager.getApplicationLabel(appInfo)).foreach { s =>
+        return s.toString()
       }
     }
     if (empty) {
@@ -35,6 +36,14 @@ object NotificationListener {
       pkg
     }
   }
+
+  def getPkgSet(ctx: Context): Set[String] = {
+    val pref = ctx.getSharedPreferences(MainActivity.Pref, 0)
+    val javaSet = pref.getStringSet(
+      MainActivity.KeyPkgs,
+      JavaConversions.setAsJavaSet(Set.empty))
+    return Set.empty ++ JavaConversions.asScalaSet(javaSet)
+  }
 }
 
 class NotificationListener extends NotificationListenerService {
@@ -42,7 +51,6 @@ class NotificationListener extends NotificationListenerService {
   import NotificationListener.ReplyKey
 
   val PkgSelf = "com.yhsif.autonotif"
-  val PkgSet = Set("com.smartthings.android")
 
   var connected = false
   var lastId: Int = 0
@@ -50,27 +58,28 @@ class NotificationListener extends NotificationListenerService {
 
   override def onListenerConnected(): Unit = {
     connected = true
+    val pkgs = NotificationListener.getPkgSet(this)
     for (notif <- getActiveNotifications()) {
-      handleNotif(notif)
+      handleNotif(pkgs, notif)
     }
   }
 
   override def onNotificationPosted(
       sbn: StatusBarNotification,
       rm: NotificationListenerService.RankingMap): Unit = {
-    handleNotif(sbn)
+    handleNotif(NotificationListener.getPkgSet(this), sbn)
   }
 
   override def onNotificationRemoved(sbn: StatusBarNotification): Unit = {
-    cancelNotif(sbn)
+    cancelNotif(NotificationListener.getPkgSet(this), sbn)
   }
 
-  def handleNotif(sbn: StatusBarNotification): Unit = {
+  def handleNotif(pkgs: Set[String], sbn: StatusBarNotification): Unit = {
     if (!connected) {
       return
     }
     val pkg = sbn.getPackageName().toLowerCase()
-    if (checkPackage(pkg, sbn)) {
+    if (checkPackage(pkgs, pkg, sbn)) {
       val notif = sbn.getNotification()
       val key = sbn.getKey()
       val label = NotificationListener.getPackageName(this, pkg, true)
@@ -99,8 +108,7 @@ class NotificationListener extends NotificationListenerService {
         val notifBuilder = new NotificationCompat.Builder(this)
           .setSmallIcon(R.drawable.icon_notif)
           .setContentText(text)
-          .extend(
-            new CarExtender().setUnreadConversation(convBuilder.build()))
+          .extend(new CarExtender().setUnreadConversation(convBuilder.build()))
 
         getBitmap(Option(notif.getLargeIcon()), Option(notif.getSmallIcon()))
           .foreach { bitmap =>
@@ -116,12 +124,12 @@ class NotificationListener extends NotificationListenerService {
     }
   }
 
-  def cancelNotif(sbn: StatusBarNotification): Unit = {
+  def cancelNotif(pkgs: Set[String], sbn: StatusBarNotification): Unit = {
     if (!connected) {
       return
     }
     val pkg = sbn.getPackageName().toLowerCase()
-    if (checkPackage(pkg, sbn)) {
+    if (checkPackage(pkgs, pkg, sbn)) {
       val key = sbn.getKey()
       notifMap.get(key).foreach { id =>
         NotificationManagerCompat.from(this).cancel(id)
@@ -129,10 +137,11 @@ class NotificationListener extends NotificationListenerService {
     }
   }
 
-  def checkPackage(pkg: String, sbn: StatusBarNotification): Boolean = {
-    // pkg != PkgSelf
-    PkgSet(pkg) && !sbn.isOngoing()
-  }
+  def checkPackage(
+    pkgs: Set[String],
+    pkg: String,
+    sbn: StatusBarNotification): Boolean =
+      pkg != PkgSelf && pkgs(pkg) && !sbn.isOngoing()
 
   def getBitmap(large: Option[Icon], small: Option[Icon]): Option[Bitmap] = {
     large match {

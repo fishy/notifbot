@@ -8,4 +8,5 @@
 
   <string name="receiver_wrong_text">Cannot find package from \"%1$s\"</string>
   <string name="receiver_added_pkg">Added package %1$s</string>
+  <string name="receiver_pkg_exists">Package %1$s was already added</string>
 </resources>
