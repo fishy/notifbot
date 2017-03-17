@@ -5,4 +5,7 @@
   <string name="share_receiver_name">Add to AutoNotif</string>
 
   <string name="notif_reply">Quick reply</string>
+
+  <string name="receiver_wrong_text">Cannot find package from \"%1$s\"</string>
+  <string name="receiver_added_pkg">Added package %1$s</string>
 </resources>

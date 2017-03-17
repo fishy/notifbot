@@ -56,13 +56,13 @@ class ShareReceiver extends Activity {
     return None
   }
 
-  def illegalText(text: String): Unit = {
-    showToast(s"Cannot find package from \'$text\'")
-  }
-
   def addPackage(pkg: String): Unit = {
     // TODO: real work here
-    showToast(s"Added package $pkg")
+    showToast(getString(R.string.receiver_added_pkg, pkg))
+  }
+
+  def illegalText(text: String): Unit = {
+    showToast(getString(R.string.receiver_wrong_text, text))
   }
 
   def showToast(text: String): Unit = {
