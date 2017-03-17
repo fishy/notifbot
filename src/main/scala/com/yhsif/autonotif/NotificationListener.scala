@@ -17,12 +17,17 @@ import android.support.v4.app.RemoteInput
 import scala.collection.JavaConverters._
 import scala.collection.mutable.Map
 
-class NotificationListener extends NotificationListenerService {
-  val PkgSelf = "com.yhsif.autonotif"
-  val PkgSet = Set("com.smartthings.android")
-
+object NotificationListener {
   val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not really used
   val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not really used
+}
+
+class NotificationListener extends NotificationListenerService {
+  import NotificationListener.ReplyAction
+  import NotificationListener.ReplyKey
+
+  val PkgSelf = "com.yhsif.autonotif"
+  val PkgSet = Set("com.smartthings.android")
 
   var connected = false
   var lastId: Int = 0
