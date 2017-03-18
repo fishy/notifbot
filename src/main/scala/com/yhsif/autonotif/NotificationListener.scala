@@ -3,6 +3,7 @@ package com.yhsif.autonotif
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -25,10 +26,14 @@ object NotificationListener {
 
   def getPackageName(ctx: Context, pkg: String, empty: Boolean): String = {
     val manager = ctx.getPackageManager()
-    Option(manager.getApplicationInfo(pkg, 0)).foreach { appInfo =>
-      Option(manager.getApplicationLabel(appInfo)).foreach { s =>
-        return s.toString()
+    try {
+      Option(manager.getApplicationInfo(pkg, 0)).foreach { appInfo =>
+        Option(manager.getApplicationLabel(appInfo)).foreach { s =>
+          return s.toString()
+        }
       }
+    } catch {
+      case _: NameNotFoundException =>
     }
     if (empty) {
       ""

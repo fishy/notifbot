@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <dimen name="toast_padding">10dp</dimen>
+  <dimen name="activity_vertical_margin">10dp</dimen>
 </resources>

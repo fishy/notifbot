@@ -9,4 +9,9 @@
   <string name="receiver_wrong_text">Cannot find package from \"%1$s\"</string>
   <string name="receiver_added_pkg">Added package %1$s</string>
   <string name="receiver_pkg_exists">Package %1$s was already added</string>
+
+  <string name="main_hint">
+    These are the apps you added, click to remove:
+    (&lt;a href="https://github.com/fishy/autonotif/blob/master/docs/FAQ.md">How do I add apps?&lt;/a>)
+  </string>
 </resources>
