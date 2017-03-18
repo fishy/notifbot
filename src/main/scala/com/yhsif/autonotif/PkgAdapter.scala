@@ -3,10 +3,12 @@ package com.yhsif.autonotif
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.View
 
 import scala.collection.mutable.ListBuffer
 
-class PkgAdapter(var list: ListBuffer[PkgData])
+class PkgAdapter(
+  var list: ListBuffer[PkgData], val listener: View.OnClickListener)
     extends RecyclerView.Adapter[PkgViewHolder] {
 
   override def onCreateViewHolder(parent: ViewGroup, vt: Int): PkgViewHolder = {
@@ -14,6 +16,7 @@ class PkgAdapter(var list: ListBuffer[PkgData])
       LayoutInflater
         .from(parent.getContext())
         .inflate(R.layout.pkg_item, parent, false)
+    v.setOnClickListener(listener)
     return new PkgViewHolder(v)
   }
 
@@ -29,16 +32,8 @@ class PkgAdapter(var list: ListBuffer[PkgData])
     super.onAttachedToRecyclerView(rv)
   }
 
-  def insert(i: Int, data: PkgData) = {
-    list.insert(i, data)
-    notifyItemInserted(i)
-  }
-
-  def remove(data: PkgData) = {
-    val i = list.indexOf(data)
-    if (i >= 0) {
-      list.remove(i)
-      notifyItemRemoved(i)
-    }
+  def remove(i: Int) = {
+    list.remove(i)
+    notifyDataSetChanged()
   }
 }

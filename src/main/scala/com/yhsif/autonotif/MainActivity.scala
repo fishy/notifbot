@@ -1,13 +1,17 @@
 package com.yhsif.autonotif
 
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.view.View
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
@@ -18,7 +22,7 @@ object MainActivity {
   val KeyPkgs = "packages"
 }
 
-class MainActivity extends ActionBarActivity {
+class MainActivity extends AppCompatActivity with View.OnClickListener {
   // allows accessing `.value` on TR.resource.constants
   implicit val context = this
 
@@ -33,7 +37,7 @@ class MainActivity extends ActionBarActivity {
     vh.hint.setText(Html.fromHtml(getString(R.string.main_hint)))
     vh.hint.setMovementMethod(LinkMovementMethod.getInstance())
 
-    adapter = Option(new PkgAdapter(ListBuffer.empty))
+    adapter = Option(new PkgAdapter(ListBuffer.empty, this))
     adapter.foreach {
       a => vh.pkg_list.setAdapter(a) 
     }
@@ -44,6 +48,47 @@ class MainActivity extends ActionBarActivity {
   override def onResume(): Unit = {
     refreshData()
     super.onResume()
+  }
+
+  // for View.OnClickListener
+  override def onClick(v: View): Unit = {
+    val rv = findViewById(R.id.pkg_list).asInstanceOf[RecyclerView]
+    val i = rv.getChildLayoutPosition(v)
+    adapter.foreach { a =>
+      val data = a.list.apply(i)
+      val builder = new AlertDialog.Builder(this)
+        .setCancelable(true)
+        .setIcon(data.icon)
+        .setTitle(R.string.dialog_title)
+        .setMessage(getString(
+          R.string.dialog_text, data.name, getString(R.string.app_name)))
+        .setNegativeButton(
+          R.string.dialog_no,
+          new DialogInterface.OnClickListener() {
+            override def onClick(dialog: DialogInterface, which: Int): Unit = {
+              dialog.dismiss()
+            }
+          })
+        .setPositiveButton(
+          R.string.dialog_yes,
+          new DialogInterface.OnClickListener() {
+            override def onClick(dialog: DialogInterface, which: Int): Unit = {
+              removePkg(data.pkg)
+              a.remove(i)
+              dialog.dismiss()
+            }
+          })
+      builder.create().show()
+    }
+  }
+
+  def removePkg(pkg: String) = {
+    val pkgSet = Set.empty ++= NotificationListener.getPkgSet(this)
+    pkgSet -= pkg
+    val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
+    editor.putStringSet(
+      MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
+    editor.commit()
   }
 
   def refreshData() = {
@@ -77,6 +122,6 @@ class MainActivity extends ActionBarActivity {
     } catch {
       case _: NameNotFoundException =>
     }
-    return new PkgData(icon, name)
+    return new PkgData(icon, name, pkg)
   }
 }

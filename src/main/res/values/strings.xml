@@ -6,12 +6,19 @@
 
   <string name="notif_reply">Quick reply</string>
 
-  <string name="receiver_wrong_text">Cannot find package from \"%1$s\"</string>
-  <string name="receiver_added_pkg">Added package %1$s</string>
-  <string name="receiver_pkg_exists">Package %1$s was already added</string>
+  <string name="receiver_wrong_text">Cannot find app from \"%1$s\"</string>
+  <string name="receiver_added_pkg">Added app %1$s</string>
+  <string name="receiver_pkg_exists">App %1$s was already added</string>
 
   <string name="main_hint">
     These are the apps you added, click to remove:
     (&lt;a href="https://github.com/fishy/autonotif/blob/master/docs/FAQ.md">How do I add apps?&lt;/a>)
   </string>
+
+  <string name="dialog_title">Confirm</string>
+  <string name="dialog_text">
+    Are you sure you want to remove the app \"%1$s\" from %2$s?
+  </string>
+  <string name="dialog_yes">Yes</string>
+  <string name="dialog_no">No</string>
 </resources>
