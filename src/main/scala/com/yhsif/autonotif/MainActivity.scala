@@ -57,7 +57,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
   override def onResume(): Unit = {
     if (!NotificationListener.connected) {
       val name = getString(R.string.app_name)
-      val builder = new AlertDialog.Builder(this)
+      new AlertDialog.Builder(this)
         .setCancelable(true)
         .setIcon(R.mipmap.icon)
         .setTitle(getString(R.string.perm_title, name))
@@ -90,7 +90,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
             finish()
           }
         })
-      builder.create().show()
+        .create()
+        .show()
     }
 
     refreshData()
@@ -114,11 +115,11 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
           .asInstanceOf[TextView]
           .setText(
             getString(R.string.about_title, getString(R.string.app_name)))
-        val dialog = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
           .setTitle(R.string.about)
           .setView(view)
           .create()
-        dialog.show()
+          .show()
         return true
       }
       case _ => {
@@ -133,15 +134,14 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
     val i = rv.getChildLayoutPosition(v)
     adapter.foreach { a =>
       val data = a.list.apply(i)
-      val builder = new AlertDialog.Builder(this)
+      new AlertDialog.Builder(this)
         .setCancelable(true)
         .setIcon(data.icon)
         .setTitle(R.string.dialog_title)
-        .setMessage(
-          getString(
-            R.string.dialog_text,
-            data.name,
-            getString(R.string.app_name)))
+        .setMessage(getString(
+          R.string.dialog_text,
+          data.name,
+          getString(R.string.app_name)))
         .setNegativeButton(
           R.string.dialog_no,
           new DialogInterface.OnClickListener() {
@@ -159,7 +159,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
             }
           }
         )
-      builder.create().show()
+        .create()
+        .show()
     }
   }
 
