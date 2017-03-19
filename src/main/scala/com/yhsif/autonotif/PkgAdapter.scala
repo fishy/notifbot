@@ -8,7 +8,8 @@ import android.view.View
 import scala.collection.mutable.ListBuffer
 
 class PkgAdapter(
-  var list: ListBuffer[PkgData], val listener: View.OnClickListener)
+    var list: ListBuffer[PkgData],
+    val listener: View.OnClickListener)
     extends RecyclerView.Adapter[PkgViewHolder] {
 
   override def onCreateViewHolder(parent: ViewGroup, vt: Int): PkgViewHolder = {

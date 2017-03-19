@@ -68,8 +68,8 @@ class ShareReceiver extends Activity {
     }
     pkgSet += pkg
     val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
-    editor.putStringSet(
-      MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
+    editor
+      .putStringSet(MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
     editor.commit()
     showToast(getString(R.string.receiver_added_pkg, name))
   }

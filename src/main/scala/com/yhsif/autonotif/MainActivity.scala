@@ -40,8 +40,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
     vh.hint.setMovementMethod(LinkMovementMethod.getInstance())
 
     adapter = Option(new PkgAdapter(ListBuffer.empty, this))
-    adapter.foreach {
-      a => vh.pkg_list.setAdapter(a) 
+    adapter.foreach { a =>
+      vh.pkg_list.setAdapter(a)
     }
     vh.pkg_list.setLayoutManager(new LinearLayoutManager(this))
   }
@@ -62,7 +62,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
               NotificationListener.startMain = false
               finish()
             }
-          })
+          }
+        )
         .setPositiveButton(
           R.string.perm_yes,
           new DialogInterface.OnClickListener() {
@@ -72,15 +73,15 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
               startActivity(
                 new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
             }
-          })
-        .setOnCancelListener(
-          new DialogInterface.OnCancelListener() {
-            override def onCancel(dialog: DialogInterface): Unit = {
-              dialog.dismiss()
-              NotificationListener.startMain = false
-              finish()
-            }
-          })
+          }
+        )
+        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+          override def onCancel(dialog: DialogInterface): Unit = {
+            dialog.dismiss()
+            NotificationListener.startMain = false
+            finish()
+          }
+        })
       builder.create().show()
     }
 
@@ -98,8 +99,11 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
         .setCancelable(true)
         .setIcon(data.icon)
         .setTitle(R.string.dialog_title)
-        .setMessage(getString(
-          R.string.dialog_text, data.name, getString(R.string.app_name)))
+        .setMessage(
+          getString(
+            R.string.dialog_text,
+            data.name,
+            getString(R.string.app_name)))
         .setNegativeButton(
           R.string.dialog_no,
           new DialogInterface.OnClickListener() {
@@ -115,7 +119,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
               a.remove(i)
               dialog.dismiss()
             }
-          })
+          }
+        )
       builder.create().show()
     }
   }
@@ -124,8 +129,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
     val pkgSet = Set.empty ++= NotificationListener.getPkgSet(this)
     pkgSet -= pkg
     val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
-    editor.putStringSet(
-      MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
+    editor
+      .putStringSet(MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
     editor.commit()
   }
 
@@ -136,18 +141,19 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
       val pm = getPackageManager()
       val defIcon = getDrawable(R.mipmap.default_icon)
       adapter.foreach { a =>
-        a.list =
-          prev
-            .map(x => createPkgData(pm, x, defIcon))
-            .to[ListBuffer]
-            .sortBy(_.name)
+        a.list = prev
+          .map(x => createPkgData(pm, x, defIcon))
+          .to[ListBuffer]
+          .sortBy(_.name)
         a.notifyDataSetChanged()
       }
     }
   }
 
-  def createPkgData(pm: PackageManager, pkg: String, defIcon: Drawable)
-  : PkgData = {
+  def createPkgData(
+      pm: PackageManager,
+      pkg: String,
+      defIcon: Drawable): PkgData = {
     var name = pkg
     var icon = defIcon
     try {

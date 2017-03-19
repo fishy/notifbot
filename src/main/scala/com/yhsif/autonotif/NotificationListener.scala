@@ -150,10 +150,10 @@ class NotificationListener extends NotificationListenerService {
   }
 
   def checkPackage(
-    pkgs: Set[String],
-    pkg: String,
-    sbn: StatusBarNotification): Boolean =
-      pkg != PkgSelf && pkgs(pkg) && !sbn.isOngoing()
+      pkgs: Set[String],
+      pkg: String,
+      sbn: StatusBarNotification): Boolean =
+    pkg != PkgSelf && pkgs(pkg) && !sbn.isOngoing()
 
   def getBitmap(large: Option[Icon], small: Option[Icon]): Option[Bitmap] = {
     large match {
