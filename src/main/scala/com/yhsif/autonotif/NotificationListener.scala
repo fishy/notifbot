@@ -24,6 +24,9 @@ object NotificationListener {
   val ReplyAction = "com.yhsif.autonotif.ACTION_REPLY" // not really used
   val ReplyKey = "com.yhsif.autonorif.KEY_REPLY" // not really used
 
+  var connected = false
+  var startMain = false
+
   def getPackageName(ctx: Context, pkg: String, empty: Boolean): String = {
     val manager = ctx.getPackageManager()
     try {
@@ -54,19 +57,23 @@ object NotificationListener {
 class NotificationListener extends NotificationListenerService {
   import NotificationListener.ReplyAction
   import NotificationListener.ReplyKey
+  import NotificationListener.connected
+  import NotificationListener.startMain
 
   val PkgSelf = "com.yhsif.autonotif"
 
-  var connected = false
   var lastId: Int = 0
   var notifMap: Map[String, Int] = Map()
 
   override def onListenerConnected(): Unit = {
     connected = true
-    val pkgs = NotificationListener.getPkgSet(this)
-    for (notif <- getActiveNotifications()) {
-      handleNotif(pkgs, notif)
+    if (startMain) {
+      startActivity(new Intent(this, classOf[MainActivity]))
     }
+  }
+
+  override def onListenerDisconnected(): Unit = {
+    connected = false
   }
 
   override def onNotificationPosted(

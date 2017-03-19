@@ -21,4 +21,12 @@
   </string>
   <string name="dialog_yes">Yes</string>
   <string name="dialog_no">No</string>
+
+  <string name="perm_title">Grant %1$s permission</string>
+  <string name="perm_text">
+    %1$s needs permission to access your notifications in order to function.
+    Please turn it on on the next screen.
+  </string>
+  <string name="perm_yes">Continue</string>
+  <string name="perm_no">No thanks</string>
 </resources>

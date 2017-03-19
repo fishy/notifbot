@@ -1,10 +1,12 @@
 package com.yhsif.autonotif
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -42,10 +44,46 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
       a => vh.pkg_list.setAdapter(a) 
     }
     vh.pkg_list.setLayoutManager(new LinearLayoutManager(this))
-    refreshData()
   }
 
   override def onResume(): Unit = {
+    if (!NotificationListener.connected) {
+      val name = getString(R.string.app_name)
+      val builder = new AlertDialog.Builder(this)
+        .setCancelable(true)
+        .setIcon(R.mipmap.icon)
+        .setTitle(getString(R.string.perm_title, name))
+        .setMessage(getString(R.string.perm_text, name))
+        .setNegativeButton(
+          R.string.perm_no,
+          new DialogInterface.OnClickListener() {
+            override def onClick(dialog: DialogInterface, which: Int): Unit = {
+              dialog.dismiss()
+              NotificationListener.startMain = false
+              finish()
+            }
+          })
+        .setPositiveButton(
+          R.string.perm_yes,
+          new DialogInterface.OnClickListener() {
+            override def onClick(dialog: DialogInterface, which: Int): Unit = {
+              dialog.dismiss()
+              NotificationListener.startMain = true
+              startActivity(
+                new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+            }
+          })
+        .setOnCancelListener(
+          new DialogInterface.OnCancelListener() {
+            override def onCancel(dialog: DialogInterface): Unit = {
+              dialog.dismiss()
+              NotificationListener.startMain = false
+              finish()
+            }
+          })
+      builder.create().show()
+    }
+
     refreshData()
     super.onResume()
   }
