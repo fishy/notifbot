@@ -29,4 +29,30 @@
   </string>
   <string name="perm_yes">Continue</string>
   <string name="perm_no">No thanks</string>
+
+  <string name="about">About</string>
+  <string name="about_title">About AutoNotif</string>
+  <string name="about_text">
+    AutoNotif v0.1-alpha by Yuxuan \'fishy\' Wang
+    &lt;br />
+    &lt;br />
+
+    This is an
+    &lt;a href="https://github.com/fishy/autonotif">Open Source project&lt;/a>.
+    &lt;br />
+    &lt;br />
+
+    Part of the icon was originally made by
+    &lt;a href="http://www.freepik.com">Freepik&lt;/a>
+    for &lt;a href="http://www.flaticon.com">Flaticon&lt;/a>,
+    used under
+    &lt;a href="https://creativecommons.org/licenses/by/3.0/">CC 3.0 BY&lt;/a>.
+    &lt;br />
+    &lt;br />
+
+    Part of the icon was from
+    &lt;a href="https://material.io/icons/">Material Design Icons&lt;/a>,
+    used under
+    &lt;a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License&lt;/a>.
+  </string>
 </resources>

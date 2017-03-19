@@ -11,8 +11,11 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 
 import scala.collection.JavaConversions
@@ -44,6 +47,9 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
       vh.pkg_list.setAdapter(a)
     }
     vh.pkg_list.setLayoutManager(new LinearLayoutManager(this))
+
+    //vh.app_bar.inflateMenu(R.menu.main)
+    setSupportActionBar(vh.app_bar)
   }
 
   override def onResume(): Unit = {
@@ -87,6 +93,27 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
 
     refreshData()
     super.onResume()
+  }
+
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    getMenuInflater().inflate(R.menu.main, menu)
+    return true
+  }
+
+  override def onOptionsItemSelected(item: MenuItem): Boolean = {
+    item.getItemId() match {
+      case R.id.action_about => {
+        val builder = new AlertDialog.Builder(this)
+          .setIcon(R.mipmap.icon)
+          .setTitle(getString(R.string.about_title))
+          .setMessage(Html.fromHtml(getString(R.string.about_text)))
+        builder.create().show()
+        return true
+      }
+      case _ => {
+        return super.onOptionsItemSelected(item)
+      }
+    }
   }
 
   // for View.OnClickListener
