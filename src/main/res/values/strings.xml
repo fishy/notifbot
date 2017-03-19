@@ -31,12 +31,10 @@
   <string name="perm_no">No thanks</string>
 
   <string name="about">About</string>
-  <string name="about_title">About AutoNotif</string>
+  <string name="about_title">
+    %1$s v0.1-alpha by Yuxuan \'fishy\' Wang
+  </string>
   <string name="about_text">
-    AutoNotif v0.1-alpha by Yuxuan \'fishy\' Wang
-    &lt;br />
-    &lt;br />
-
     This is an
     &lt;a href="https://github.com/fishy/autonotif">Open Source project&lt;/a>.
     &lt;br />

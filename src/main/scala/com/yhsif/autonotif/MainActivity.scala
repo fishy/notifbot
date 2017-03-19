@@ -17,6 +17,8 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup.LayoutParams
+import android.widget.TextView
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
@@ -103,11 +105,20 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
   override def onOptionsItemSelected(item: MenuItem): Boolean = {
     item.getItemId() match {
       case R.id.action_about => {
-        val builder = new AlertDialog.Builder(this)
-          .setIcon(R.mipmap.icon)
-          .setTitle(getString(R.string.about_title))
-          .setMessage(Html.fromHtml(getString(R.string.about_text)))
-        builder.create().show()
+        val view = getLayoutInflater().inflate(R.layout.about, null)
+        val tv = view.findViewById(R.id.about_text).asInstanceOf[TextView]
+        tv.setText(Html.fromHtml(getString(R.string.about_text)))
+        tv.setMovementMethod(LinkMovementMethod.getInstance())
+        view
+          .findViewById(R.id.about_title)
+          .asInstanceOf[TextView]
+          .setText(
+            getString(R.string.about_title, getString(R.string.app_name)))
+        val dialog = new AlertDialog.Builder(this)
+          .setTitle(R.string.about)
+          .setView(view)
+          .create()
+        dialog.show()
         return true
       }
       case _ => {
