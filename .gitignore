@@ -2,4 +2,5 @@ target/
 project/project
 bin/
 local.properties
+release.jks
 proguard-sbt.txt
