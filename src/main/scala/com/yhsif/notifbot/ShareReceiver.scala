@@ -1,4 +1,4 @@
-package com.yhsif.autonotif
+package com.yhsif.notifbot
 
 import android.app.Activity
 import android.content.Intent

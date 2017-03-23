@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">AutoNotif</string>
-  <string name="service_name">AutoNotifService</string>
-  <string name="share_receiver_name">Add to AutoNotif</string>
+  <string name="app_name">NotifBot</string>
+  <string name="service_name">NotifBotService</string>
+  <string name="share_receiver_name">Add to NotifBot</string>
 
   <string name="notif_reply">Quick reply</string>
 
@@ -12,7 +12,7 @@
 
   <string name="main_hint">
     These are the apps you added, click to remove:
-    (&lt;a href="https://github.com/fishy/autonotif/blob/master/FAQ.md">How do I add apps?&lt;/a>)
+    (&lt;a href="https://github.com/fishy/notifbot/blob/master/FAQ.md">How do I add apps?&lt;/a>)
   </string>
 
   <string name="dialog_title">Confirm</string>
@@ -32,19 +32,11 @@
 
   <string name="about">About</string>
   <string name="about_title">
-    %1$s v0.2-beta by Yuxuan \'fishy\' Wang
+    %1$s v0.1-beta by Yuxuan \'fishy\' Wang
   </string>
   <string name="about_text">
     This is an
-    &lt;a href="https://github.com/fishy/autonotif">Open Source project&lt;/a>.
-    &lt;br />
-    &lt;br />
-
-    Part of the icon was originally made by
-    &lt;a href="http://www.freepik.com">Freepik&lt;/a>
-    for &lt;a href="http://www.flaticon.com">Flaticon&lt;/a>,
-    used under
-    &lt;a href="https://creativecommons.org/licenses/by/3.0/">CC 3.0 BY&lt;/a>.
+    &lt;a href="https://github.com/fishy/notifbot">Open Source project&lt;/a>.
     &lt;br />
     &lt;br />
 

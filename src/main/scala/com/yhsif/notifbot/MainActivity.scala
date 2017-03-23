@@ -1,4 +1,4 @@
-package com.yhsif.autonotif
+package com.yhsif.notifbot
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -25,7 +25,7 @@ import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.Set
 
 object MainActivity {
-  val Pref = "com.yhsif.autonotif"
+  val Pref = "com.yhsif.notifbot"
   val KeyPkgs = "packages"
 }
 

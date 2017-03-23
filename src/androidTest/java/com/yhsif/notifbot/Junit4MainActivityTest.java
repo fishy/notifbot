@@ -1,4 +1,4 @@
-package com.yhsif.autonotif;
+package com.yhsif.notifbot;
 
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.rule.ActivityTestRule;
