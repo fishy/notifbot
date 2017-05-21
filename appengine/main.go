@@ -49,7 +49,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	}
 	if botToken.ValidateWebhookURL(r) {
 		// TODO
-		w.Write([]byte("Hello, world!"))
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 	http.NotFound(w, r)
