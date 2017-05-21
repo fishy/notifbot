@@ -1,11 +1,10 @@
-# AutoNotif
+# NotifBot
 
-An Android app that transforms normal notifications into Android Auto
-notifications.
+An Android app and Telegram bot that forwards Android notifications to Telegram.
 
 ## Building
 
-The building system used is [sbt](http://www.scala-sbt.org/).
+For Android part, the building system used is [sbt](http://www.scala-sbt.org/).
 You only need to manually install sbt,
 and sbt will get all the dependencies for you
 (including scala, sbt-android, android-sdk, etc.)
