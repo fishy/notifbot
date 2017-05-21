@@ -4,13 +4,13 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
@@ -26,7 +26,6 @@ const (
 	botKind           = "telebotkey"
 	botID             = "AndroidNotificationBot"
 	urlPrefix         = "https://api.telegram.org/bot"
-	webhookURLPrefix  = "https://notification-bot.appspot.com/"
 	webhookMaxConn    = 5
 )
 
@@ -37,10 +36,8 @@ type entityTelegramToken struct {
 	Number int    `datastore:"Number,noindex"`
 	Str    string `datastore:"String,noindex"`
 
-	hashOnce          sync.Once
-	hashPrefix        string
-	hashPath          string
-	hashPathWithSlash string
+	hashOnce   sync.Once
+	hashPrefix string
 }
 
 func (e *entityTelegramToken) String() string {
@@ -56,13 +53,14 @@ func (e *entityTelegramToken) PostRequest(
 	ctx context.Context, endpoint string, params url.Values,
 ) {
 	runtime.RunInBackground(ctx, func(ctx context.Context) {
+		start := time.Now()
+		defer func() {
+			log.Debugf(ctx, "http POST for %s took %v", endpoint, time.Now().Sub(start))
+		}()
 		client := urlfetch.Client(ctx)
 		resp, err := client.PostForm(e.getURL(endpoint), params)
 		if resp != nil && resp.Body != nil {
-			defer func() {
-				io.Copy(ioutil.Discard, resp.Body)
-				resp.Body.Close()
-			}()
+			defer DrainAndClose(resp.Body)
 		}
 		if err != nil {
 			log.Errorf(ctx, "%s err: %v", endpoint, err)
@@ -81,23 +79,21 @@ func (e *entityTelegramToken) initHashPrefix(r *http.Request) {
 		ctx := appengine.NewContext(r)
 
 		hash := sha512.Sum512_224([]byte(e.String()))
-		e.hashPrefix = base64.URLEncoding.EncodeToString(hash[:])
+		e.hashPrefix = webhookPrefix + base64.URLEncoding.EncodeToString(hash[:])
 		log.Infof(ctx, "hashPrefix == %s", e.hashPrefix)
-		e.hashPath = "/" + e.hashPrefix
-		e.hashPathWithSlash = e.hashPath + "/"
 	})
 }
 
 func (e *entityTelegramToken) getWebhookURL(r *http.Request) string {
 	e.initHashPrefix(r)
-	return fmt.Sprintf("%s%s", webhookURLPrefix, e.hashPath)
+	return fmt.Sprintf("%s%s", globalURLPrefix, e.hashPrefix)
 }
 
 // ValidateWebhookURL validates whether requested URI in request matches hash
 // path.
 func (e *entityTelegramToken) ValidateWebhookURL(r *http.Request) bool {
 	e.initHashPrefix(r)
-	return r.URL.Path == e.hashPath || strings.HasPrefix(r.URL.Path, e.hashPathWithSlash)
+	return r.URL.Path == e.hashPrefix
 }
 
 // SetWebhook sets webhook with telegram.
