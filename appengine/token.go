@@ -74,6 +74,16 @@ func (e *entityTelegramToken) PostRequest(
 	})
 }
 
+// SendMessage sents a telegram messsage.
+func (e *entityTelegramToken) SendMessage(
+	ctx context.Context, id int64, msg string,
+) {
+	values := url.Values{}
+	values.Add("chat_id", fmt.Sprintf("%d", id))
+	values.Add("text", msg)
+	e.PostRequest(ctx, "sendMessage", values)
+}
+
 func (e *entityTelegramToken) initHashPrefix(r *http.Request) {
 	e.hashOnce.Do(func() {
 		ctx := appengine.NewContext(r)
@@ -126,7 +136,7 @@ func InitBot(r *http.Request) {
 		key := datastore.NewKey(ctx, botKind, botID, 0, nil)
 		e := new(entityTelegramToken)
 		if err := datastore.Get(ctx, key, e); err != nil {
-			log.Errorf(ctx, "failed to get datastore key %s: %v", key, err)
+			log.Errorf(ctx, "failed to get datastore key %v: %v", key, err)
 			return
 		}
 		botToken = e
