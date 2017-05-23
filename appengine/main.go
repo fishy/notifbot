@@ -32,7 +32,7 @@ const (
 	stopMsg        = `Connection deleted.`
 	stopErrMsg     = `You did not run /start command yet.`
 
-	msgTemplate = "%s says:\n%s"
+	msgTemplate = "From %s:\n%s"
 )
 
 var urlRegexp = regexp.MustCompile(clientPrefix + `(\d+)/(.+)`)
