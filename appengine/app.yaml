@@ -1,7 +1,9 @@
 runtime: go
 api_version: go1
+instance_class: B1
 
 basic_scaling:
+  idle_timeout: 10s
   max_instances: 1
 
 handlers:
