@@ -15,7 +15,13 @@ minSdkVersion := "23"
 
 javacOptions in Compile ++= "-source" :: "1.7" :: "-target" :: "1.7" :: Nil
 
+proguardOptions ++= Seq(
+  "-dontwarn okio.**",
+  "-dontwarn javax.annotation.Nullable",
+  "-dontwarn javax.annotation.ParametersAreNonnullByDefault")
+
 libraryDependencies ++=
+  "com.squareup.okhttp3" % "okhttp" % "3.8.0" ::
   "com.android.support" % "appcompat-v7" % "25.3.0" ::
   "com.android.support" % "cardview-v7" % "25.3.0" ::
   "com.android.support" % "recyclerview-v7" % "25.3.0" ::
