@@ -2,10 +2,9 @@ package com.yhsif.notifbot
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.widget.TextView
 import android.widget.Toast
-
-import java.net.URL
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.Set
@@ -16,9 +15,9 @@ class ShareReceiver extends Activity {
   // or
   // market://details?id=<package_name>
   val PlayHost = "play.google.com"
-  val MarketProtocol = "market"
-  val HttpProtocol = "http"
-  val HttpsProtocol = "https"
+  val MarketScheme = "market"
+  val HttpScheme = "http"
+  val HttpsScheme = "https"
   val IdQuery = "id"
 
   override def onResume(): Unit = {
@@ -26,14 +25,14 @@ class ShareReceiver extends Activity {
       if (intent.getAction() == Intent.ACTION_SEND) {
         Option(intent.getStringExtra(Intent.EXTRA_TEXT)).foreach { text =>
           try {
-            val url = new URL(text)
-            val valid = url.getProtocol() match {
-              case MarketProtocol => true
-              case HttpsProtocol | HttpProtocol => url.getHost() == PlayHost
+            val uri = Uri.parse(text)
+            val valid = uri.getScheme() match {
+              case MarketScheme => true
+              case HttpsScheme | HttpScheme => uri.getHost() == PlayHost
               case _ => false
             }
             if (valid) {
-              findPackageName(Option(url.getQuery())) match {
+              Option(uri.getQueryParameter(IdQuery)) match {
                 case Some(pkg) => addPackage(pkg)
                 case None => illegalText(text)
               }
@@ -46,17 +45,6 @@ class ShareReceiver extends Activity {
     }
     finish()
     super.onResume()
-  }
-
-  def findPackageName(queryOrNull: Option[String]): Option[String] = {
-    val query = queryOrNull getOrElse ""
-    for (q <- query.split("&")) {
-      val s = q.split("=")
-      if (s.size == 2 && s(0) == IdQuery) {
-        return Option(s(1))
-      }
-    }
-    return None
   }
 
   def addPackage(pkg: String): Unit = {
