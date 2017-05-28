@@ -11,22 +11,15 @@ Here are the detailed steps:
  1. Choose NotifBot in the Share menu
  1. You should see a Toast afterwards as confirmation
 
-## After playing the notification Android Auto asks me for reply?
+## How do I connect with Telegram?
 
-Due to Android Auto's restriction,
-only notifications that you can reply will be shown.
-But we can't really reply the notifications.
-You can just ignore the reply request.
-If you do reply to the notification,
-that goes nowhere.
+The Telegram bot is
+[@AndroidNotificationBot](https://t.me/AndroidNotificationBot?start=0).
 
-## The NotifBot notifications will show even without Android Auto
+You can use either the `/start` command or the "START" button to get an URL.
 
-Due to Android's restriction,
-we cannot reliably detect whether Android Auto is running.
-As a result,
-we just show NotifBot notifications regardless the status of Android Auto.
-The NotifBot notification will dismiss itself when the original notification is
-gone, or you can just swipe it away if Android Auto is not running.
+Open the URL with NotifBot app will connect the app with the bot.
 
-If you know a way to reliably detect current running app, please let us know!
+## How do I disconnect with Telegram?
+
+You can use `/stop` command in Telegram bot to revoke the connection URL.
