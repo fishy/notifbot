@@ -54,4 +54,21 @@
     used under
     &lt;a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License&lt;/a>.
   </string>
+
+  <string name="service_succeed">
+    Successfully connected to service!
+    You\'ll start getting notification in Telegram from now on.
+  </string>
+  <string name="no_service">
+    Not connected to Telegram bot
+  </string>
+  <string name="notif_text">
+    Please click this notification to connect to Telegram bot.
+  </string>
+  <string name="service_failed_title">
+    Invalid service URL
+  </string>
+  <string name="service_failed_text">
+    Please click %1$s button to re-connect to Telegram bot.
+  </string>
 </resources>

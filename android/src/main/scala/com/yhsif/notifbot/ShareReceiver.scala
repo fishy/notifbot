@@ -3,8 +3,6 @@ package com.yhsif.notifbot
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.widget.TextView
-import android.widget.Toast
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.Set
@@ -51,7 +49,7 @@ class ShareReceiver extends Activity {
     val name = NotificationListener.getPackageName(this, pkg, false)
     val pkgSet = Set.empty ++= NotificationListener.getPkgSet(this)
     if (pkgSet(pkg)) {
-      showToast(getString(R.string.receiver_pkg_exists, name))
+      MainActivity.showToast(this, getString(R.string.receiver_pkg_exists, name))
       return
     }
     pkgSet += pkg
@@ -59,22 +57,10 @@ class ShareReceiver extends Activity {
     editor
       .putStringSet(MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
     editor.commit()
-    showToast(getString(R.string.receiver_added_pkg, name))
+    MainActivity.showToast(this, getString(R.string.receiver_added_pkg, name))
   }
 
   def illegalText(text: String): Unit = {
-    showToast(getString(R.string.receiver_wrong_text, text))
-  }
-
-  def showToast(text: String): Unit = {
-    val toast = Toast.makeText(this, text, Toast.LENGTH_LONG)
-    Option(toast.getView().findViewById(android.R.id.message)).foreach { v =>
-      // Put the icon on the right
-      val view = v.asInstanceOf[TextView]
-      view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
-      view.setCompoundDrawablePadding(
-        getResources().getDimensionPixelSize(R.dimen.toast_padding))
-    }
-    toast.show()
+    MainActivity.showToast(this, getString(R.string.receiver_wrong_text, text))
   }
 }

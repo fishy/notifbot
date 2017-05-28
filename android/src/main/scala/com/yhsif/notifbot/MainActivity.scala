@@ -1,24 +1,25 @@
 package com.yhsif.notifbot
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup.LayoutParams
 import android.widget.TextView
+import android.widget.Toast
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
@@ -27,6 +28,22 @@ import scala.collection.mutable.Set
 object MainActivity {
   val Pref = "com.yhsif.notifbot"
   val KeyPkgs = "packages"
+  val KeyServiceURL = "service"
+  val HttpsScheme = "https"
+  val ServiceHost = "notification-bot.appspot.com"
+  val TelegramURL = Uri.parse("https://t.me/AndroidNotificationBot?start=0")
+
+  def showToast(ctx: Context, text: String): Unit = {
+    val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
+    Option(toast.getView().findViewById(android.R.id.message)).foreach { v =>
+      // Put the icon on the right
+      val view = v.asInstanceOf[TextView]
+      view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
+      view.setCompoundDrawablePadding(
+        ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding))
+    }
+    toast.show()
+  }
 }
 
 class MainActivity extends AppCompatActivity with View.OnClickListener {
@@ -55,6 +72,61 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
   }
 
   override def onResume(): Unit = {
+    // Handle notification-bot.appspot.com URL
+    Option(getIntent()).foreach { intent =>
+      if (intent.getAction() == Intent.ACTION_VIEW) {
+        Option(intent.getData()).foreach { uri =>
+          val valid = uri.getHost() match {
+            case MainActivity.ServiceHost => true
+            case _ => false
+          }
+          if (valid) {
+            val url = String.format(
+              "%s://%s%s",
+              MainActivity.HttpsScheme, uri.getHost(), uri.getPath())
+            HttpSender.send(
+              url,
+              getString(R.string.app_name),
+              getString(R.string.service_succeed),
+              () => {
+                NotificationListener.cancelTelegramNotif(this)
+                MainActivity.showToast(
+                  this, getString(R.string.service_succeed))
+                val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
+                editor.putString(MainActivity.KeyServiceURL, url)
+                editor.commit()
+              },
+              () => {
+                new AlertDialog.Builder(this)
+                  .setCancelable(true)
+                  .setIcon(R.mipmap.icon)
+                  .setTitle(getString(R.string.service_failed_title))
+                  .setMessage(getString(
+                    R.string.service_failed_text,
+                    getString(android.R.string.ok)))
+                  .setPositiveButton(
+                    android.R.string.ok,
+                    new DialogInterface.OnClickListener() {
+                      override def onClick(
+                          dialog: DialogInterface, which: Int): Unit = {
+                        dialog.dismiss()
+                        startActivity(new Intent(
+                          Intent.ACTION_VIEW, MainActivity.TelegramURL))
+                      }
+                    }
+                  )
+                  .create()
+                  .show()
+              })
+          } else {
+            // Pass it along
+            startActivity(new Intent(Intent.ACTION_VIEW, uri))
+          }
+        }
+      }
+    }
+
+    // Check the listener service status
     if (!NotificationListener.connected) {
       val name = getString(R.string.app_name)
       new AlertDialog.Builder(this)

@@ -1,18 +1,21 @@
 package com.yhsif.notifbot
 
+import android.app.PendingIntent
+import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
+import android.net.Uri
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.support.v4.app.RemoteInput
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 
 import scala.collection.JavaConversions
 import scala.collection.immutable.Set
 
 object NotificationListener {
-  val ReplyAction = "com.yhsif.notifbot.ACTION_REPLY" // not really used
-  val ReplyKey = "com.yhsif.notifbot.KEY_REPLY" // not really used
+  val NotifID = 0
 
   var connected = false
   var startMain = false
@@ -42,11 +45,15 @@ object NotificationListener {
       JavaConversions.setAsJavaSet(Set.empty))
     return Set.empty ++ JavaConversions.asScalaSet(javaSet)
   }
+
+  def cancelTelegramNotif(ctx: Context): Unit = {
+    NotificationManagerCompat.from(ctx).cancel(NotifID)
+  }
 }
 
 class NotificationListener extends NotificationListenerService {
-  import NotificationListener.ReplyAction
-  import NotificationListener.ReplyKey
+  import NotificationListener.NotifID
+
   import NotificationListener.connected
   import NotificationListener.startMain
 
@@ -84,8 +91,34 @@ class NotificationListener extends NotificationListenerService {
         case Some(s) => s.toString()
         case None => ""
       }
+      if (label == "" || text == "") {
+        return
+      }
 
-      // TODO
+      val pref = getSharedPreferences(MainActivity.Pref, 0)
+      val url = pref.getString(MainActivity.KeyServiceURL, "")
+      val onFailure = () => {
+        val intent = new Intent(Intent.ACTION_VIEW, MainActivity.TelegramURL)
+        val notifBuilder = new NotificationCompat.Builder(this)
+          .setSmallIcon(R.drawable.icon_notif)
+          .setContentTitle(getString(R.string.no_service))
+          .setContentText(getString(R.string.notif_text))
+          .setAutoCancel(true)
+          .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
+          .setVisibility(Notification.VISIBILITY_PUBLIC)
+        NotificationManagerCompat
+          .from(this)
+          .notify(NotifID, notifBuilder.build())
+      }
+      val onSuccess = () => NotificationListener.cancelTelegramNotif(this)
+      // Sanity check
+      val uri = Uri.parse(url)
+      if (uri.getScheme() == MainActivity.HttpsScheme &&
+          uri.getHost() == MainActivity.ServiceHost) {
+        HttpSender.send(url, label, text, onSuccess, onFailure)
+      } else {
+        onFailure()
+      }
     }
   }
 
