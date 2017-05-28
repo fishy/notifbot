@@ -71,4 +71,7 @@
   <string name="service_failed_text">
     Please click %1$s button to re-connect to Telegram bot.
   </string>
+  <string name="init_service_text">
+    Please click %1$s button to connect to Telegram bot.
+  </string>
 </resources>

@@ -11,7 +11,7 @@ object HttpSender {
   val KeyLabel = "label"
   val KeyMsg = "msg"
 
-  private val client = new OkHttpClient()
+  private val client = new OkHttpClient.Builder().followRedirects(false).build()
 
   def send(
       url: String,
@@ -28,19 +28,33 @@ object HttpSender {
       .post(body)
       .build()
 
-    new AsyncTask[AnyRef, AnyRef, AnyRef]() {
-      override def doInBackground(unused: AnyRef*): AnyRef = {
-        client.newCall(request).execute()
-      }
+    new HttpSender(onSuccess, onFailure).execute(request)
+  }
 
-      override def onPostExecute(response: AnyRef): Unit = {
-        val code = response.asInstanceOf[Response].code()
-        if (code >= 200 && code < 400) {
-          onSuccess()
-        } else {
-          onFailure()
-        }
-      }
-    }.execute()
+  def checkUrl(url: String, onFailure: () => Unit): Unit = {
+    val request = new Request.Builder().url(url).get().build()
+    new HttpSender(() => {}, onFailure).execute(request)
+  }
+}
+
+class HttpSender(val onSuccess: () => Unit, val onFailure: () => Unit)
+    extends AsyncTask[AnyRef, AnyRef, AnyRef] {
+
+  override def doInBackground(reqs: AnyRef*): AnyRef = {
+    reqs.foreach { req =>
+      // Only handle the first req
+      return HttpSender.client.newCall(req.asInstanceOf[Request]).execute()
+    }
+    // Empty reqs
+    return new Response.Builder().code(404).build()
+  }
+
+  override def onPostExecute(response: AnyRef): Unit = {
+    val code = response.asInstanceOf[Response].code()
+    if (code >= 200 && code < 400) {
+      onSuccess()
+    } else {
+      onFailure()
+    }
   }
 }

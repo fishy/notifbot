@@ -31,7 +31,7 @@ object MainActivity {
   val KeyServiceURL = "service"
   val HttpsScheme = "https"
   val ServiceHost = "notification-bot.appspot.com"
-  val TelegramURL = Uri.parse("https://t.me/AndroidNotificationBot?start=0")
+  val TelegramUri = Uri.parse("https://t.me/AndroidNotificationBot?start=0")
 
   def showToast(ctx: Context, text: String): Unit = {
     val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
@@ -72,6 +72,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
   }
 
   override def onResume(): Unit = {
+    var checkService = true
+
     // Handle notification-bot.appspot.com URL
     Option(getIntent()).foreach { intent =>
       if (intent.getAction() == Intent.ACTION_VIEW) {
@@ -80,6 +82,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
             case MainActivity.ServiceHost => true
             case _ => false
           }
+          checkService = !valid
           if (valid) {
             val url = String.format(
               "%s://%s%s",
@@ -111,7 +114,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
                           dialog: DialogInterface, which: Int): Unit = {
                         dialog.dismiss()
                         startActivity(new Intent(
-                          Intent.ACTION_VIEW, MainActivity.TelegramURL))
+                          Intent.ACTION_VIEW, MainActivity.TelegramUri))
                       }
                     }
                   )
@@ -164,6 +167,39 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
         })
         .create()
         .show()
+    } else if (checkService) {
+      // Check service url
+      val pref = getSharedPreferences(MainActivity.Pref, 0)
+      val url = pref.getString(MainActivity.KeyServiceURL, "")
+      val onFailure = () => {
+        new AlertDialog.Builder(this)
+          .setCancelable(true)
+          .setIcon(R.mipmap.icon)
+          .setTitle(getString(R.string.no_service))
+          .setMessage(getString(
+            R.string.init_service_text,
+            getString(android.R.string.ok)))
+          .setPositiveButton(
+            android.R.string.ok,
+            new DialogInterface.OnClickListener() {
+              override def onClick(
+                  dialog: DialogInterface, which: Int): Unit = {
+                dialog.dismiss()
+                startActivity(new Intent(
+                  Intent.ACTION_VIEW, MainActivity.TelegramUri))
+              }
+            }
+          )
+          .create()
+          .show()
+      }
+      val uri = Uri.parse(url)
+      if (uri.getScheme() == MainActivity.HttpsScheme &&
+          uri.getHost() == MainActivity.ServiceHost) {
+        HttpSender.checkUrl(url, onFailure)
+      } else {
+        onFailure()
+      }
     }
 
     refreshData()

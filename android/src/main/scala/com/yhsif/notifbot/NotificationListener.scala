@@ -98,7 +98,7 @@ class NotificationListener extends NotificationListenerService {
       val pref = getSharedPreferences(MainActivity.Pref, 0)
       val url = pref.getString(MainActivity.KeyServiceURL, "")
       val onFailure = () => {
-        val intent = new Intent(Intent.ACTION_VIEW, MainActivity.TelegramURL)
+        val intent = new Intent(Intent.ACTION_VIEW, MainActivity.TelegramUri)
         val notifBuilder = new NotificationCompat.Builder(this)
           .setSmallIcon(R.drawable.icon_notif)
           .setContentTitle(getString(R.string.no_service))
