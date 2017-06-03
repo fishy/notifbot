@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
+import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.support.v4.app.NotificationCompat
@@ -16,6 +17,7 @@ import scala.collection.immutable.Set
 
 object NotificationListener {
   val NotifID = 0
+  val NotifTextTemplate = "%s\n%s"
 
   var connected = false
   var startMain = false
@@ -48,6 +50,42 @@ object NotificationListener {
 
   def cancelTelegramNotif(ctx: Context): Unit = {
     NotificationManagerCompat.from(ctx).cancel(NotifID)
+  }
+
+  def getFirstString(extras: Bundle, keys: String*): String = {
+    keys.foreach { key =>
+      {
+        val text = Option(extras.getCharSequence(key)) match {
+          case Some(s) => s.toString()
+          case None => ""
+        }
+        if (text != "") {
+          return text
+        }
+      }
+    }
+    return ""
+  }
+
+  def getNotifText(notif: Notification): String = {
+    val title = getFirstString(
+      notif.extras,
+      Notification.EXTRA_TITLE,
+      Notification.EXTRA_TITLE_BIG)
+    val text = getFirstString(
+      notif.extras,
+      Notification.EXTRA_BIG_TEXT,
+      Notification.EXTRA_TEXT,
+      Notification.EXTRA_SUMMARY_TEXT,
+      Notification.EXTRA_SUB_TEXT,
+      Notification.EXTRA_INFO_TEXT)
+    if (title == "") {
+      return text
+    }
+    if (text == "") {
+      return title
+    }
+    return String.format(NotifTextTemplate, title, text)
   }
 }
 
@@ -87,10 +125,7 @@ class NotificationListener extends NotificationListenerService {
       val notif = sbn.getNotification()
       val key = sbn.getKey()
       val label = NotificationListener.getPackageName(this, pkg, true)
-      val text = Option(notif.tickerText) match {
-        case Some(s) => s.toString()
-        case None => ""
-      }
+      val text = NotificationListener.getNotifText(notif)
       if (label == "" || text == "") {
         return
       }
