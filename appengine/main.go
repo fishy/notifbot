@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
@@ -155,7 +156,12 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	botToken.SendMessage(ctx, id, fmt.Sprintf(msgTemplate, label, msg))
+	if !strings.HasPrefix(strings.TrimSpace(msg), strings.TrimSpace(label)) {
+		// For some apps, the notification title will juse be app name, so only add
+		// label when that's not the case to avoid repetition.
+		msg = fmt.Sprintf(msgTemplate, label, msg)
+	}
+	botToken.SendMessage(ctx, id, msg)
 	w.WriteHeader(http.StatusOK)
 }
 
