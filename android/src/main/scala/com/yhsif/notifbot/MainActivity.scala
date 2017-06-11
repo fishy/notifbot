@@ -120,6 +120,9 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
                   )
                   .create()
                   .show()
+              },
+              () => {
+                // Do nothing on network failure here.
               })
           } else {
             // Pass it along

@@ -2,6 +2,8 @@ package com.yhsif.notifbot
 
 import android.os.AsyncTask
 
+import java.io.IOException
+
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,7 +20,8 @@ object HttpSender {
       label: String,
       msg: String,
       onSuccess: () => Unit,
-      onFailure: () => Unit): Unit = {
+      onFailure: () => Unit,
+      onNetFail: () => Unit): Unit = {
     val body = new FormBody.Builder()
       .add(KeyLabel, label)
       .add(KeyMsg, msg)
@@ -28,29 +31,44 @@ object HttpSender {
       .post(body)
       .build()
 
-    new HttpSender(onSuccess, onFailure).execute(request)
+    new HttpSender(onSuccess, onFailure, onNetFail).execute(request)
   }
 
   def checkUrl(url: String, onFailure: () => Unit): Unit = {
     val request = new Request.Builder().url(url).get().build()
-    new HttpSender(() => {}, onFailure).execute(request)
+    new HttpSender(() => {}, onFailure, () => {}).execute(request)
   }
 }
 
-class HttpSender(val onSuccess: () => Unit, val onFailure: () => Unit)
+class HttpSender(
+    val onSuccess: () => Unit,
+    val onFailure: () => Unit,
+    val onNetFail: () => Unit)
     extends AsyncTask[AnyRef, AnyRef, AnyRef] {
 
   override def doInBackground(reqs: AnyRef*): AnyRef = {
     reqs.foreach { req =>
       // Only handle the first req
-      return HttpSender.client.newCall(req.asInstanceOf[Request]).execute()
+      try {
+        return HttpSender.client.newCall(req.asInstanceOf[Request]).execute()
+      } catch {
+        case _: IOException => {
+          return null
+        }
+      }
     }
     // Empty reqs
     return new Response.Builder().code(404).build()
   }
 
   override def onPostExecute(response: AnyRef): Unit = {
-    val code = response.asInstanceOf[Response].code()
+    if (response == null) {
+      onNetFail()
+      return
+    }
+    val res = response.asInstanceOf[Response]
+    val code = res.code()
+    res.close()
     if (code >= 200 && code < 400) {
       onSuccess()
     } else {
