@@ -47,9 +47,8 @@ object NotificationListener {
 
   def getPkgSet(ctx: Context): Set[String] = {
     val pref = ctx.getSharedPreferences(MainActivity.Pref, 0)
-    val javaSet = pref.getStringSet(
-      MainActivity.KeyPkgs,
-      setAsJavaSet(Set.empty))
+    val javaSet =
+      pref.getStringSet(MainActivity.KeyPkgs, setAsJavaSet(Set.empty))
     return Set.empty ++ asScalaSet(javaSet)
   }
 
@@ -117,9 +116,7 @@ class NotificationListener extends NotificationListenerService {
       .setAutoCancel(true)
       .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
       .setVisibility(Notification.VISIBILITY_PUBLIC)
-    NotificationManagerCompat
-      .from(this)
-      .notify(NotifID, notifBuilder.build())
+    NotificationManagerCompat.from(this).notify(NotifID, notifBuilder.build())
   }
 
   var lastId: Int = 0
@@ -196,7 +193,7 @@ class NotificationListener extends NotificationListenerService {
       var result = Vector[(Long, String, String)]()
       mapAsScalaMap(javaMap).toSeq.sortBy(_._1).foreach { kv =>
         kv._1 match {
-          case KeyRegexp(time, label, _*) =>
+          case KeyRegexp(time, label, _ *) =>
             result =
               result :+ Tuple3(time.toLong, label, kv._2.asInstanceOf[String])
         }

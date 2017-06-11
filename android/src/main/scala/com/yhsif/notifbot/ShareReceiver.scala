@@ -49,7 +49,8 @@ class ShareReceiver extends Activity {
     val name = NotificationListener.getPackageName(this, pkg, false)
     val pkgSet = Set.empty ++= NotificationListener.getPkgSet(this)
     if (pkgSet(pkg)) {
-      MainActivity.showToast(this, getString(R.string.receiver_pkg_exists, name))
+      MainActivity
+        .showToast(this, getString(R.string.receiver_pkg_exists, name))
       return
     }
     pkgSet += pkg

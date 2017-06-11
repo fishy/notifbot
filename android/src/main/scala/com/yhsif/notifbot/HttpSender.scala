@@ -13,7 +13,8 @@ object HttpSender {
   val KeyLabel = "label"
   val KeyMsg = "msg"
 
-  private val client = new OkHttpClient.Builder().followRedirects(false).build()
+  private val client =
+    new OkHttpClient.Builder().followRedirects(false).build()
 
   def send(
       url: String,
@@ -22,14 +23,9 @@ object HttpSender {
       onSuccess: () => Unit,
       onFailure: () => Unit,
       onNetFail: () => Unit): Unit = {
-    val body = new FormBody.Builder()
-      .add(KeyLabel, label)
-      .add(KeyMsg, msg)
-      .build()
-    val request = new Request.Builder()
-      .url(url)
-      .post(body)
-      .build()
+    val body =
+      new FormBody.Builder().add(KeyLabel, label).add(KeyMsg, msg).build()
+    val request = new Request.Builder().url(url).post(body).build()
 
     new HttpSender(onSuccess, onFailure, onNetFail).execute(request)
   }

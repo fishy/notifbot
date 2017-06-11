@@ -86,15 +86,17 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
           if (valid) {
             val url = String.format(
               "%s://%s%s",
-              MainActivity.HttpsScheme, uri.getHost(), uri.getPath())
+              MainActivity.HttpsScheme,
+              uri.getHost(),
+              uri.getPath())
             HttpSender.send(
               url,
               getString(R.string.app_name),
               getString(R.string.service_succeed),
               () => {
                 NotificationListener.cancelTelegramNotif(this)
-                MainActivity.showToast(
-                  this, getString(R.string.service_succeed))
+                MainActivity
+                  .showToast(this, getString(R.string.service_succeed))
                 val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
                 editor.putString(MainActivity.KeyServiceURL, url)
                 editor.commit()
@@ -113,8 +115,10 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
                       override def onClick(
                           dialog: DialogInterface, which: Int): Unit = {
                         dialog.dismiss()
-                        startActivity(new Intent(
-                          Intent.ACTION_VIEW, MainActivity.TelegramUri))
+                        startActivity(
+                          new Intent(
+                            Intent.ACTION_VIEW,
+                            MainActivity.TelegramUri))
                       }
                     }
                   )
@@ -185,11 +189,10 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
           .setPositiveButton(
             android.R.string.ok,
             new DialogInterface.OnClickListener() {
-              override def onClick(
-                  dialog: DialogInterface, which: Int): Unit = {
+              override def onClick(dialog: DialogInterface, which: Int): Unit = {
                 dialog.dismiss()
-                startActivity(new Intent(
-                  Intent.ACTION_VIEW, MainActivity.TelegramUri))
+                startActivity(
+                  new Intent(Intent.ACTION_VIEW, MainActivity.TelegramUri))
               }
             }
           )
