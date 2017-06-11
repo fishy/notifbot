@@ -17,7 +17,7 @@ import scala.collection.immutable.Set
 
 object NotificationListener {
   val NotifID = 0
-  val NotifTextTemplate = "%s\n%s"
+  val NotifTextTemplate = "%s:\n%s"
 
   var connected = false
   var startMain = false
