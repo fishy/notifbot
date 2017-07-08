@@ -12,6 +12,7 @@ import okhttp3.Response
 object HttpSender {
   val KeyLabel = "label"
   val KeyMsg = "msg"
+  val CodeNetFail: Int = -1
 
   private val client =
     new OkHttpClient.Builder().followRedirects(false).build()
@@ -46,25 +47,29 @@ class HttpSender(
     reqs.foreach { req =>
       // Only handle the first req
       try {
-        return HttpSender.client.newCall(req.asInstanceOf[Request]).execute()
+        val res = HttpSender.client.newCall(req.asInstanceOf[Request]).execute()
+        if (res == null) {
+          return HttpSender.CodeNetFail.asInstanceOf[AnyRef]
+        }
+        val code = res.code().asInstanceOf[AnyRef]
+        res.close()
+        return code
       } catch {
         case _: IOException => {
-          return null
+          return HttpSender.CodeNetFail.asInstanceOf[AnyRef]
         }
       }
     }
     // Empty reqs
-    return new Response.Builder().code(404).build()
+    return 404.asInstanceOf[AnyRef]
   }
 
-  override def onPostExecute(response: AnyRef): Unit = {
-    if (response == null) {
+  override def onPostExecute(c: AnyRef): Unit = {
+    val code = c.asInstanceOf[Int]
+    if (code == HttpSender.CodeNetFail) {
       onNetFail()
       return
     }
-    val res = response.asInstanceOf[Response]
-    val code = res.code()
-    res.close()
     if (code >= 200 && code < 400) {
       onSuccess()
     } else {
