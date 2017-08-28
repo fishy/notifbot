@@ -9,7 +9,7 @@ version := "0.3.1-beta"
 instrumentTestRunner :=
   "android.support.test.runner.AndroidJUnitRunner"
 
-platformTarget := "android-25"
+platformTarget := "android-26"
 
 minSdkVersion := "23"
 
@@ -21,11 +21,11 @@ proguardOptions ++= Seq(
   "-dontwarn javax.annotation.ParametersAreNonnullByDefault")
 
 libraryDependencies ++=
-  "com.squareup.okhttp3" % "okhttp" % "3.8.0" ::
-  "com.android.support" % "appcompat-v7" % "25.3.0" ::
-  "com.android.support" % "cardview-v7" % "25.3.0" ::
-  "com.android.support" % "recyclerview-v7" % "25.3.0" ::
-  "com.android.support" % "support-v4" % "25.3.0" ::
+  "com.squareup.okhttp3" % "okhttp" % "3.8.1" ::
+  "com.android.support" % "appcompat-v7" % "25.3.1" ::
+  "com.android.support" % "cardview-v7" % "25.3.1" ::
+  "com.android.support" % "recyclerview-v7" % "25.3.1" ::
+  "com.android.support" % "support-v4" % "25.3.1" ::
   "com.android.support.test" % "runner" % "0.5" % "androidTest" ::
   "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest" ::
   Nil
