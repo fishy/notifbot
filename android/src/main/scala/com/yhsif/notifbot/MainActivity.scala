@@ -236,6 +236,19 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
           .show()
         return true
       }
+      case R.id.action_box => {
+        val view = getLayoutInflater().inflate(R.layout.magic, null)
+        val tv = view.findViewById(R.id.magic_text).asInstanceOf[TextView]
+        tv.setText(Html.fromHtml(getString(R.string.magic_text)))
+        tv.setMovementMethod(LinkMovementMethod.getInstance())
+        // TODO: handle go button
+        new AlertDialog.Builder(this)
+          .setTitle(R.string.magic_box)
+          .setView(view)
+          .create()
+          .show()
+        return true
+      }
       case _ => {
         return super.onOptionsItemSelected(item)
       }

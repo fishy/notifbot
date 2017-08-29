@@ -55,6 +55,26 @@
     &lt;a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License&lt;/a>.
   </string>
 
+  <string name="magic_box">Magic Box</string>
+  <string name="magic_text">
+    Some examples of things you can put in the magic box below are:
+    &lt;br />
+    &lt;br />
+
+    * An Android app id: \"com.smartthings.android\"
+    &lt;br />
+    * A Google Play URL:
+    \"https://play.google.com/store/apps/details?id=com.smartthings.android\"
+    &lt;br />
+    * A NotifBot URL:
+    \"https://notification-bot.appspot.com/c/12345/deadbeef\"
+    &lt;br />
+
+    &lt;br />
+    Press back button to cancel.
+  </string>
+  <string name="go">Go</string>
+
   <string name="service_succeed">
     Successfully connected to service!
     You\'ll start getting notification in Telegram from now on.
