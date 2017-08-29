@@ -31,13 +31,26 @@ object MainActivity {
   val Pref = "com.yhsif.notifbot"
   val KeyPkgs = "packages"
   val KeyServiceURL = "service"
-  val HttpsScheme = "https"
   val ServiceHost = "notification-bot.appspot.com"
   val TelegramUri = Uri.parse("https://t.me/AndroidNotificationBot?start=0")
 
+  val HttpScheme = "http"
+  val HttpsScheme = "https"
+
+  // For google play url.
+  // The URL should be either
+  // http(s)://play.google.com/store/apps/details?id=<package_name>
+  // or
+  // market://details?id=<package_name>
+  val PlayHost = "play.google.com"
+  val MarketScheme = "market"
+  val IdQuery = "id"
+
   def showToast(ctx: Context, text: String): Unit = {
     val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
-    Option(toast.getView().findViewById(android.R.id.message)).foreach { v =>
+    val ov: Option[View] =
+      Option(toast.getView().findViewById(android.R.id.message))
+    ov.foreach { v =>
       // Put the icon on the right
       val view = v.asInstanceOf[TextView]
       view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
@@ -46,9 +59,105 @@ object MainActivity {
     }
     toast.show()
   }
+
+  def handleTextPackage(ctx: Context, text: String): Boolean = {
+    try {
+      val uri = Uri.parse(text)
+      val valid = uri.getScheme() match {
+        case MarketScheme => true
+        case HttpsScheme | HttpScheme => uri.getHost() == PlayHost
+        case _ => false
+      }
+      if (!valid) {
+        return false
+      }
+      Option(uri.getQueryParameter(IdQuery)) match {
+        case Some(pkg) => {
+          addPackage(ctx, pkg)
+          return true
+        }
+        case None => return false
+      }
+    } catch {
+      case _: Throwable => return false
+    }
+  }
+
+  def addPackage(ctx: Context, pkg: String): Unit = {
+    val name = NotificationListener.getPackageName(ctx, pkg, false)
+    val pkgSet = Set.empty ++= NotificationListener.getPkgSet(ctx)
+    if (pkgSet(pkg)) {
+      showToast(ctx, ctx.getString(R.string.receiver_pkg_exists, name))
+      return
+    }
+    pkgSet += pkg
+    val editor = ctx.getSharedPreferences(Pref, 0).edit()
+    editor
+      .putStringSet(KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
+    editor.commit()
+    showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name))
+  }
+
+  def illegalText(ctx: Context, text: String): Unit = {
+    showToast(ctx, ctx.getString(R.string.receiver_wrong_text, text))
+  }
+
+  def handleTextService(ctx: Context, uri: Uri): Boolean = {
+    if (uri.getHost() != ServiceHost) {
+      return false
+    }
+    val url = String.format(
+      "%s://%s%s",
+      HttpsScheme,
+      uri.getHost(),
+      uri.getPath())
+    HttpSender.send(
+      url,
+      ctx.getString(R.string.app_name),
+      ctx.getString(R.string.service_succeed),
+      () => {
+        NotificationListener.cancelTelegramNotif(ctx)
+        showToast(ctx, ctx.getString(R.string.service_succeed))
+        val editor = ctx.getSharedPreferences(Pref, 0).edit()
+        editor.putString(KeyServiceURL, url)
+        editor.commit()
+      },
+      () => {
+        new AlertDialog.Builder(ctx)
+          .setCancelable(true)
+          .setIcon(R.mipmap.icon)
+          .setTitle(ctx.getString(R.string.service_failed_title))
+          .setMessage(ctx.getString(
+            R.string.service_failed_text,
+            ctx.getString(android.R.string.ok)))
+          .setPositiveButton(
+            android.R.string.ok,
+            new DialogInterface.OnClickListener() {
+              override def onClick(dialog: DialogInterface, which: Int)
+              : Unit = {
+                dialog.dismiss()
+                ctx.startActivity(new Intent(Intent.ACTION_VIEW, TelegramUri))
+              }
+            }
+          )
+          .create()
+          .show()
+      },
+      () => {
+        // TODO: handle network failure
+      })
+    return true
+  }
 }
 
 class MainActivity extends AppCompatActivity with View.OnClickListener {
+  import MainActivity.Pref
+  import MainActivity.KeyPkgs
+  import MainActivity.KeyServiceURL
+  import MainActivity.ServiceHost
+  import MainActivity.TelegramUri
+  import MainActivity.HttpsScheme
+
   // allows accessing `.value` on TR.resource.constants
   implicit val context = this
 
@@ -90,57 +199,9 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
     Option(getIntent()).foreach { intent =>
       if (intent.getAction() == Intent.ACTION_VIEW) {
         Option(intent.getData()).foreach { uri =>
-          val valid = uri.getHost() match {
-            case MainActivity.ServiceHost => true
-            case _ => false
-          }
+          val valid = MainActivity.handleTextService(this, uri)
           checkService = !valid
-          if (valid) {
-            val url = String.format(
-              "%s://%s%s",
-              MainActivity.HttpsScheme,
-              uri.getHost(),
-              uri.getPath())
-            HttpSender.send(
-              url,
-              getString(R.string.app_name),
-              getString(R.string.service_succeed),
-              () => {
-                NotificationListener.cancelTelegramNotif(this)
-                MainActivity
-                  .showToast(this, getString(R.string.service_succeed))
-                val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
-                editor.putString(MainActivity.KeyServiceURL, url)
-                editor.commit()
-              },
-              () => {
-                new AlertDialog.Builder(this)
-                  .setCancelable(true)
-                  .setIcon(R.mipmap.icon)
-                  .setTitle(getString(R.string.service_failed_title))
-                  .setMessage(getString(
-                    R.string.service_failed_text,
-                    getString(android.R.string.ok)))
-                  .setPositiveButton(
-                    android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                      override def onClick(
-                          dialog: DialogInterface, which: Int): Unit = {
-                        dialog.dismiss()
-                        startActivity(
-                          new Intent(
-                            Intent.ACTION_VIEW,
-                            MainActivity.TelegramUri))
-                      }
-                    }
-                  )
-                  .create()
-                  .show()
-              },
-              () => {
-                // Do nothing on network failure here.
-              })
-          } else {
+          if (!valid) {
             // Pass it along
             startActivity(new Intent(Intent.ACTION_VIEW, uri))
           }
@@ -188,8 +249,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
         .show()
     } else if (checkService) {
       // Check service url
-      val pref = getSharedPreferences(MainActivity.Pref, 0)
-      val url = pref.getString(MainActivity.KeyServiceURL, "")
+      val pref = getSharedPreferences(Pref, 0)
+      val url = pref.getString(KeyServiceURL, "")
       val onFailure = () => {
         new AlertDialog.Builder(this)
           .setCancelable(true)
@@ -204,7 +265,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
               override def onClick(dialog: DialogInterface, which: Int): Unit = {
                 dialog.dismiss()
                 startActivity(
-                  new Intent(Intent.ACTION_VIEW, MainActivity.TelegramUri))
+                  new Intent(Intent.ACTION_VIEW, TelegramUri))
               }
             }
           )
@@ -212,8 +273,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
           .show()
       }
       val uri = Uri.parse(url)
-      if (uri.getScheme() == MainActivity.HttpsScheme &&
-          uri.getHost() == MainActivity.ServiceHost) {
+      if (uri.getScheme() == HttpsScheme && uri.getHost() == ServiceHost) {
         HttpSender.checkUrl(url, onFailure)
       } else {
         onFailure()
@@ -270,6 +330,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
         }
         return
       }
+      case _ =>
     }
     val rv = findViewById(R.id.pkg_list).asInstanceOf[RecyclerView]
     val i = rv.getChildLayoutPosition(v)
@@ -308,9 +369,8 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
   def removePkg(pkg: String) = {
     val pkgSet = Set.empty ++= NotificationListener.getPkgSet(this)
     pkgSet -= pkg
-    val editor = getSharedPreferences(MainActivity.Pref, 0).edit()
-    editor
-      .putStringSet(MainActivity.KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
+    val editor = getSharedPreferences(Pref, 0).edit()
+    editor.putStringSet(KeyPkgs, JavaConversions.setAsJavaSet(pkgSet))
     editor.commit()
   }
 
