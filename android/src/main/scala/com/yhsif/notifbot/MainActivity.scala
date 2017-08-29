@@ -18,6 +18,8 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 
@@ -52,6 +54,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
 
   var prev: Set[String] = Set.empty
   var adapter: Option[PkgAdapter] = None
+  var magicDialog: Option[AlertDialog] = None
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -67,7 +70,16 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
     }
     vh.pkg_list.setLayoutManager(new LinearLayoutManager(this))
 
-    //vh.app_bar.inflateMenu(R.menu.main)
+    val view = getLayoutInflater().inflate(R.layout.magic, null)
+    val tv = view.findViewById(R.id.magic_text).asInstanceOf[TextView]
+    tv.setText(Html.fromHtml(getString(R.string.magic_text)))
+    tv.setMovementMethod(LinkMovementMethod.getInstance())
+    view.findViewById(R.id.go).asInstanceOf[Button].setOnClickListener(this)
+    magicDialog = Option(new AlertDialog.Builder(this)
+      .setTitle(R.string.magic_box)
+      .setView(view)
+      .create())
+
     setSupportActionBar(vh.app_bar)
   }
 
@@ -237,16 +249,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
         return true
       }
       case R.id.action_box => {
-        val view = getLayoutInflater().inflate(R.layout.magic, null)
-        val tv = view.findViewById(R.id.magic_text).asInstanceOf[TextView]
-        tv.setText(Html.fromHtml(getString(R.string.magic_text)))
-        tv.setMovementMethod(LinkMovementMethod.getInstance())
-        // TODO: handle go button
-        new AlertDialog.Builder(this)
-          .setTitle(R.string.magic_box)
-          .setView(view)
-          .create()
-          .show()
+        magicDialog.get.show()
         return true
       }
       case _ => {
@@ -257,6 +260,17 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
 
   // for View.OnClickListener
   override def onClick(v: View): Unit = {
+    v.getId() match {
+      case R.id.go => {
+        magicDialog.foreach { d =>
+          val text = d.findViewById(R.id.magic_url).asInstanceOf[EditText]
+          if (d.isShowing() && handleText(text.getText().toString())) {
+            d.dismiss()
+          }
+        }
+        return
+      }
+    }
     val rv = findViewById(R.id.pkg_list).asInstanceOf[RecyclerView]
     val i = rv.getChildLayoutPosition(v)
     adapter.foreach { a =>
@@ -333,5 +347,10 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
       case _: NameNotFoundException =>
     }
     return new PkgData(icon, name, pkg)
+  }
+
+  def handleText(text: String): Boolean = {
+    // TODO
+    return true
   }
 }
