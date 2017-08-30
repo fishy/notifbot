@@ -28,7 +28,7 @@ const (
 	playURL        = `https://play.google.com/store/apps/details?id=com.yhsif.notifbot`
 	unsupportedMsg = `unsupported message/command`
 	downloadMsg    = `Download NotifBot Android app at: ` + playURL
-	startMsg       = `Please open this URL in NotifBot app: `
+	startMsg       = `Please open this URL in NotifBot app (or copy paste this whole message into the Magic Box of the app): `
 	startErrMsg    = `Failed to generate token, please try again later.`
 	stopMsg        = `Connection deleted.`
 	stopErrMsg     = `You did not run /start command yet.`
