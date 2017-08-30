@@ -1,5 +1,5 @@
 runtime: go
-api_version: go1
+api_version: go1.8
 instance_class: B1
 
 basic_scaling:
