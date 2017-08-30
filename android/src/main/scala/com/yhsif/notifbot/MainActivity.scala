@@ -148,7 +148,7 @@ object MainActivity {
           .show()
       },
       () => {
-        // TODO: handle network failure
+        showToast(ctx, ctx.getString(R.string.service_net_fail))
       })
     return true
   }

@@ -95,4 +95,8 @@
   <string name="init_service_text">
     Please click %1$s button to connect to Telegram bot.
   </string>
+  <string name="service_net_fail">
+    Cannot connect to service due to network failure.
+    Please try again later.
+  </string>
 </resources>
