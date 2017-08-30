@@ -34,6 +34,10 @@ object MainActivity {
   val ServiceHost = "notification-bot.appspot.com"
   val TelegramUri = Uri.parse("https://t.me/AndroidNotificationBot?start=0")
 
+  val UriRegexp = """(?s).*?([^\s]+://[^\s]+).*""".r
+  val AppIdRegexp = """[a-zA-Z0-9\._-]+""".r
+  val AppIdPrefix = "market://details?id="
+
   val HttpScheme = "http"
   val HttpsScheme = "https"
 
@@ -147,6 +151,33 @@ object MainActivity {
         // TODO: handle network failure
       })
     return true
+  }
+
+  def handleText(ctx: Context, text: String): Boolean = {
+    var msg = text
+    text match {
+      case UriRegexp(uri, _ *) => {
+        msg = uri
+        if (handleTextPackage(ctx, uri)) {
+          return true
+        }
+        try {
+          if (handleTextService(ctx, Uri.parse(uri))) {
+            return true
+          }
+        } catch {
+          case _: Throwable =>
+        }
+      }
+      case AppIdRegexp(_*) => {
+        if (handleTextPackage(ctx, AppIdPrefix + text)) {
+          return true
+        }
+      }
+      case _ =>
+    }
+    showToast(ctx, ctx.getString(R.string.magic_invalid_uri, msg))
+    return false
   }
 }
 
@@ -324,8 +355,11 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
       case R.id.go => {
         magicDialog.foreach { d =>
           val text = d.findViewById(R.id.magic_url).asInstanceOf[EditText]
-          if (d.isShowing() && handleText(text.getText().toString())) {
+          if (d.isShowing()
+            && MainActivity.handleText(this, text.getText().toString())) {
             d.dismiss()
+            text.setText("")
+            refreshData()
           }
         }
         return
@@ -407,10 +441,5 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
       case _: NameNotFoundException =>
     }
     return new PkgData(icon, name, pkg)
-  }
-
-  def handleText(text: String): Boolean = {
-    // TODO
-    return true
   }
 }

@@ -74,6 +74,7 @@
     Press back button to cancel.
   </string>
   <string name="go">Go</string>
+  <string name="magic_invalid_uri">Invalid magic text: \"%1$s\"</string>
 
   <string name="service_succeed">
     Successfully connected to service!
