@@ -15,9 +15,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -110,11 +112,8 @@ object MainActivity {
     if (uri.getHost() != ServiceHost) {
       return false
     }
-    val url = String.format(
-      "%s://%s%s",
-      HttpsScheme,
-      uri.getHost(),
-      uri.getPath())
+    val url =
+      String.format("%s://%s%s", HttpsScheme, uri.getHost(), uri.getPath())
     HttpSender.send(
       url,
       ctx.getString(R.string.app_name),
@@ -137,8 +136,7 @@ object MainActivity {
           .setPositiveButton(
             android.R.string.ok,
             new DialogInterface.OnClickListener() {
-              override def onClick(dialog: DialogInterface, which: Int)
-              : Unit = {
+              override def onClick(dialog: DialogInterface, which: Int): Unit = {
                 dialog.dismiss()
                 ctx.startActivity(new Intent(Intent.ACTION_VIEW, TelegramUri))
               }
@@ -149,7 +147,8 @@ object MainActivity {
       },
       () => {
         showToast(ctx, ctx.getString(R.string.service_net_fail))
-      })
+      }
+    )
     return true
   }
 
@@ -169,7 +168,7 @@ object MainActivity {
           case _: Throwable =>
         }
       }
-      case AppIdRegexp(_*) => {
+      case AppIdRegexp(_ *) => {
         if (handleTextPackage(ctx, AppIdPrefix + text)) {
           return true
         }
@@ -181,7 +180,11 @@ object MainActivity {
   }
 }
 
-class MainActivity extends AppCompatActivity with View.OnClickListener {
+class MainActivity
+    extends AppCompatActivity
+    with View.OnClickListener
+    with TextView.OnEditorActionListener {
+
   import MainActivity.Pref
   import MainActivity.KeyPkgs
   import MainActivity.KeyServiceURL
@@ -215,10 +218,14 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
     tv.setText(Html.fromHtml(getString(R.string.magic_text)))
     tv.setMovementMethod(LinkMovementMethod.getInstance())
     view.findViewById(R.id.go).asInstanceOf[Button].setOnClickListener(this)
-    magicDialog = Option(new AlertDialog.Builder(this)
-      .setTitle(R.string.magic_box)
-      .setView(view)
-      .create())
+    val et = view.findViewById(R.id.magic_url).asInstanceOf[EditText]
+    et.setOnEditorActionListener(this)
+    et.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER)
+    magicDialog = Option(
+      new AlertDialog.Builder(this)
+        .setTitle(R.string.magic_box)
+        .setView(view)
+        .create())
 
     setSupportActionBar(vh.app_bar)
   }
@@ -293,10 +300,10 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
           .setPositiveButton(
             android.R.string.ok,
             new DialogInterface.OnClickListener() {
-              override def onClick(dialog: DialogInterface, which: Int): Unit = {
+              override def onClick(
+                  dialog: DialogInterface, which: Int): Unit = {
                 dialog.dismiss()
-                startActivity(
-                  new Intent(Intent.ACTION_VIEW, TelegramUri))
+                startActivity(new Intent(Intent.ACTION_VIEW, TelegramUri))
               }
             }
           )
@@ -353,15 +360,7 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
   override def onClick(v: View): Unit = {
     v.getId() match {
       case R.id.go => {
-        magicDialog.foreach { d =>
-          val text = d.findViewById(R.id.magic_url).asInstanceOf[EditText]
-          if (d.isShowing()
-            && MainActivity.handleText(this, text.getText().toString())) {
-            d.dismiss()
-            text.setText("")
-            refreshData()
-          }
-        }
+        doMagicGo()
         return
       }
       case _ =>
@@ -397,6 +396,28 @@ class MainActivity extends AppCompatActivity with View.OnClickListener {
         )
         .create()
         .show()
+    }
+  }
+
+  // for TextView.OnEditorActionListener
+  override def onEditorAction(v: TextView, id: Int, ev: KeyEvent): Boolean = {
+    id match {
+      case EditorInfo.IME_ACTION_GO =>
+        doMagicGo()
+        return true
+      case _ => return false
+    }
+  }
+
+  def doMagicGo(): Unit = {
+    magicDialog.foreach { d =>
+      val text = d.findViewById(R.id.magic_url).asInstanceOf[EditText]
+      if (d.isShowing()
+          && MainActivity.handleText(this, text.getText().toString())) {
+        d.dismiss()
+        text.setText("")
+        refreshData()
+      }
     }
   }
 

@@ -25,6 +25,7 @@
         android:layout_weight="1"
         android:inputType="textUri"
         android:singleLine="true"
+        android:imeOptions="actionGo"
         android:textAppearance="@android:style/TextAppearance.Medium"
         android:selectAllOnFocus="true"
       />
