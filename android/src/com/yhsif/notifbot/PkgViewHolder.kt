@@ -6,16 +6,18 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 
-class PkgViewHolder(v: View) extends RecyclerView.ViewHolder(v) {
-  def setIcon(icon: Drawable) = {
-    v.findViewById(R.id.icon).asInstanceOf[ImageView].setImageDrawable(icon)
+class PkgViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+  val v = v
+
+  fun setIcon(icon: Drawable) {
+    (v.findViewById(R.id.icon) as ImageView).setImageDrawable(icon)
   }
 
-  def setName(name: String) = {
-    v.findViewById(R.id.name).asInstanceOf[TextView].setText(name)
+  fun setName(name: String) {
+    (v.findViewById(R.id.name) as TextView).setText(name)
   }
 
-  def setBackground(i: Int) = {
+  fun setBackground(i: Int) {
     if (i % 2 == 0) {
       v.setBackgroundColor(v.getContext().getColor(R.color.even_background))
     } else {

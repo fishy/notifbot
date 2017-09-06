@@ -3,11 +3,11 @@ package com.yhsif.notifbot
 import android.app.Activity
 import android.content.Intent
 
-class ShareReceiver extends Activity {
-  override def onResume(): Unit = {
-    Option(getIntent()).foreach { intent =>
+class ShareReceiver : Activity() {
+  override fun onResume() {
+    getIntent()?.let { intent ->
       if (intent.getAction() == Intent.ACTION_SEND) {
-        Option(intent.getStringExtra(Intent.EXTRA_TEXT)).foreach { text =>
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { text ->
           if (!MainActivity.handleTextPackage(this, text)) {
             MainActivity.illegalText(this, text)
           }
