@@ -4,13 +4,14 @@ An Android app and Telegram bot that forwards Android notifications to Telegram.
 
 ## Building
 
-For Android part, the building system used is [sbt](http://www.scala-sbt.org/).
-You only need to manually install sbt,
-and sbt will get all the dependencies for you
-(including scala, sbt-android, android-sdk, etc.)
+For Android part, the building system used is [Bazel](https://bazel.build/).
+You only need to manually install Bazel,
+and Bazel will get all the dependencies for you
+(including Kotlin and third-party Bazel rules).
 
-Please refer to [sbt-android](https://github.com/scala-android/sbt-android)
-for building options.
+The Bazel rules depends on the `ANDROID_HOME` environment variable.
+
+To get the release apk, use the script in `android/tools/release.sh`.
 
 ## License
 
