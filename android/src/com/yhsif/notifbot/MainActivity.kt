@@ -103,9 +103,10 @@ class MainActivity
         showToast(ctx, ctx.getString(R.string.receiver_pkg_exists, name))
         return
       }
-      pkgSet.add(pkg)
+      val mutableSet = pkgSet.toMutableSet()
+      mutableSet.add(pkg)
       val editor = ctx.getSharedPreferences(PREF, 0).edit()
-      editor.putStringSet(KEY_PKGS, pkgSet)
+      editor.putStringSet(KEY_PKGS, mutableSet)
       editor.commit()
       showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name))
     }
@@ -206,7 +207,7 @@ class MainActivity
     }
   }
 
-  var prev: MutableSet<String> = mutableSetOf()
+  var prev: Set<String> = setOf()
   var adapter: PkgAdapter? = null
   var magicDialog: AlertDialog? = null
 
@@ -422,7 +423,7 @@ class MainActivity
   }
 
   fun removePkg(pkg: String) {
-    val pkgSet = NotificationListener.getPkgSet(this)
+    val pkgSet = NotificationListener.getPkgSet(this).toMutableSet()
     pkgSet.remove(pkg)
     val editor = getSharedPreferences(PREF, 0).edit()
     editor.putStringSet(KEY_PKGS, pkgSet)

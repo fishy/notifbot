@@ -49,9 +49,9 @@ class NotificationListener : NotificationListenerService() {
       }
     }
 
-    fun getPkgSet(ctx: Context): MutableSet<String> {
+    fun getPkgSet(ctx: Context): Set<String> {
       val pref = ctx.getSharedPreferences(MainActivity.PREF, 0)
-      return pref.getStringSet(MainActivity.KEY_PKGS, mutableSetOf())
+      return pref.getStringSet(MainActivity.KEY_PKGS, setOf())
     }
 
     fun cancelTelegramNotif(ctx: Context) {
@@ -133,7 +133,7 @@ class NotificationListener : NotificationListenerService() {
     handleNotif(NotificationListener.getPkgSet(this), sbn)
   }
 
-  fun handleNotif(pkgs: MutableSet<String>, sbn: StatusBarNotification) {
+  fun handleNotif(pkgs: Set<String>, sbn: StatusBarNotification) {
     if (!connected) {
       return
     }
@@ -168,7 +168,7 @@ class NotificationListener : NotificationListenerService() {
       sbn: StatusBarNotification
   ): Boolean = pkg != PKG_SELF && pkgs.contains(pkg) && !sbn.isOngoing()
 
-  fun getAndClearRetryQueue(): MutableList<Triple<Long, String, String>> {
+  fun getAndClearRetryQueue(): List<Triple<Long, String, String>> {
     val map = retryQueueLock.withLock {
       val pref = getSharedPreferences(PREF_RETRY, 0)
       val map = pref.getAll()
