@@ -10,11 +10,11 @@ class PkgViewHolder(v: View) : RecyclerView.ViewHolder(v) {
   val v = v
 
   fun setIcon(icon: Drawable) {
-    (v.findViewById(R.id.icon) as ImageView).setImageDrawable(icon)
+    v.findViewById<ImageView>(R.id.icon).setImageDrawable(icon)
   }
 
   fun setName(name: String) {
-    (v.findViewById(R.id.name) as TextView).setText(name)
+    v.findViewById<TextView>(R.id.name).setText(name)
   }
 
   fun setBackground(i: Int) {

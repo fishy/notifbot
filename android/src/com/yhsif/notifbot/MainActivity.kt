@@ -60,11 +60,10 @@ class MainActivity
 
     fun showToast(ctx: Context, text: String) {
       val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
-      toast.getView()?.findViewById(android.R.id.message)?.let { v ->
+      toast.getView()?.findViewById<TextView>(android.R.id.message)?.let { v ->
         // Put the icon on the right
-        val view = v as TextView
-        view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
-        view.setCompoundDrawablePadding(
+        v.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
+        v.setCompoundDrawablePadding(
           ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding))
       }
       toast.show()
@@ -205,12 +204,12 @@ class MainActivity
     }
 
     val view = getLayoutInflater().inflate(R.layout.magic, null)
-    (view.findViewById(R.id.magic_text) as TextView).let { tv ->
+    view.findViewById<TextView>(R.id.magic_text).let { tv ->
       tv.setText(fromHtmlWrapper(getString(R.string.magic_text)))
       tv.setMovementMethod(LinkMovementMethod.getInstance())
     }
-    view.findViewById(R.id.go)?.setOnClickListener(this)
-    (view.findViewById(R.id.magic_url) as EditText).let { et ->
+    view.findViewById<View>(R.id.go).setOnClickListener(this)
+    view.findViewById<EditText>(R.id.magic_url).let { et ->
       et.setOnEditorActionListener(this)
       et.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER)
     }
@@ -315,14 +314,12 @@ class MainActivity
     when(item.getItemId()) {
       R.id.action_about -> {
         val view = getLayoutInflater().inflate(R.layout.about, null)
-        (view.findViewById(R.id.about_text) as TextView).let { tv ->
+        view.findViewById<TextView>(R.id.about_text).let { tv ->
           tv.setText(fromHtmlWrapper(getString(R.string.about_text)))
           tv.setMovementMethod(LinkMovementMethod.getInstance())
         }
-        (view.findViewById(R.id.about_title) as TextView).let { v ->
-          v.setText(
+        view.findViewById<TextView>(R.id.about_title).setText(
             getString(R.string.about_title, getString(R.string.app_name)))
-        }
         AlertDialog.Builder(this)
           .setTitle(R.string.about)
           .setView(view)
