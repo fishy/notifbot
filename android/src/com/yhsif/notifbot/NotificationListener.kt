@@ -70,16 +70,16 @@ class NotificationListener : NotificationListenerService() {
 
     fun getNotifText(notif: Notification): String {
       val title = getFirstString(
-        notif.extras,
-        Notification.EXTRA_TITLE,
-        Notification.EXTRA_TITLE_BIG)
+          notif.extras,
+          Notification.EXTRA_TITLE,
+          Notification.EXTRA_TITLE_BIG)
       val text = getFirstString(
-        notif.extras,
-        Notification.EXTRA_BIG_TEXT,
-        Notification.EXTRA_TEXT,
-        Notification.EXTRA_SUMMARY_TEXT,
-        Notification.EXTRA_SUB_TEXT,
-        Notification.EXTRA_INFO_TEXT)
+          notif.extras,
+          Notification.EXTRA_BIG_TEXT,
+          Notification.EXTRA_TEXT,
+          Notification.EXTRA_SUMMARY_TEXT,
+          Notification.EXTRA_SUB_TEXT,
+          Notification.EXTRA_INFO_TEXT)
       if (title == "") {
         return text
       }

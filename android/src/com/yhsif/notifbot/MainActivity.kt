@@ -1,5 +1,7 @@
 package com.yhsif.notifbot
 
+import android.content.ClipboardManager
+import android.content.ClipData
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -58,13 +60,15 @@ class MainActivity
     val RE_URI = Regex("""[^\s]+://[^\s]+""")
     val RE_APP_ID = Regex("""[a-zA-Z0-9\._-]+""")
 
+    var serviceDialog: AlertDialog? = null
+
     fun showToast(ctx: Context, text: String) {
       val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
       toast.getView()?.findViewById<TextView>(android.R.id.message)?.let { v ->
         // Put the icon on the right
         v.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
         v.setCompoundDrawablePadding(
-          ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding))
+            ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding))
       }
       toast.show()
     }
@@ -116,35 +120,40 @@ class MainActivity
       }
       val url = "${SCHEME_HTTPS}://${uri.getHost()}${uri.getPath()}"
       HttpSender.send(
-        url,
-        ctx.getString(R.string.app_name),
-        ctx.getString(R.string.service_succeed),
-        {
-          NotificationListener.cancelTelegramNotif(ctx)
-          showToast(ctx, ctx.getString(R.string.service_succeed))
-          val editor = ctx.getSharedPreferences(PREF, 0).edit()
-          editor.putString(KEY_SERVICE_URL, url)
-          editor.commit()
-        },
-        {
-          AlertDialog.Builder(ctx)
-            .setCancelable(true)
-            .setIcon(R.mipmap.icon)
-            .setTitle(ctx.getString(R.string.service_failed_title))
-            .setMessage(ctx.getString(
-              R.string.service_failed_text,
-              ctx.getString(android.R.string.ok)))
-            .setPositiveButton(
-              android.R.string.ok,
-              DialogInterface.OnClickListener() { dialog, _ ->
-                dialog.dismiss()
-                ctx.startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
+          url,
+          ctx.getString(R.string.app_name),
+          ctx.getString(R.string.service_succeed),
+          {
+            NotificationListener.cancelTelegramNotif(ctx)
+            showToast(ctx, ctx.getString(R.string.service_succeed))
+            val editor = ctx.getSharedPreferences(PREF, 0).edit()
+            editor.putString(KEY_SERVICE_URL, url)
+            editor.commit()
+            serviceDialog?.let { d ->
+              if (d.isShowing()) {
+                d.dismiss()
               }
-            )
-            .create()
-            .show()
-        },
-        { showToast(ctx, ctx.getString(R.string.service_net_fail)) }
+            }
+          },
+          {
+            AlertDialog.Builder(ctx)
+              .setCancelable(true)
+              .setIcon(R.mipmap.icon)
+              .setTitle(ctx.getString(R.string.service_failed_title))
+              .setMessage(ctx.getString(
+                  R.string.service_failed_text,
+                  ctx.getString(android.R.string.ok)))
+              .setPositiveButton(
+                  android.R.string.ok,
+                  DialogInterface.OnClickListener() { dialog, _ ->
+                    dialog.dismiss()
+                    ctx.startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
+                  }
+              )
+              .create()
+              .show()
+          },
+          { showToast(ctx, ctx.getString(R.string.service_net_fail)) }
       )
       return true
     }
@@ -181,6 +190,20 @@ class MainActivity
         return Html.fromHtml(text)
       }
     }
+
+    fun tryClip(ctx: Context) {
+      val clipboard =
+          ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+      clipboard.getPrimaryClip()?.getItemAt(0)?.let { item ->
+        val text = item.coerceToText(ctx).toString()
+        RE_URI.find(text)?.value?.let { uri ->
+          try {
+            handleTextService(ctx, Uri.parse(uri))
+          } catch (_: Throwable) {
+          }
+        }
+      }
+    }
   }
 
   var prev: MutableSet<String> = mutableSetOf()
@@ -213,9 +236,26 @@ class MainActivity
       et.setOnEditorActionListener(this)
       et.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER)
     }
+
     magicDialog = AlertDialog.Builder(this)
       .setTitle(R.string.magic_box)
       .setView(view)
+      .create()
+
+    serviceDialog = AlertDialog.Builder(this)
+      .setCancelable(true)
+      .setIcon(R.mipmap.icon)
+      .setTitle(getString(R.string.no_service))
+      .setMessage(getString(
+          R.string.init_service_text,
+          getString(android.R.string.ok)))
+      .setPositiveButton(
+          android.R.string.ok,
+          DialogInterface.OnClickListener() { dialog, _ ->
+            dialog.dismiss()
+            startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
+          }
+      )
       .create()
 
     setSupportActionBar(findViewById(R.id.app_bar) as Toolbar)
@@ -258,13 +298,13 @@ class MainActivity
             }
         )
         .setPositiveButton(
-          R.string.perm_yes,
-          DialogInterface.OnClickListener() { dialog, _ ->
-            dialog.dismiss()
-            NotificationListener.startMain = true
-            startActivity(
-              Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
-          }
+            R.string.perm_yes,
+            DialogInterface.OnClickListener() { dialog, _ ->
+              dialog.dismiss()
+              NotificationListener.startMain = true
+              startActivity(
+                  Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+            }
         )
         .setOnCancelListener(DialogInterface.OnCancelListener() { dialog ->
           onCancel(dialog)
@@ -276,22 +316,8 @@ class MainActivity
       val pref = getSharedPreferences(PREF, 0)
       val url = pref.getString(KEY_SERVICE_URL, "")
       val onFailure = {
-        AlertDialog.Builder(this)
-          .setCancelable(true)
-          .setIcon(R.mipmap.icon)
-          .setTitle(getString(R.string.no_service))
-          .setMessage(getString(
-            R.string.init_service_text,
-            getString(android.R.string.ok)))
-          .setPositiveButton(
-            android.R.string.ok,
-            DialogInterface.OnClickListener() { dialog, _ ->
-              dialog.dismiss()
-              startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
-            }
-          )
-          .create()
-          .show()
+        serviceDialog?.show()
+        tryClip(this)
       }
       val uri = Uri.parse(url)
       if (uri.getScheme() == SCHEME_HTTPS && uri.getHost() == SERVICE_HOST) {
@@ -350,21 +376,21 @@ class MainActivity
           .setIcon(data.icon)
           .setTitle(R.string.dialog_title)
           .setMessage(getString(
-            R.string.dialog_text,
-            data.name,
-            getString(R.string.app_name)))
+              R.string.dialog_text,
+              data.name,
+              getString(R.string.app_name)))
           .setNegativeButton(
-            R.string.dialog_no,
-            DialogInterface.OnClickListener() { dialog, _ ->
-              dialog.dismiss()
-            })
+              R.string.dialog_no,
+              DialogInterface.OnClickListener() { dialog, _ ->
+                dialog.dismiss()
+              })
           .setPositiveButton(
-            R.string.dialog_yes,
-            DialogInterface.OnClickListener() { dialog, _ ->
-              removePkg(data.pkg)
-              a.remove(i)
-              dialog.dismiss()
-            }
+              R.string.dialog_yes,
+              DialogInterface.OnClickListener() { dialog, _ ->
+                removePkg(data.pkg)
+                a.remove(i)
+                dialog.dismiss()
+              }
           )
           .create()
           .show()
