@@ -98,6 +98,7 @@ class NotificationListener : NotificationListenerService() {
     val intent = Intent(Intent.ACTION_VIEW, MainActivity.TELEGRAM_URI)
     val notifBuilder = NotificationCompat.Builder(this)
       .setSmallIcon(R.drawable.icon_notif)
+      .setCategory(Notification.CATEGORY_ERROR)
       .setContentTitle(getString(R.string.no_service))
       .setContentText(getString(R.string.notif_text))
       .setAutoCancel(true)
