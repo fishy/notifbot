@@ -25,8 +25,13 @@ kotlin_android_library(
         "@com_squareup_okio_okio//jar",
     ],
     aar_deps = [
-        "@androidsdk//com.android.support:appcompat-v7-25.3.1",
-        "@androidsdk//com.android.support:cardview-v7-25.3.1",
-        "@androidsdk//com.android.support:recyclerview-v7-25.3.1",
+        "@appcompat_v7//aar",
+        "@cardview_v7//aar",
+        "@recyclerview_v7//aar",
+        "@support_compat//aar",
+        "@support_core_ui//aar",
+        "@support_core_utils//aar",
+        "@support_fragment//aar",
+        "@support_vector_drawable//aar",
     ],
 )

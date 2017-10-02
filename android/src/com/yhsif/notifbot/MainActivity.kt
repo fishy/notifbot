@@ -159,7 +159,10 @@ class MainActivity
       return true
     }
 
-    fun handleText(ctx: Context, text: String): Boolean {
+    fun handleText(ctx: Context, text: String?): Boolean {
+      if (text == null) {
+        return false
+      }
       var msg = text
       val uri = RE_URI.find(text)?.value
       if (uri != null) {
@@ -214,13 +217,13 @@ class MainActivity
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
-    (findViewById(R.id.hint) as TextView).let { tv ->
+    findViewById<TextView>(R.id.hint).let { tv ->
       tv.setText(fromHtmlWrapper(getString(R.string.main_hint)))
       tv.setMovementMethod(LinkMovementMethod.getInstance())
     }
 
     adapter = PkgAdapter(mutableListOf(), this)
-    (findViewById(R.id.pkg_list) as RecyclerView).let { rv ->
+    findViewById<RecyclerView>(R.id.pkg_list).let { rv ->
       adapter?.let { a ->
         rv.setAdapter(a)
       }
@@ -259,7 +262,7 @@ class MainActivity
       )
       .create()
 
-    setSupportActionBar(findViewById(R.id.app_bar) as Toolbar)
+    setSupportActionBar(findViewById<Toolbar>(R.id.app_bar))
   }
 
   override fun onResume() {
@@ -368,7 +371,7 @@ class MainActivity
       doMagicGo()
       return
     }
-    (findViewById(R.id.pkg_list) as RecyclerView).let { rv ->
+    findViewById<RecyclerView>(R.id.pkg_list).let { rv ->
       val i = rv.getChildLayoutPosition(v)
       adapter?.let { a ->
         val data = a.list.get(i)
@@ -412,10 +415,10 @@ class MainActivity
 
   fun doMagicGo() {
     magicDialog?.let { d ->
-      (d.findViewById(R.id.magic_url) as EditText).let { text ->
-        if (d.isShowing() && handleText(this, text.getText().toString())) {
+      d.findViewById<EditText>(R.id.magic_url).let { text ->
+        if (d.isShowing() && handleText(this, text?.getText().toString())) {
           d.dismiss()
-          text.setText("")
+          text?.setText("")
           refreshData()
         }
       }

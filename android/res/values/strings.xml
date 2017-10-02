@@ -100,4 +100,10 @@
     Cannot connect to service due to network failure.
     Please try again later.
   </string>
+
+  <!-- Notification channel -->
+  <string name="channel_name">Service connection failure</string>
+  <string name="channel_desc">
+    The notification to indicate service connection failures
+  </string>
 </resources>

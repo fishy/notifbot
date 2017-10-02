@@ -2,10 +2,13 @@ package com.yhsif.notifbot
 
 import android.app.PendingIntent
 import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -25,11 +28,31 @@ class NotificationListener : NotificationListenerService() {
     private const val NOTIF_TEXT_TEMPLATE = "%s:\n%s"
     private const val PREF_RETRY = "com.yhsif.notifbot.retries"
     private const val MAX_RANDOM_INT = 1000000
+    private const val CHANNEL_ID = "service_connection_failure"
 
     private val RE_KEY = Regex("""(\d+)-(.+)-(\d+)""")
 
     var connected = false
     var startMain = false
+
+    var ctx: Context? = null
+    val channelId: String by lazy {
+      // Lazy create the notification channel
+      ctx?.let { ctx ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          val channel = NotificationChannel(
+              CHANNEL_ID,
+              ctx.getString(R.string.channel_name),
+              NotificationManager.IMPORTANCE_DEFAULT)
+          channel.setDescription(ctx.getString(R.string.channel_desc))
+          channel.setShowBadge(false)
+          val manager = ctx.getSystemService(
+              Context.NOTIFICATION_SERVICE) as NotificationManager
+          manager.createNotificationChannel(channel)
+        }
+      }
+      CHANNEL_ID
+    }
 
     fun getPackageName(ctx: Context, pkg: String, empty: Boolean): String {
       val manager = ctx.getPackageManager()
@@ -96,7 +119,8 @@ class NotificationListener : NotificationListenerService() {
   val onSuccess = { NotificationListener.cancelTelegramNotif(this) }
   val onFailure = {
     val intent = Intent(Intent.ACTION_VIEW, MainActivity.TELEGRAM_URI)
-    val notifBuilder = NotificationCompat.Builder(this)
+    ctx = this
+    val notifBuilder = NotificationCompat.Builder(this, channelId)
       .setSmallIcon(R.drawable.icon_notif)
       .setCategory(Notification.CATEGORY_ERROR)
       .setContentTitle(getString(R.string.no_service))
