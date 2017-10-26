@@ -1,10 +1,10 @@
 runtime: go
 api_version: go1
-instance_class: B1
+instance_class: F1
 
-basic_scaling:
-  idle_timeout: 10s
-  max_instances: 1
+automatic_scaling:
+  min_pending_latency: 50ms
+  max_pending_latency: 500ms
 
 handlers:
 - url: /.*

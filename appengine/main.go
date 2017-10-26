@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -57,25 +58,44 @@ func main() {
 	appengine.Main()
 }
 
-func initHandler(w http.ResponseWriter, r *http.Request) {
+func doInit(w http.ResponseWriter, r *http.Request) error {
 	if InitBot(r); botToken == nil {
 		http.Error(w, errNoToken, 500)
-		return
+		return errors.New(errNoToken)
 	}
 	botToken.SetWebhook(r)
+	return nil
+}
+
+func initHandler(w http.ResponseWriter, r *http.Request) {
+	if err := doInit(w, r); err != nil {
+		return
+	}
 	http.NotFound(w, r)
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	if err := doInit(w, r); err != nil {
+		return
+	}
+
 	fmt.Fprint(w, "healthy")
 }
 
 func verifyHandler(w http.ResponseWriter, r *http.Request) {
+	if err := doInit(w, r); err != nil {
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	fmt.Fprint(w, verifyContent)
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
+	if err := doInit(w, r); err != nil {
+		return
+	}
+
 	if !botToken.ValidateWebhookURL(r) {
 		http.NotFound(w, r)
 		return
@@ -126,6 +146,10 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func clientHandler(w http.ResponseWriter, r *http.Request) {
+	if err := doInit(w, r); err != nil {
+		return
+	}
+
 	groups := urlRegexp.FindStringSubmatch(r.URL.Path)
 	if groups == nil || len(groups) == 0 {
 		http.NotFound(w, r)
@@ -166,6 +190,10 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
+	if err := doInit(w, r); err != nil {
+		return
+	}
+
 	http.NotFound(w, r)
 }
 
