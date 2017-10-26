@@ -9,7 +9,7 @@ git_repository(
     name = "org_pubref_rules_kotlin",
     remote = "https://github.com/pubref/rules_kotlin.git",
     # TODO: change to tag after the next release
-    commit = "9d297ebf92c13383d56ca2296d37719f0122cefa",
+    commit = "f82c58b4c7e0e24d7a647d4629bfbb60d073c23e",
 )
 
 load("@org_pubref_rules_kotlin//kotlin:rules.bzl", "kotlin_repositories")
