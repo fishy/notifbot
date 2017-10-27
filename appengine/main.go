@@ -63,7 +63,6 @@ func doInit(w http.ResponseWriter, r *http.Request) error {
 		http.Error(w, errNoToken, 500)
 		return errors.New(errNoToken)
 	}
-	botToken.SetWebhook(r)
 	return nil
 }
 

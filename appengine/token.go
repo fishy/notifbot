@@ -17,7 +17,6 @@ import (
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/memcache"
-	"google.golang.org/appengine/runtime"
 	"google.golang.org/appengine/urlfetch"
 )
 
@@ -52,26 +51,24 @@ func (e *entityTelegramToken) getURL(endpoint string) string {
 func (e *entityTelegramToken) PostRequest(
 	ctx context.Context, endpoint string, params url.Values,
 ) {
-	runtime.RunInBackground(ctx, func(ctx context.Context) {
-		start := time.Now()
-		defer func() {
-			log.Debugf(ctx, "http POST for %s took %v", endpoint, time.Now().Sub(start))
-		}()
-		client := urlfetch.Client(ctx)
-		resp, err := client.PostForm(e.getURL(endpoint), params)
-		if resp != nil && resp.Body != nil {
-			defer DrainAndClose(resp.Body)
-		}
-		if err != nil {
-			log.Errorf(ctx, "%s err: %v", endpoint, err)
-			return
-		}
-		if resp.StatusCode != http.StatusOK {
-			buf, _ := ioutil.ReadAll(resp.Body)
-			log.Errorf(ctx, "%s failed: code = %d, body = %q", endpoint, resp.StatusCode, buf)
-			return
-		}
-	})
+	start := time.Now()
+	defer func() {
+		log.Debugf(ctx, "http POST for %s took %v", endpoint, time.Now().Sub(start))
+	}()
+	client := urlfetch.Client(ctx)
+	resp, err := client.PostForm(e.getURL(endpoint), params)
+	if resp != nil && resp.Body != nil {
+		defer DrainAndClose(resp.Body)
+	}
+	if err != nil {
+		log.Errorf(ctx, "%s err: %v", endpoint, err)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		buf, _ := ioutil.ReadAll(resp.Body)
+		log.Errorf(ctx, "%s failed: code = %d, body = %q", endpoint, resp.StatusCode, buf)
+		return
+	}
 }
 
 // SendMessage sents a telegram messsage.
@@ -119,6 +116,11 @@ func (e *entityTelegramToken) SetWebhook(r *http.Request) {
 // InitBot initializes botToken.
 func InitBot(r *http.Request) {
 	keyOnce.Do(func() {
+		defer func() {
+			if botToken != nil {
+				botToken.SetWebhook(r)
+			}
+		}()
 		ctx := appengine.NewContext(r)
 		memKey := memcacheKeyPrefix + botID
 		item, err := memcache.Get(ctx, memKey)
