@@ -5,5 +5,5 @@
   <item name="accent" type="color">#5C6BC0</item>
   <item name="even_background" type="color">#B0BEC5</item>
   <item name="odd_background" type="color">#CFD8DC</item>
-  <item name="adaptive_icon_background" type="color">#8C9EFF</item>
+  <item name="adaptive_icon_background" type="color">#5C6BC0</item>
 </resources>
