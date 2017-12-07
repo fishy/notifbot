@@ -10,9 +10,16 @@ git_repository(
     remote = "https://github.com/pubref/rules_kotlin.git",
     tag = "v0.4.1",
 )
-
 load("@org_pubref_rules_kotlin//kotlin:rules.bzl", "kotlin_repositories")
 kotlin_repositories()
+
+git_repository(
+    name = "gmaven_rules",
+    remote = "https://github.com/aj-michael/gmaven_rules",
+    commit = "ccf6e13ba9357e6845179fe90e78b0fa24bd9f2b",
+)
+load("@gmaven_rules//:gmaven.bzl", "gmaven_rules")
+gmaven_rules()
 
 maven_jar(
     name = "com_squareup_okhttp3_okhttp",
@@ -24,54 +31,4 @@ maven_jar(
     name = "com_squareup_okio_okio",
     artifact = "com.squareup.okio:okio:1.13.0",
     sha1 = "a9283170b7305c8d92d25aff02a6ab7e45d06cbe",
-)
-
-load("@bazel_tools//tools/build_defs/repo:maven_rules.bzl", "maven_aar")
-
-maven_aar(
-    name = "appcompat_v7",
-    artifact = "com.android.support:appcompat-v7:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "cardview_v7",
-    artifact = "com.android.support:cardview-v7:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "recyclerview_v7",
-    artifact = "com.android.support:recyclerview-v7:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "support_compat",
-    artifact = "com.android.support:support-compat:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "support_core_ui",
-    artifact = "com.android.support:support-core-ui:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "support_core_utils",
-    artifact = "com.android.support:support-core-utils:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "support_fragment",
-    artifact = "com.android.support:support-fragment:26.0.2",
-    settings = "maven-google.xml",
-)
-
-maven_aar(
-    name = "support_vector_drawable",
-    artifact = "com.android.support:support-vector-drawable:26.0.2",
-    settings = "maven-google.xml",
 )
