@@ -46,7 +46,7 @@ class HttpSender(
     }
   }
 
-  override fun doInBackground(vararg reqs: Request?): Int {
+  override fun doInBackground(vararg reqs: Request): Int {
     for (req in reqs) {
       // Only handle the first req
       try {
