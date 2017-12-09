@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -107,16 +105,9 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf := new(bytes.Buffer)
-	if _, err := io.Copy(buf, r.Body); err != nil {
-		log.Errorf(ctx, "read webhook request err: %v", err)
-		http.NotFound(w, r)
-		return
-	}
-
 	update := new(Update)
-	if err := json.NewDecoder(buf).Decode(update); err != nil {
-		log.Errorf(ctx, "unable to decode json %q: %v", buf.String(), err)
+	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
+		log.Errorf(ctx, "unable to decode json: %v", err)
 		http.NotFound(w, r)
 		return
 	}
