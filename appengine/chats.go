@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
 	"strconv"
 
-	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/memcache"
@@ -61,7 +61,13 @@ func (e *EntityChat) Delete(ctx context.Context) {
 
 // GetURL returns the url for this chat.
 func (e *EntityChat) GetURL() string {
-	return fmt.Sprintf("%s%s%d/%s", globalURLPrefix, clientPrefix, e.Chat, e.Token)
+	return fmt.Sprintf(
+		"%s%s%d/%s",
+		globalURLPrefix,
+		clientPrefix,
+		e.Chat,
+		e.Token,
+	)
 }
 
 // GetChat gets a chat token from db.
@@ -111,7 +117,13 @@ func randomString(ctx context.Context, len int) string {
 	buf := make([]byte, len)
 	n, err := rand.Read(buf)
 	if err != nil || n != len {
-		log.Errorf(ctx, "failed to generate random string: read %d/%d, err = %v", n, len, err)
+		log.Errorf(
+			ctx,
+			"failed to generate random string: read %d/%d, err = %v",
+			n,
+			len,
+			err,
+		)
 	}
 	return hex.EncodeToString(buf)
 }

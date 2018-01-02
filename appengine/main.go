@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 )
@@ -188,7 +188,11 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func replyMessage(
-	ctx context.Context, w http.ResponseWriter, orig Message, msg string, quote bool,
+	ctx context.Context,
+	w http.ResponseWriter,
+	orig Message,
+	msg string,
+	quote bool,
 ) {
 	reply := ReplyMessage{
 		Method: "sendMessage",
