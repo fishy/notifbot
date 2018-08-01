@@ -171,7 +171,7 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !strings.HasPrefix(strings.TrimSpace(msg), strings.TrimSpace(label)) {
-		// For some apps, the notification title will juse be app name, so only add
+		// For some apps, the notification title will just be app name, so only add
 		// label when that's not the case to avoid repetition.
 		msg = fmt.Sprintf(msgTemplate, label, msg)
 	}
