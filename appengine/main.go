@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
+	"cloud.google.com/go/datastore"
 )
 
 const (
@@ -46,68 +46,71 @@ const (
 
 var urlRegexp = regexp.MustCompile(clientPrefix + `(\d+)/(.+)`)
 
+var dsClient *datastore.Client
+
 func main() {
+	ctx := context.Background()
+	if err := initDatastoreClient(ctx); err != nil {
+		log.Fatalf("Failed to get data store client: %v", err)
+	}
+	if err := initBot(ctx); err != nil {
+		log.Fatalf("Failed to init bot: %v", err)
+	}
+	if err := initRedis(ctx); err != nil {
+		log.Printf("WARNING: Failed to init redis client: %v", err)
+	}
+
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc(webhookPrefix, webhookHandler)
 	http.HandleFunc(clientPrefix, clientHandler)
 	http.HandleFunc("/_ah/health", healthCheckHandler)
 	http.HandleFunc("/_ah/start", initHandler)
 	http.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
-	appengine.Main()
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
+	log.Printf("Listening on port %s", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
-func doInit(w http.ResponseWriter, r *http.Request) error {
-	if InitBot(r); botToken == nil {
-		http.Error(w, errNoToken, 500)
-		return errors.New(errNoToken)
-	}
-	return nil
+func initDatastoreClient(ctx context.Context) error {
+	var err error
+	dsClient, err = datastore.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT"))
+	return err
 }
 
 func initHandler(w http.ResponseWriter, r *http.Request) {
-	if err := doInit(w, r); err != nil {
-		return
-	}
 	http.NotFound(w, r)
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	if err := doInit(w, r); err != nil {
-		return
-	}
-
 	fmt.Fprint(w, "healthy")
 }
 
 func verifyHandler(w http.ResponseWriter, r *http.Request) {
-	if err := doInit(w, r); err != nil {
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	fmt.Fprint(w, verifyContent)
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
-	if err := doInit(w, r); err != nil {
-		return
-	}
-
 	if !botToken.ValidateWebhookURL(r) {
 		http.NotFound(w, r)
 		return
 	}
-	ctx := appengine.NewContext(r)
+	ctx := context.Background()
 
 	if r.Body == nil {
-		log.Errorf(ctx, "empty webhook request body")
+		log.Print("Empty webhook request body")
 		http.NotFound(w, r)
 		return
 	}
 
 	update := new(Update)
 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		log.Errorf(ctx, "unable to decode json: %v", err)
+		log.Printf("Unable to decode json: %v", err)
 		http.NotFound(w, r)
 		return
 	}
@@ -136,10 +139,6 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func clientHandler(w http.ResponseWriter, r *http.Request) {
-	if err := doInit(w, r); err != nil {
-		return
-	}
-
 	groups := urlRegexp.FindStringSubmatch(r.URL.Path)
 	if groups == nil || len(groups) == 0 {
 		http.NotFound(w, r)
@@ -151,7 +150,7 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := appengine.NewContext(r)
+	ctx := context.Background()
 	chat := GetChat(ctx, id)
 	if chat == nil || chat.Token != groups[2] {
 		http.NotFound(w, r)
@@ -180,10 +179,6 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	if err := doInit(w, r); err != nil {
-		return
-	}
-
 	http.NotFound(w, r)
 }
 
