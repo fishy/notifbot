@@ -60,12 +60,13 @@ func main() {
 		log.Printf("WARNING: Failed to init redis client: %v", err)
 	}
 
-	http.HandleFunc("/", rootHandler)
-	http.HandleFunc(webhookPrefix, webhookHandler)
-	http.HandleFunc(clientPrefix, clientHandler)
-	http.HandleFunc("/_ah/health", healthCheckHandler)
-	http.HandleFunc("/_ah/start", initHandler)
-	http.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", rootHandler)
+	mux.HandleFunc(webhookPrefix, webhookHandler)
+	mux.HandleFunc(clientPrefix, clientHandler)
+	mux.HandleFunc("/_ah/health", healthCheckHandler)
+	mux.HandleFunc("/_ah/start", initHandler)
+	mux.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -73,7 +74,7 @@ func main() {
 		log.Printf("Defaulting to port %s", port)
 	}
 	log.Printf("Listening on port %s", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), mux))
 }
 
 func initDatastoreClient(ctx context.Context) error {
