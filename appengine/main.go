@@ -65,7 +65,6 @@ func main() {
 	mux.HandleFunc(webhookPrefix, webhookHandler)
 	mux.HandleFunc(clientPrefix, clientHandler)
 	mux.HandleFunc("/_ah/health", healthCheckHandler)
-	mux.HandleFunc("/_ah/start", initHandler)
 	mux.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
 
 	port := os.Getenv("PORT")
@@ -81,10 +80,6 @@ func initDatastoreClient(ctx context.Context) error {
 	var err error
 	dsClient, err = datastore.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT"))
 	return err
-}
-
-func initHandler(w http.ResponseWriter, r *http.Request) {
-	http.NotFound(w, r)
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
