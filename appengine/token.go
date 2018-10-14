@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -44,7 +43,7 @@ func (bot *telegramToken) PostRequest(
 ) {
 	start := time.Now()
 	defer func() {
-		log.Printf("HTTP POST for %s took %v", endpoint, time.Now().Sub(start))
+		infoLog.Printf("HTTP POST for %s took %v", endpoint, time.Now().Sub(start))
 	}()
 
 	req, err := http.NewRequest(
@@ -53,7 +52,7 @@ func (bot *telegramToken) PostRequest(
 		strings.NewReader(params.Encode()),
 	)
 	if err != nil {
-		log.Printf("Failed to construct http request: %v", err)
+		errorLog.Printf("Failed to construct http request: %v", err)
 		return
 	}
 	req.Header.Set("Content-Type", postFormContentType)
@@ -62,12 +61,17 @@ func (bot *telegramToken) PostRequest(
 		defer DrainAndClose(resp.Body)
 	}
 	if err != nil {
-		log.Printf("%s err: %v", endpoint, err)
+		errorLog.Printf("%s err: %v", endpoint, err)
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
 		buf, _ := ioutil.ReadAll(resp.Body)
-		log.Printf("%s failed: code = %d, body = %q", endpoint, resp.StatusCode, buf)
+		errorLog.Printf(
+			"%s failed: code = %d, body = %q",
+			endpoint,
+			resp.StatusCode,
+			buf,
+		)
 		return
 	}
 }
@@ -86,7 +90,7 @@ func (bot *telegramToken) initHashPrefix(ctx context.Context) {
 	bot.hashOnce.Do(func() {
 		hash := sha512.Sum512_224([]byte(bot.String()))
 		bot.hashPrefix = webhookPrefix + base64.URLEncoding.EncodeToString(hash[:])
-		log.Printf("hashPrefix == %s", bot.hashPrefix)
+		infoLog.Printf("hashPrefix == %s", bot.hashPrefix)
 	})
 }
 

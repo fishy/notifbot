@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"log"
 
 	"cloud.google.com/go/datastore"
 )
@@ -53,7 +52,7 @@ func (e *EntityChat) SaveDatastore(ctx context.Context) error {
 func (e *EntityChat) Delete(ctx context.Context) {
 	key := e.datastoreKey()
 	if err := dsClient.Delete(ctx, key); err != nil {
-		log.Printf("Failed to delete datastore key %v: %v", key, err)
+		errorLog.Printf("Failed to delete datastore key %v: %v", key, err)
 	}
 	var err error
 	redisKey := e.getKey()
@@ -63,7 +62,7 @@ func (e *EntityChat) Delete(ctx context.Context) {
 		err = redisClient.Del(redisKey).Err()
 	}
 	if err != nil {
-		log.Printf("Failed to delete redis key %v: %v", redisKey, err)
+		errorLog.Printf("Failed to delete redis key %v: %v", redisKey, err)
 	}
 }
 
@@ -91,16 +90,16 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 			return e
 		}
 		if !isNotExist(err) {
-			log.Printf("Failed to get redis key %s: %v", key, err)
+			errorLog.Printf("Failed to get redis key %s: %v", key, err)
 		}
 	}
 	key := e.datastoreKey()
 	if err := dsClient.Get(ctx, key, e); err != nil {
-		log.Printf("Failed to get datastore key %v: %v", key, err)
+		errorLog.Printf("Failed to get datastore key %v: %v", key, err)
 		return nil
 	}
 	if err := e.SaveMemcache(); err != nil {
-		log.Printf("Failed to save redis key %s: %v", e.getKey(), err)
+		errorLog.Printf("Failed to save redis key %s: %v", e.getKey(), err)
 	}
 	return e
 }
@@ -115,10 +114,10 @@ func NewChat(ctx context.Context, id int64) *EntityChat {
 		Token: randomString(ctx, tokenLength),
 	}
 	if err := e.SaveMemcache(); err != nil {
-		log.Printf("Failed to save redis chat %d: %v", id, err)
+		errorLog.Printf("Failed to save redis chat %d: %v", id, err)
 	}
 	if err := e.SaveDatastore(ctx); err != nil {
-		log.Printf("Failed to save datastore chat %d: %v", id, err)
+		errorLog.Printf("Failed to save datastore chat %d: %v", id, err)
 	}
 	return e
 }
@@ -127,7 +126,7 @@ func randomString(ctx context.Context, len int) string {
 	buf := make([]byte, len)
 	n, err := rand.Read(buf)
 	if err != nil || n != len {
-		log.Printf(
+		errorLog.Printf(
 			"Failed to generate random string: read %d/%d, err = %v",
 			n,
 			len,

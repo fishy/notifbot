@@ -48,16 +48,24 @@ var urlRegexp = regexp.MustCompile(clientPrefix + `(\d+)/(.+)`)
 
 var dsClient *datastore.Client
 
+// AppEngine log will auto add date and time, so there's no need to double log
+// them in our own logger.
+var (
+	infoLog  = log.New(os.Stderr, "I ", log.Lshortfile)
+	warnLog  = log.New(os.Stderr, "W ", log.Lshortfile)
+	errorLog = log.New(os.Stderr, "E ", log.Lshortfile)
+)
+
 func main() {
 	ctx := context.Background()
 	if err := initDatastoreClient(ctx); err != nil {
-		log.Fatalf("Failed to get data store client: %v", err)
+		errorLog.Fatalf("Failed to get data store client: %v", err)
 	}
 	if err := initBot(ctx); err != nil {
-		log.Fatalf("Failed to init bot: %v", err)
+		errorLog.Fatalf("Failed to init bot: %v", err)
 	}
 	if err := initRedis(ctx); err != nil {
-		log.Printf("WARNING: Failed to init redis client: %v", err)
+		warnLog.Printf("Failed to init redis client: %v", err)
 	}
 
 	mux := http.NewServeMux()
@@ -70,10 +78,10 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		log.Printf("Defaulting to port %s", port)
+		infoLog.Printf("Defaulting to port %s", port)
 	}
-	log.Printf("Listening on port %s", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), mux))
+	infoLog.Printf("Listening on port %s", port)
+	infoLog.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), mux))
 }
 
 func initDatastoreClient(ctx context.Context) error {
@@ -99,14 +107,14 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	if r.Body == nil {
-		log.Print("Empty webhook request body")
+		errorLog.Print("Empty webhook request body")
 		http.NotFound(w, r)
 		return
 	}
 
 	update := new(Update)
 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		log.Printf("Unable to decode json: %v", err)
+		errorLog.Printf("Unable to decode json: %v", err)
 		http.NotFound(w, r)
 		return
 	}
