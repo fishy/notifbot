@@ -51,7 +51,7 @@ var dsClient *datastore.Client
 // AppEngine log will auto add date and time, so there's no need to double log
 // them in our own logger.
 var (
-	infoLog  = log.New(os.Stderr, "I ", log.Lshortfile)
+	infoLog  = log.New(os.Stdout, "I ", log.Lshortfile)
 	warnLog  = log.New(os.Stderr, "W ", log.Lshortfile)
 	errorLog = log.New(os.Stderr, "E ", log.Lshortfile)
 )
@@ -81,12 +81,13 @@ func main() {
 		infoLog.Printf("Defaulting to port %s", port)
 	}
 	infoLog.Printf("Listening on port %s", port)
+	go chatCounterMetricsLoop()
 	infoLog.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), mux))
 }
 
 func initDatastoreClient(ctx context.Context) error {
 	var err error
-	dsClient, err = datastore.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT"))
+	dsClient, err = datastore.NewClient(ctx, getProjectID())
 	return err
 }
 
@@ -153,6 +154,8 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
+	chatCounter.Inc(id)
 
 	ctx := context.Background()
 	chat := GetChat(ctx, id)

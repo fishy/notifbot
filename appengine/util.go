@@ -3,7 +3,12 @@ package main
 import (
 	"io"
 	"io/ioutil"
+	"os"
 )
+
+func getProjectID() string {
+	return os.Getenv("GOOGLE_CLOUD_PROJECT")
+}
 
 // DrainAndClose reads r fully and then close it
 func DrainAndClose(r io.ReadCloser) {

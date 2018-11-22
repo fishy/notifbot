@@ -43,7 +43,7 @@ func (bot *telegramToken) PostRequest(
 ) {
 	start := time.Now()
 	defer func() {
-		infoLog.Printf("HTTP POST for %s took %v", endpoint, time.Now().Sub(start))
+		infoLog.Printf("HTTP POST for %s took %v", endpoint, time.Since(start))
 	}()
 
 	req, err := http.NewRequest(
