@@ -74,7 +74,7 @@ class NotificationListener : NotificationListenerService() {
 
     fun getPkgSet(ctx: Context): Set<String> {
       val pref = ctx.getSharedPreferences(MainActivity.PREF, 0)
-      return pref.getStringSet(MainActivity.KEY_PKGS, setOf())
+      return pref.getStringSet(MainActivity.KEY_PKGS, setOf())!!
     }
 
     fun cancelTelegramNotif(ctx: Context) {
@@ -172,7 +172,7 @@ class NotificationListener : NotificationListenerService() {
       }
 
       val pref = getSharedPreferences(MainActivity.PREF, 0)
-      val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")
+      val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
       val onNetFail = {
         addToRetryQueue(System.currentTimeMillis(), label, text)
       }
@@ -232,7 +232,7 @@ class NotificationListener : NotificationListenerService() {
 
   fun retry() {
     val pref = getSharedPreferences(MainActivity.PREF, 0)
-    val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")
+    val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
     // Sanity check
     val uri = Uri.parse(url)
     if (uri.getScheme() == MainActivity.SCHEME_HTTPS &&

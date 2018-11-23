@@ -51,9 +51,6 @@ class HttpSender(
       // Only handle the first req
       try {
         val res = client.newCall(req).execute()
-        if (res == null) {
-          return CODE_NET_FAIL
-        }
         val code = res.code()
         res.close()
         return code

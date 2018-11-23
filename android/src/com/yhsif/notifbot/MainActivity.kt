@@ -318,7 +318,7 @@ class MainActivity
     } else if (checkService) {
       // Check service url
       val pref = getSharedPreferences(PREF, 0)
-      val url = pref.getString(KEY_SERVICE_URL, "")
+      val url = pref.getString(KEY_SERVICE_URL, "")!!
       val onFailure = {
         serviceDialog?.show()
         tryClip(this)
@@ -438,7 +438,7 @@ class MainActivity
     if (pkgSet != prev) {
       prev = pkgSet
       val pm = getPackageManager()
-      val defIcon = getDrawable(R.mipmap.default_icon)
+      val defIcon = getDrawable(R.mipmap.default_icon)!!
       adapter?.let { a ->
         a.list = prev
           .map() { createPkgData(pm, it, defIcon) }

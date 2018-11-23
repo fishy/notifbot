@@ -2,34 +2,36 @@ workspace(name = "notifbot")
 
 android_sdk_repository(
     name = "androidsdk",
-    api_level = 26,
+    api_level = 28,
 )
 
-git_repository(
-    name = "org_pubref_rules_kotlin",
-    remote = "https://github.com/pubref/rules_kotlin.git",
-    commit = "069f25c065b0ba59645968a436d0a1031d6f2c41",
-    sha256 = "10a902d8e5c23502e15aeef67fca51d0fda3f40d28855795a26dc0a1c371476b",
+RULES_KOTLIN_VERSION = "87bd13f91d166a8070e9bbfbb0861f6f76435e7a"
+http_archive(
+    name = "io_bazel_rules_kotlin",
+    strip_prefix = "rules_kotlin-%s" % RULES_KOTLIN_VERSION,
+    url = "https://github.com/bazelbuild/rules_kotlin/archive/%s.tar.gz" % RULES_KOTLIN_VERSION,
 )
-load("@org_pubref_rules_kotlin//kotlin:rules.bzl", "kotlin_repositories")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
 kotlin_repositories()
+kt_register_toolchains()
 
-git_repository(
+GMAVEN_TAG = "20181031-1"
+http_archive(
     name = "gmaven_rules",
-    remote = "https://github.com/aj-michael/gmaven_rules",
-    commit = "ccf6e13ba9357e6845179fe90e78b0fa24bd9f2b",
+    strip_prefix = "gmaven_rules-%s" % GMAVEN_TAG,
+    url = "https://github.com/bazelbuild/gmaven_rules/archive/%s.tar.gz" % GMAVEN_TAG,
 )
 load("@gmaven_rules//:gmaven.bzl", "gmaven_rules")
 gmaven_rules()
 
 maven_jar(
     name = "com_squareup_okhttp3_okhttp",
-    artifact = "com.squareup.okhttp3:okhttp:3.9.0",
-    sha1 = "01b6c10b5120995a7542c1a31b7828fb8593c8ba",
+    artifact = "com.squareup.okhttp3:okhttp:3.12.0",
+    sha1 = "b36f4a04584c0fb0d9af2d3401cdff8dacb1ea54",
 )
 
 maven_jar(
     name = "com_squareup_okio_okio",
-    artifact = "com.squareup.okio:okio:1.13.0",
-    sha1 = "a9283170b7305c8d92d25aff02a6ab7e45d06cbe",
+    artifact = "com.squareup.okio:okio:2.1.0",
+    sha1 = "5316c3393a9ff5c1b2af43df74463d63fb697a90",
 )
