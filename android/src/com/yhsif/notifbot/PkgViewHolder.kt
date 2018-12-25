@@ -1,10 +1,11 @@
 package com.yhsif.notifbot
 
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+
+import androidx.recyclerview.widget.RecyclerView
 
 class PkgViewHolder(v: View) : RecyclerView.ViewHolder(v) {
   val v = v

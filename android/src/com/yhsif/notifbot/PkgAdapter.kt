@@ -1,14 +1,14 @@
 package com.yhsif.notifbot
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
 
-class PkgAdapter(
-    list: MutableList<PkgData>,
-    listener: View.OnClickListener
-) : RecyclerView.Adapter<PkgViewHolder>() {
+import androidx.recyclerview.widget.RecyclerView
+
+class PkgAdapter(list: MutableList<PkgData>, listener: View.OnClickListener)
+: RecyclerView.Adapter<PkgViewHolder>() {
+
   var list = list
   val listener = listener
 

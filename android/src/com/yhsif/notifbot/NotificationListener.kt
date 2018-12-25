@@ -12,8 +12,9 @@ import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 
 import java.security.SecureRandom
 import java.util.concurrent.locks.ReentrantLock
