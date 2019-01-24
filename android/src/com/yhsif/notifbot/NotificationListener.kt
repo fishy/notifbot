@@ -153,8 +153,8 @@ class NotificationListener : NotificationListenerService() {
   }
 
   override fun onNotificationPosted(
-      sbn: StatusBarNotification,
-      rm: NotificationListenerService.RankingMap
+    sbn: StatusBarNotification,
+    rm: NotificationListenerService.RankingMap
   ) {
     handleNotif(NotificationListener.getPkgSet(this), sbn)
   }
@@ -189,9 +189,9 @@ class NotificationListener : NotificationListenerService() {
   }
 
   fun checkPackage(
-      pkgs: Set<String>,
-      pkg: String,
-      sbn: StatusBarNotification
+    pkgs: Set<String>,
+    pkg: String,
+    sbn: StatusBarNotification
   ): Boolean = pkg != PKG_SELF && pkgs.contains(pkg) && !sbn.isOngoing()
 
   fun getAndClearRetryQueue(): List<Triple<Long, String, String>> {

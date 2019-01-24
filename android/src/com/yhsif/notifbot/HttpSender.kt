@@ -7,12 +7,11 @@ import java.io.IOException
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 
 class HttpSender(
-    onSuccess: () -> Unit,
-    onFailure: () -> Unit,
-    onNetFail: () -> Unit
+  onSuccess: () -> Unit,
+  onFailure: () -> Unit,
+  onNetFail: () -> Unit
 ) : AsyncTask<Request, Void, Int>() {
   val onSuccess = onSuccess
   val onFailure = onFailure
@@ -26,12 +25,12 @@ class HttpSender(
     private val client = OkHttpClient.Builder().followRedirects(false).build()
 
     fun send(
-        url: String,
-        label: String,
-        msg: String,
-        onSuccess: () -> Unit,
-        onFailure: () -> Unit,
-        onNetFail: () -> Unit
+      url: String,
+      label: String,
+      msg: String,
+      onSuccess: () -> Unit,
+      onFailure: () -> Unit,
+      onNetFail: () -> Unit
     ) {
       val body =
         FormBody.Builder().add(KEY_LABEL, label).add(KEY_MSG, msg).build()

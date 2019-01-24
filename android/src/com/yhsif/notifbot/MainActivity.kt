@@ -1,7 +1,6 @@
 package com.yhsif.notifbot
 
 import android.content.ClipboardManager
-import android.content.ClipData
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -20,7 +19,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -32,12 +30,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import kotlin.text.Regex
-import kotlin.text.RegexOption.MULTILINE
 
 class MainActivity
-: AppCompatActivity()
-, View.OnClickListener
-, TextView.OnEditorActionListener {
+: AppCompatActivity(), View.OnClickListener, TextView.OnEditorActionListener {
 
   companion object {
     const val PREF = "com.yhsif.notifbot"
@@ -77,7 +72,7 @@ class MainActivity
     fun handleTextPackage(ctx: Context, text: String): Boolean {
       try {
         val uri = Uri.parse(text)
-        val valid = when(uri.getScheme()) {
+        val valid = when (uri.getScheme()) {
           SCHEME_MARKET -> true
           SCHEME_HTTPS, SCHEME_HTTP -> uri.getHost() == PLAY_HOST
           else -> false
@@ -120,7 +115,7 @@ class MainActivity
       if (uri.getHost() != SERVICE_HOST) {
         return false
       }
-      val url = "${SCHEME_HTTPS}://${uri.getHost()}${uri.getPath()}"
+      val url = "$SCHEME_HTTPS://${uri.getHost()}${uri.getPath()}"
       HttpSender.send(
           url,
           ctx.getString(R.string.app_name),
@@ -342,7 +337,7 @@ class MainActivity
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    when(item.getItemId()) {
+    when (item.getItemId()) {
       R.id.action_about -> {
         val view = getLayoutInflater().inflate(R.layout.about, null)
         view.findViewById<TextView>(R.id.about_text).let { tv ->
@@ -405,7 +400,7 @@ class MainActivity
 
   // for TextView.OnEditorActionListener
   override fun onEditorAction(v: TextView, id: Int, ev: KeyEvent): Boolean {
-    when(id) {
+    when (id) {
       EditorInfo.IME_ACTION_GO -> {
         doMagicGo()
         return true
@@ -451,9 +446,10 @@ class MainActivity
   }
 
   fun createPkgData(
-      pm: PackageManager,
-      pkg: String,
-      defIcon: Drawable): PkgData {
+    pm: PackageManager,
+    pkg: String,
+    defIcon: Drawable
+  ): PkgData {
     var name = pkg
     var icon = defIcon
     try {
