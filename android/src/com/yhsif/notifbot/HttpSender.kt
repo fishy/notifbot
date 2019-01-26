@@ -9,13 +9,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 class HttpSender(
-  onSuccess: () -> Unit,
-  onFailure: () -> Unit,
-  onNetFail: () -> Unit
+  val onSuccess: () -> Unit,
+  val onFailure: () -> Unit,
+  val onNetFail: () -> Unit
 ) : AsyncTask<Request, Void, Int>() {
-  val onSuccess = onSuccess
-  val onFailure = onFailure
-  val onNetFail = onNetFail
 
   companion object {
     private const val KEY_LABEL = "label"

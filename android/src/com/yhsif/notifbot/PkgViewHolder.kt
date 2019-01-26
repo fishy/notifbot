@@ -7,8 +7,7 @@ import android.widget.TextView
 
 import androidx.recyclerview.widget.RecyclerView
 
-class PkgViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-  val v = v
+class PkgViewHolder(val v: View) : RecyclerView.ViewHolder(v) {
 
   fun setIcon(icon: Drawable) {
     v.findViewById<ImageView>(R.id.icon).setImageDrawable(icon)

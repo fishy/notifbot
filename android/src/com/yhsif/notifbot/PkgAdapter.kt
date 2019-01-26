@@ -6,17 +6,15 @@ import android.view.View
 
 import androidx.recyclerview.widget.RecyclerView
 
-class PkgAdapter(list: MutableList<PkgData>, listener: View.OnClickListener)
-: RecyclerView.Adapter<PkgViewHolder>() {
-
-  var list = list
-  val listener = listener
+class PkgAdapter(
+  var list: MutableList<PkgData>,
+  val listener: View.OnClickListener
+) : RecyclerView.Adapter<PkgViewHolder>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, vt: Int): PkgViewHolder {
-    val v =
-      LayoutInflater
-        .from(parent.getContext())
-        .inflate(R.layout.pkg_item, parent, false)
+    val v = LayoutInflater
+      .from(parent.getContext())
+      .inflate(R.layout.pkg_item, parent, false)
     v.setOnClickListener(listener)
     return PkgViewHolder(v)
   }

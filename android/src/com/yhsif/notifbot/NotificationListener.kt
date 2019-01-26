@@ -42,13 +42,14 @@ class NotificationListener : NotificationListenerService() {
       ctx?.let { ctx ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
           val channel = NotificationChannel(
-              CHANNEL_ID,
-              ctx.getString(R.string.channel_name),
-              NotificationManager.IMPORTANCE_DEFAULT)
+            CHANNEL_ID,
+            ctx.getString(R.string.channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT
+          )
           channel.setDescription(ctx.getString(R.string.channel_desc))
           channel.setShowBadge(false)
           val manager = ctx.getSystemService(
-              Context.NOTIFICATION_SERVICE) as NotificationManager
+            Context.NOTIFICATION_SERVICE) as NotificationManager
           manager.createNotificationChannel(channel)
         }
       }
@@ -94,16 +95,18 @@ class NotificationListener : NotificationListenerService() {
 
     fun getNotifText(notif: Notification): String {
       val title = getFirstString(
-          notif.extras,
-          Notification.EXTRA_TITLE,
-          Notification.EXTRA_TITLE_BIG)
+        notif.extras,
+        Notification.EXTRA_TITLE,
+        Notification.EXTRA_TITLE_BIG
+      )
       val text = getFirstString(
-          notif.extras,
-          Notification.EXTRA_BIG_TEXT,
-          Notification.EXTRA_TEXT,
-          Notification.EXTRA_SUMMARY_TEXT,
-          Notification.EXTRA_SUB_TEXT,
-          Notification.EXTRA_INFO_TEXT)
+        notif.extras,
+        Notification.EXTRA_BIG_TEXT,
+        Notification.EXTRA_TEXT,
+        Notification.EXTRA_SUMMARY_TEXT,
+        Notification.EXTRA_SUB_TEXT,
+        Notification.EXTRA_INFO_TEXT
+      )
       if (title == "") {
         return text
       }
