@@ -59,11 +59,16 @@ class MainActivity :
 
     var serviceDialog: AlertDialog? = null
 
-    fun showToast(ctx: Context, text: String) {
+    fun showToast(ctx: Context, text: String, icon: Drawable? = null) {
       val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
       toast.getView()?.findViewById<TextView>(android.R.id.message)?.let { v ->
         // Put the icon on the right
-        v.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.mipmap.icon, 0)
+        v.setCompoundDrawablesWithIntrinsicBounds(
+          icon, // left
+          null, // top
+          ctx.getDrawable(R.mipmap.icon), // right
+          null // bottom
+        )
         v.setCompoundDrawablePadding(
           ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding)
         )
@@ -97,8 +102,20 @@ class MainActivity :
     fun addPackage(ctx: Context, pkg: String) {
       val name = NotificationListener.getPackageName(ctx, pkg, false)
       val pkgSet = NotificationListener.getPkgSet(ctx)
+
+      var icon: Drawable? = null
+      ctx.getPackageManager().let { pm ->
+        try {
+          pm.getApplicationInfo(pkg, 0)?.let { appInfo ->
+            icon = pm.getApplicationIcon(appInfo)
+          }
+        } catch (_: NameNotFoundException) {
+          // do nothing
+        }
+      }
+
       if (pkgSet.contains(pkg)) {
-        showToast(ctx, ctx.getString(R.string.receiver_pkg_exists, name))
+        showToast(ctx, ctx.getString(R.string.receiver_pkg_exists, name), icon)
         return
       }
       val mutableSet = pkgSet.toMutableSet()
@@ -106,7 +123,7 @@ class MainActivity :
       val editor = ctx.getSharedPreferences(PREF, 0).edit()
       editor.putStringSet(KEY_PKGS, mutableSet)
       editor.commit()
-      showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name))
+      showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name), icon)
     }
 
     fun illegalText(ctx: Context, text: String) {
