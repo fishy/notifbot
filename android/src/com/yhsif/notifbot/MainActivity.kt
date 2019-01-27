@@ -62,13 +62,14 @@ class MainActivity :
     fun showToast(ctx: Context, text: String, icon: Drawable? = null) {
       val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
       toast.getView()?.findViewById<TextView>(android.R.id.message)?.let { v ->
-        // Put the icon on the right
-        v.setCompoundDrawablesWithIntrinsicBounds(
-          icon, // left
-          null, // top
-          ctx.getDrawable(R.mipmap.icon), // right
-          null // bottom
-        )
+        val iconSize = ctx.getResources()
+          .getDimensionPixelSize(R.dimen.toast_icon_size)
+        val appIcon = ctx.getDrawable(R.mipmap.icon)
+        appIcon?.setBounds(0, 0, iconSize, iconSize)
+        icon?.setBounds(0, 0, iconSize, iconSize)
+
+        // App icon on the right and custom icon on the left
+        v.setCompoundDrawables(icon, null, appIcon, null)
         v.setCompoundDrawablePadding(
           ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding)
         )
@@ -424,7 +425,7 @@ class MainActivity :
   }
 
   // for TextView.OnEditorActionListener
-  override fun onEditorAction(v: TextView, id: Int, ev: KeyEvent): Boolean {
+  override fun onEditorAction(v: TextView?, id: Int, ev: KeyEvent?): Boolean {
     when (id) {
       EditorInfo.IME_ACTION_GO -> {
         doMagicGo()
