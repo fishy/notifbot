@@ -6,9 +6,9 @@
 
   <string name="notif_reply">Quick reply</string>
 
-  <string name="receiver_wrong_text">Cannot find app from \"%1$s\"</string>
-  <string name="receiver_added_pkg">Added app %1$s</string>
-  <string name="receiver_pkg_exists">App %1$s was already added</string>
+  <string name="receiver_wrong_text">Cannot find app from \"%1$s\".</string>
+  <string name="receiver_added_pkg">Added app %1$s.</string>
+  <string name="receiver_pkg_exists">App %1$s was already added.</string>
 
   <string name="main_hint">
     These are the apps you added, click to remove:
@@ -75,7 +75,7 @@
     Press back button to cancel.
   </string>
   <string name="go">Go</string>
-  <string name="magic_invalid_uri">Invalid magic text: \"%1$s\"</string>
+  <string name="magic_invalid_uri">Invalid magic text: \"%1$s\".</string>
 
   <string name="service_succeed">
     Successfully connected to service!
@@ -104,6 +104,6 @@
   <!-- Notification channel -->
   <string name="channel_name">Service connection failure</string>
   <string name="channel_desc">
-    The notification to indicate service connection failures
+    The notification to indicate service connection failures.
   </string>
 </resources>
