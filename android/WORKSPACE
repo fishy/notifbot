@@ -36,6 +36,6 @@ maven_jar(
 
 maven_jar(
     name = "com_squareup_okio_okio",
-    artifact = "com.squareup.okio:okio:2.1.0",
-    sha1 = "5316c3393a9ff5c1b2af43df74463d63fb697a90",
+    artifact = "com.squareup.okio:okio:2.2.1",
+    sha1 = "dcdc2776f9139581885febcc3d74ef518f9d73e1",
 )
