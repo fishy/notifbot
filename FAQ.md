@@ -5,11 +5,11 @@
 Basically, share the app from Google Play to NotifBot.
 Here are the detailed steps:
 
- 1. Go to the Google Play page of the app you want to add
-    ([example](https://play.google.com/store/apps/details?id=com.smartthings.android))
- 1. Find the Share button (last time I checked, it's right below the reviews)
- 1. Choose NotifBot in the Share menu
- 1. You should see a Toast afterwards as confirmation
+1. Go to the Google Play page of the app you want to add
+   ([example](https://play.google.com/store/apps/details?id=com.smartthings.android))
+1. Find the Share button (last time I checked, it's in the `...` menu)
+1. Choose NotifBot in the Share menu
+1. You should see a Toast afterwards as confirmation
 
 ## How do I connect with Telegram?
 
