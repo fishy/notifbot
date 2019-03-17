@@ -1,5 +1,5 @@
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_android_library")
-load("@gmaven_rules//:defs.bzl", "gmaven_artifact")
+load("@rules_jvm_external//:defs.bzl", "artifact")
 
 PACKAGE = "com.yhsif.notifbot"
 MANIFEST = "AndroidManifest.xml"
@@ -22,18 +22,17 @@ kt_android_library(
     manifest = MANIFEST,
     resource_files = glob(["res/**/*"]),
     deps = [
-        "@com_squareup_okhttp3_okhttp//jar",
-        "@com_squareup_okio_okio//jar",
+        artifact("com.squareup.okhttp3:okhttp"),
 
-        gmaven_artifact("androidx.appcompat:appcompat:aar:1.0.0"),
-        gmaven_artifact("androidx.cardview:cardview:aar:1.0.0"),
-        gmaven_artifact("androidx.core:core:aar:1.0.0"),
-        gmaven_artifact("androidx.recyclerview:recyclerview:aar:1.0.0"),
+        artifact("androidx.appcompat:appcompat"),
+        artifact("androidx.cardview:cardview"),
+        artifact("androidx.core:core:aar"),
+        artifact("androidx.recyclerview:recyclerview"),
 
         # indirect deps:
-        gmaven_artifact("androidx.drawerlayout:drawerlayout:aar:1.0.0"),
-        gmaven_artifact("androidx.fragment:fragment:aar:1.0.0"),
-        gmaven_artifact("androidx.lifecycle:lifecycle-common:jar:2.0.0"),
-        gmaven_artifact("androidx.lifecycle:lifecycle-viewmodel:aar:2.0.0"),
+        artifact("androidx.drawerlayout:drawerlayout"),
+        artifact("androidx.fragment:fragment"),
+        artifact("androidx.lifecycle:lifecycle-common"),
+        artifact("androidx.lifecycle:lifecycle-viewmodel"),
     ],
 )
