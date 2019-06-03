@@ -28,6 +28,9 @@ class NotificationListener : NotificationListenerService() {
     private const val NOTIF_ID = 0
     private const val NOTIF_TEXT_TEMPLATE = "%s:\n%s"
     private const val PREF_RETRY = "com.yhsif.notifbot.retries"
+    private const val PREF_LAST = "com.yhsif.notifbot.last"
+    private const val KEY_LABEL = "label"
+    private const val KEY_TEXT = "text"
     private const val MAX_RANDOM_INT = 1000000
     private const val CHANNEL_ID = "service_connection_failure"
 
@@ -118,6 +121,7 @@ class NotificationListener : NotificationListenerService() {
   }
 
   val retryQueueLock = ReentrantLock()
+  val dupCheckLock = ReentrantLock()
   val rand = SecureRandom()
 
   val onSuccess = { NotificationListener.cancelTelegramNotif(this) }
@@ -174,6 +178,9 @@ class NotificationListener : NotificationListenerService() {
       if (label == "" || text == "") {
         return
       }
+      if (checkDup(label, text)) {
+        return
+      }
 
       val pref = getSharedPreferences(MainActivity.PREF, 0)
       val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
@@ -196,6 +203,23 @@ class NotificationListener : NotificationListenerService() {
     pkg: String,
     sbn: StatusBarNotification
   ): Boolean = pkg != PKG_SELF && pkgs.contains(pkg) && !sbn.isOngoing()
+
+  fun checkDup(label: String, text: String): Boolean {
+    dupCheckLock.withLock {
+      val pref = getSharedPreferences(PREF_LAST, 0)
+      val lastLabel = pref.getString(KEY_LABEL, "")
+      val lastText = pref.getString(KEY_TEXT, "")
+      if (lastLabel == label && lastText == text) {
+        return true
+      }
+      val editor = pref.edit()
+      editor.clear()
+      editor.putString(KEY_LABEL, label)
+      editor.putString(KEY_TEXT, text)
+      editor.commit()
+    }
+    return false
+  }
 
   fun getAndClearRetryQueue(): List<Triple<Long, String, String>> {
     val map = retryQueueLock.withLock {
