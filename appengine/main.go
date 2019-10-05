@@ -44,7 +44,7 @@ const (
 }]`
 )
 
-var urlRegexp = regexp.MustCompile(clientPrefix + `(\d+)/(.+)`)
+var urlRegexp = regexp.MustCompile(clientPrefix + `(\-?\d+)/(.+)`)
 
 var dsClient *datastore.Client
 
