@@ -11,3 +11,5 @@ require (
 	google.golang.org/api v0.0.0-20181120235003-faade3cbb06a // indirect
 	google.golang.org/genproto v0.0.0-20181109154231-b5d43981345b
 )
+
+go 1.13
