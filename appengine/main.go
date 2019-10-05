@@ -120,26 +120,34 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch update.Message.Text {
-	default:
+	// In group chats the commands will be in the format of
+	// "/command@AndroidNotificationBot"
+	text := strings.Split(update.Message.Text, "@")
+	if len(text) == 0 {
+		// Should not happen but just in case
 		replyMessage(ctx, w, update.Message, unsupportedMsg, true)
-	case "/download":
-		replyMessage(ctx, w, update.Message, downloadMsg, false)
-	case "/start":
-		chat := NewChat(ctx, update.Message.Chat.ID)
-		if chat == nil {
-			replyMessage(ctx, w, update.Message, startErrMsg, true)
-			return
+	} else {
+		switch text[0] {
+		default:
+			replyMessage(ctx, w, update.Message, unsupportedMsg, true)
+		case "/download":
+			replyMessage(ctx, w, update.Message, downloadMsg, false)
+		case "/start":
+			chat := NewChat(ctx, update.Message.Chat.ID)
+			if chat == nil {
+				replyMessage(ctx, w, update.Message, startErrMsg, true)
+				return
+			}
+			replyMessage(ctx, w, update.Message, startMsg+chat.GetURL(), false)
+		case "/stop":
+			chat := GetChat(ctx, update.Message.Chat.ID)
+			if chat == nil {
+				replyMessage(ctx, w, update.Message, stopErrMsg, true)
+				return
+			}
+			chat.Delete(ctx)
+			replyMessage(ctx, w, update.Message, stopMsg, false)
 		}
-		replyMessage(ctx, w, update.Message, startMsg+chat.GetURL(), false)
-	case "/stop":
-		chat := GetChat(ctx, update.Message.Chat.ID)
-		if chat == nil {
-			replyMessage(ctx, w, update.Message, stopErrMsg, true)
-			return
-		}
-		chat.Delete(ctx)
-		replyMessage(ctx, w, update.Message, stopMsg, false)
 	}
 }
 
