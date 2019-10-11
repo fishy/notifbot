@@ -47,9 +47,8 @@ class HttpSender(
       // Only handle the first req
       try {
         val res = client.newCall(req).execute()
-        val code = res.code()
         res.close()
-        return code
+        return res.code
       } catch (_: IOException) {
         return CODE_NET_FAIL
       }
