@@ -7,37 +7,40 @@ android_sdk_repository(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_KOTLIN_VERSION = "7543a917cda483c5856ec79b590343c9669eacd6"
+RULES_KOTLIN_VERSION = "0768fe7355c9d9ac78c60411ac196da394b903d5"
+
 http_archive(
     name = "io_bazel_rules_kotlin",
     strip_prefix = "rules_kotlin-%s" % RULES_KOTLIN_VERSION,
     url = "https://github.com/bazelbuild/rules_kotlin/archive/%s.tar.gz" % RULES_KOTLIN_VERSION,
-    sha256 = "d335be363937ed62b5758cfdb33910ee52429835685345ef6b9f009c2bff9a9d",
+    sha256 = "0eaa4b8b286054f8cbbec8cca40b0c3fafba7eb82ed55045273ecaf981fb1e1f",
 )
+
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
 
 kotlin_repositories()
 kt_register_toolchains()
 
-RULES_JVM_EXTERNAL_TAG = "2.8"
+
+RULES_JVM_EXTERNAL_TAG = "2.9"
+RULES_JVM_EXTERNAL_SHA = "e5b97a31a3e8feed91636f42e19b11c49487b85e5de2f387c999ea14d77c7f45"
+
 http_archive(
     name = "rules_jvm_external",
     strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
     url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
-    sha256 = "79c9850690d7614ecdb72d68394f994fef7534b292c4867ce5e7dec0aa7bdfad",
+    sha256 = RULES_JVM_EXTERNAL_SHA,
 )
+
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
         "com.squareup.okhttp3:okhttp:4.2.2",
 
-        "androidx.activity:activity:1.0.0",
         "androidx.appcompat:appcompat:1.1.0",
         "androidx.cardview:cardview:1.0.0",
-        "androidx.core:core:1.1.0",
         "androidx.recyclerview:recyclerview:1.0.0",
-        "androidx.savedstate:savedstate:1.0.0",
     ],
     repositories = [
         "https://maven.google.com",

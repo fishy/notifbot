@@ -1,5 +1,4 @@
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_android_library")
-load("@rules_jvm_external//:defs.bzl", "artifact")
 
 PACKAGE = "com.yhsif.notifbot"
 MANIFEST = "AndroidManifest.xml"
@@ -22,19 +21,10 @@ kt_android_library(
     manifest = MANIFEST,
     resource_files = glob(["res/**/*"]),
     deps = [
-        artifact("com.squareup.okhttp3:okhttp"),
+        "@maven//:com_squareup_okhttp3_okhttp",
 
-        artifact("androidx.appcompat:appcompat"),
-        artifact("androidx.cardview:cardview"),
-        artifact("androidx.core:core:aar"),
-        artifact("androidx.recyclerview:recyclerview"),
-
-        # indirect deps:
-        artifact("androidx.activity:activity"),
-        artifact("androidx.drawerlayout:drawerlayout"),
-        artifact("androidx.fragment:fragment"),
-        artifact("androidx.lifecycle:lifecycle-common"),
-        artifact("androidx.lifecycle:lifecycle-viewmodel"),
-        artifact("androidx.savedstate:savedstate"),
+        "@maven//:androidx_appcompat_appcompat",
+        "@maven//:androidx_cardview_cardview",
+        "@maven//:androidx_recyclerview_recyclerview",
     ],
 )
