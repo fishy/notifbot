@@ -35,10 +35,10 @@ func (e *EntityChat) datastoreKey() *datastore.Key {
 
 // SaveMemcache saves this token into redis.
 func (e *EntityChat) SaveMemcache() error {
-	if redisClient == nil {
-		return ErrNoRedis
+	if client, ok := getRedis(); ok {
+		return client.Set(e.getKey(), e.Token, 0).Err()
 	}
-	return redisClient.Set(e.getKey(), e.Token, 0).Err()
+	return ErrNoRedis
 }
 
 // SaveDatastore saves this token into datastore.
@@ -56,10 +56,10 @@ func (e *EntityChat) Delete(ctx context.Context) {
 	}
 	var err error
 	redisKey := e.getKey()
-	if redisClient == nil {
-		err = ErrNoRedis
+	if client, ok := getRedis(); ok {
+		err = client.Del(redisKey).Err()
 	} else {
-		err = redisClient.Del(redisKey).Err()
+		err = ErrNoRedis
 	}
 	if err != nil {
 		errorLog.Printf("Failed to delete redis key %v: %v", redisKey, err)
@@ -82,7 +82,7 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 	e := &EntityChat{
 		Chat: id,
 	}
-	if redisClient != nil {
+	if redisClient, ok := getRedis(); ok {
 		key := e.getKey()
 		value, err := redisClient.Get(key).Result()
 		if err == nil {

@@ -15,10 +15,6 @@ const (
 	nameTemplate = "projects/%s/secrets/%s/versions/latest"
 )
 
-type secretEntity struct {
-	Value string `datastore:"value,noindex"`
-}
-
 func getSecret(ctx context.Context, id string) (string, error) {
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {

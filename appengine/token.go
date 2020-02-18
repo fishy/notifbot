@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -19,7 +20,8 @@ const (
 	postFormContentType = "application/x-www-form-urlencoded"
 )
 
-var botToken *telegramToken
+var tokenValue atomic.Value
+
 var httpClient http.Client
 
 type telegramToken struct {
@@ -40,7 +42,7 @@ func (bot *telegramToken) getURL(endpoint string) string {
 // PostRequest use POST method to send a request to telegram
 func (bot *telegramToken) PostRequest(
 	ctx context.Context, endpoint string, params url.Values,
-) {
+) (code int) {
 	start := time.Now()
 	defer func() {
 		infoLog.Printf("HTTP POST for %s took %v", endpoint, time.Since(start))
@@ -72,18 +74,18 @@ func (bot *telegramToken) PostRequest(
 			resp.StatusCode,
 			buf,
 		)
-		return
 	}
+	return resp.StatusCode
 }
 
 // SendMessage sents a telegram messsage.
 func (bot *telegramToken) SendMessage(
 	ctx context.Context, id int64, msg string,
-) {
+) int {
 	values := url.Values{}
 	values.Add("chat_id", fmt.Sprintf("%d", id))
 	values.Add("text", msg)
-	bot.PostRequest(ctx, "sendMessage", values)
+	return bot.PostRequest(ctx, "sendMessage", values)
 }
 
 func (bot *telegramToken) initHashPrefix(ctx context.Context) {
@@ -107,29 +109,27 @@ func (bot *telegramToken) ValidateWebhookURL(r *http.Request) bool {
 }
 
 // SetWebhook sets webhook with telegram.
-func (bot *telegramToken) SetWebhook(ctx context.Context) {
+func (bot *telegramToken) SetWebhook(ctx context.Context) int {
 	bot.initHashPrefix(ctx)
 
 	values := url.Values{}
 	values.Add("url", bot.getWebhookURL(ctx))
 	values.Add("max_connections", fmt.Sprintf("%d", webhookMaxConn))
-	bot.PostRequest(ctx, "setWebhook", values)
+	return bot.PostRequest(ctx, "setWebhook", values)
 }
 
 // initBot initializes botToken.
-func initBot(ctx context.Context) error {
-	defer func() {
-		if botToken != nil {
-			botToken.SetWebhook(ctx)
-		}
-	}()
-
-	token, err := getSecret(ctx, tokenID)
+func initBot(ctx context.Context) {
+	secret, err := getSecret(ctx, tokenID)
 	if err != nil {
-		return err
+		errorLog.Printf("Failed to get token secret: %v", err)
 	}
-	botToken = &telegramToken{
-		Token: token,
-	}
-	return nil
+	tokenValue.Store(&telegramToken{
+		Token: secret,
+	})
+	getToken().SetWebhook(ctx)
+}
+
+func getToken() *telegramToken {
+	return tokenValue.Load().(*telegramToken)
 }

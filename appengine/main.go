@@ -61,12 +61,8 @@ func main() {
 	if err := initDatastoreClient(ctx); err != nil {
 		errorLog.Fatalf("Failed to get data store client: %v", err)
 	}
-	if err := initBot(ctx); err != nil {
-		errorLog.Fatalf("Failed to init bot: %v", err)
-	}
-	if err := initRedis(ctx); err != nil {
-		warnLog.Printf("Failed to init redis client: %v", err)
-	}
+	initBot(ctx)
+	initRedis(ctx)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", rootHandler)
@@ -101,11 +97,12 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
-	if !botToken.ValidateWebhookURL(r) {
+	ctx := context.Background()
+
+	if !getToken().ValidateWebhookURL(r) {
 		http.NotFound(w, r)
 		return
 	}
-	ctx := context.Background()
 
 	if r.Body == nil {
 		errorLog.Print("Empty webhook request body")
@@ -189,7 +186,11 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		// label when that's not the case to avoid repetition.
 		msg = fmt.Sprintf(msgTemplate, label, msg)
 	}
-	botToken.SendMessage(ctx, id, msg)
+	if getToken().SendMessage(ctx, id, msg) == http.StatusUnauthorized {
+		infoLog.Print("Invalidating secret cache and retrying...")
+		initBot(ctx)
+		getToken().SendMessage(ctx, id, msg)
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
