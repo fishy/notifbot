@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
+	"fmt"
 
-	"cloud.google.com/go/datastore"
+	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
+	smpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 )
 
 const (
-	secretsKind = "secrets"
-
 	tokenID = "telegram-token"
 	redisID = "redis-url"
+
+	nameTemplate = "projects/%s/secrets/%s/versions/latest"
 )
 
 type secretEntity struct {
@@ -18,10 +20,16 @@ type secretEntity struct {
 }
 
 func getSecret(ctx context.Context, id string) (string, error) {
-	key := datastore.NameKey(secretsKind, id, nil)
-	e := new(secretEntity)
-	if err := dsClient.Get(ctx, key, e); err != nil {
+	client, err := secretmanager.NewClient(ctx)
+	if err != nil {
 		return "", err
 	}
-	return e.Value, nil
+	req := &smpb.AccessSecretVersionRequest{
+		Name: fmt.Sprintf(nameTemplate, getProjectID(), id),
+	}
+	resp, err := client.AccessSecretVersion(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	return string(resp.Payload.Data), nil
 }
