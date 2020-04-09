@@ -62,8 +62,8 @@ class NotificationListener : NotificationListenerService() {
     fun getPackageName(ctx: Context, pkg: String, empty: Boolean): String {
       val manager = ctx.getPackageManager()
       try {
-        manager.getApplicationInfo(pkg, 0)?.let { appInfo ->
-          manager.getApplicationLabel(appInfo)?.let { s ->
+        manager.getApplicationInfo(pkg, 0).let { appInfo ->
+          manager.getApplicationLabel(appInfo).let { s ->
             return s.toString()
           }
         }

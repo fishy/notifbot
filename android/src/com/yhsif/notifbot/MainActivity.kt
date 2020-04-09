@@ -107,7 +107,7 @@ class MainActivity :
       var icon: Drawable? = null
       ctx.getPackageManager().let { pm ->
         try {
-          pm.getApplicationInfo(pkg, 0)?.let { appInfo ->
+          pm.getApplicationInfo(pkg, 0).let { appInfo ->
             icon = pm.getApplicationIcon(appInfo)
           }
         } catch (_: NameNotFoundException) {
@@ -479,8 +479,8 @@ class MainActivity :
     var name = pkg
     var icon = defIcon
     try {
-      pm.getApplicationInfo(pkg, 0)?.let { appInfo ->
-        pm.getApplicationLabel(appInfo)?.let { s ->
+      pm.getApplicationInfo(pkg, 0).let { appInfo ->
+        pm.getApplicationLabel(appInfo).let { s ->
           name = s.toString()
         }
         icon = pm.getApplicationIcon(appInfo)
