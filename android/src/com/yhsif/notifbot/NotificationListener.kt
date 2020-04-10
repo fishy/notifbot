@@ -150,7 +150,9 @@ class NotificationListener : NotificationListenerService() {
     connected = true
     monitor
     if (startMain) {
-      startActivity(Intent(this, MainActivity::class.java))
+      val intent = Intent(this, MainActivity::class.java)
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      startActivity(intent)
     }
   }
 
