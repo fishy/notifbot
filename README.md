@@ -11,7 +11,9 @@ and Bazel will get all the dependencies for you
 
 The Bazel rules depends on the `ANDROID_HOME` environment variable.
 
-To get the release apk, use the script in `android/tools/release.sh`.
+Run [`tools/release.sh`](android/tools/release.sh) to sign the apk with a
+release key.
+[More details](https://developer.android.com/studio/publish/app-signing.html#signing-manually).
 
 ## License
 
