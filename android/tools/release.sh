@@ -3,7 +3,7 @@
 set -e
 
 keyfile=${1:-"${HOME}/.android/release.jks"}
-tempfile=`mktemp -u app.tmp.XXXXXXXXXX.apk`
+tempfile=`mktemp -u app.tmp.apk.XXXXXXXXXX`
 
 bazel build :app -c opt
 zipalign -p 4 bazel-bin/app_unsigned.apk ${tempfile}
