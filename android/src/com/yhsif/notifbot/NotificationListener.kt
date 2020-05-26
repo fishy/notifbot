@@ -39,22 +39,20 @@ class NotificationListener : NotificationListenerService() {
     var connected = false
     var startMain = false
 
-    var ctx: Context? = null
+    lateinit var ctx: Context
     val channelId: String by lazy {
       // Lazy create the notification channel
-      ctx?.let { ctx ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          val channel = NotificationChannel(
-            CHANNEL_ID,
-            ctx.getString(R.string.channel_name),
-            NotificationManager.IMPORTANCE_DEFAULT
-          )
-          channel.setDescription(ctx.getString(R.string.channel_desc))
-          channel.setShowBadge(false)
-          val manager = ctx.getSystemService(
-            Context.NOTIFICATION_SERVICE) as NotificationManager
-          manager.createNotificationChannel(channel)
-        }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+          CHANNEL_ID,
+          ctx.getString(R.string.channel_name),
+          NotificationManager.IMPORTANCE_DEFAULT
+        )
+        channel.setDescription(ctx.getString(R.string.channel_desc))
+        channel.setShowBadge(false)
+        val manager = ctx.getSystemService(
+          Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
       }
       CHANNEL_ID
     }

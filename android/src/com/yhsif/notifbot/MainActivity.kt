@@ -57,7 +57,7 @@ class MainActivity :
     val RE_URI = Regex("""[^\s]+://[^\s]+""")
     val RE_APP_ID = Regex("""[a-zA-Z0-9\._-]+""")
 
-    var serviceDialog: AlertDialog? = null
+    lateinit var serviceDialog: AlertDialog
 
     fun showToast(ctx: Context, text: String, icon: Drawable? = null) {
       val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
@@ -146,7 +146,7 @@ class MainActivity :
           val editor = ctx.getSharedPreferences(PREF, 0).edit()
           editor.putString(KEY_SERVICE_URL, url)
           editor.commit()
-          serviceDialog?.let { d ->
+          serviceDialog.let { d ->
             if (d.isShowing()) {
               d.dismiss()
             }
@@ -228,8 +228,9 @@ class MainActivity :
   }
 
   var prev: Set<String> = setOf()
-  var adapter: PkgAdapter? = null
-  var magicDialog: AlertDialog? = null
+
+  lateinit var adapter: PkgAdapter
+  lateinit var magicDialog: AlertDialog
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -241,7 +242,7 @@ class MainActivity :
 
     adapter = PkgAdapter(mutableListOf(), this)
     findViewById<RecyclerView>(R.id.pkg_list).let { rv ->
-      adapter?.let { a ->
+      adapter.let { a ->
         rv.setAdapter(a)
       }
       rv.setLayoutManager(LinearLayoutManager(this))
@@ -339,7 +340,7 @@ class MainActivity :
       val pref = getSharedPreferences(PREF, 0)
       val url = pref.getString(KEY_SERVICE_URL, "")!!
       val onFailure = {
-        serviceDialog?.show()
+        serviceDialog.show()
         tryClip(this)
       }
       val uri = Uri.parse(url)
@@ -378,7 +379,7 @@ class MainActivity :
         return true
       }
       R.id.action_box -> {
-        magicDialog?.show()
+        magicDialog.show()
         return true
       }
       else -> return super.onOptionsItemSelected(item)
@@ -393,7 +394,7 @@ class MainActivity :
     }
     findViewById<RecyclerView>(R.id.pkg_list).let { rv ->
       val i = rv.getChildLayoutPosition(v)
-      adapter?.let { a ->
+      adapter.let { a ->
         val data = a.list.get(i)
         AlertDialog.Builder(this)
           .setCancelable(true)
@@ -436,7 +437,7 @@ class MainActivity :
   }
 
   fun doMagicGo() {
-    magicDialog?.let { d ->
+    magicDialog.let { d ->
       d.findViewById<EditText>(R.id.magic_url).let { text ->
         if (d.isShowing() && handleText(this, text?.getText().toString())) {
           d.dismiss()
@@ -461,7 +462,7 @@ class MainActivity :
       prev = pkgSet
       val pm = getPackageManager()
       val defIcon = getDrawable(R.mipmap.default_icon)!!
-      adapter?.let { a ->
+      adapter.let { a ->
         a.list = prev
           .map() { createPkgData(pm, it, defIcon) }
           .sortedBy() { it.name.toLowerCase() }
