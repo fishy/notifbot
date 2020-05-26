@@ -73,11 +73,11 @@ http_archive(
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = [
-        "com.squareup.okhttp3:okhttp:4.7.2",
-
         "androidx.appcompat:appcompat:1.1.0",
         "androidx.cardview:cardview:1.0.0",
         "androidx.recyclerview:recyclerview:1.1.0",
+        "com.google.android.gms:play-services-cronet:17.0.0",
+        "org.chromium.net:cronet-fallback:76.3809.111",
     ],
     repositories = [
         "https://maven.google.com",

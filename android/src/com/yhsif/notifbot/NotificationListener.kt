@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
@@ -163,6 +164,7 @@ class NotificationListener : NotificationListenerService() {
     sbn: StatusBarNotification,
     rm: NotificationListenerService.RankingMap
   ) {
+    HttpSender.initEngine(this)
     handleNotif(NotificationListener.getPkgSet(this), sbn)
   }
 
@@ -242,16 +244,21 @@ class NotificationListener : NotificationListenerService() {
   }
 
   fun addToRetryQueue(time: Long, label: String, text: String) {
-    retryQueueLock.withLock {
-      val pref = getSharedPreferences(PREF_RETRY, 0)
-      val editor = pref.edit()
-      var key = generateKey(time, label)
-      while (pref.contains(key)) {
-        key = generateKey(time, label)
+    val task = object : AsyncTask<Unit, Unit, Unit>() {
+      override fun doInBackground(vararg unused: Unit): Unit {
+        retryQueueLock.withLock {
+          val pref = getSharedPreferences(PREF_RETRY, 0)
+          val editor = pref.edit()
+          var key = generateKey(time, label)
+          while (pref.contains(key)) {
+            key = generateKey(time, label)
+          }
+          editor.putString(key, text)
+          editor.commit()
+        }
       }
-      editor.putString(key, text)
-      editor.commit()
     }
+    task.execute()
   }
 
   fun generateKey(time: Long, label: String): String {

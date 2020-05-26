@@ -612,93 +612,222 @@
                 "sha256": "147af4e14a1984010d8f155e5e19d781f03c1d70dfed02a8e0d18428b8fc8682"
             },
             {
-                "coord": "com.squareup.okhttp3:okhttp:4.7.2",
-                "file": "v1/https/jcenter.bintray.com/com/squareup/okhttp3/okhttp/4.7.2/okhttp-4.7.2.jar",
+                "coord": "com.google.android.gms:play-services-base:aar:17.0.0",
+                "file": "v1/https/maven.google.com/com/google/android/gms/play-services-base/17.0.0/play-services-base-17.0.0.aar",
                 "directDependencies": [
-                    "com.squareup.okio:okio:2.6.0",
-                    "org.jetbrains.kotlin:kotlin-stdlib:1.3.71"
+                    "androidx.collection:collection:jar:1.1.0",
+                    "com.google.android.gms:play-services-tasks:aar:17.0.0",
+                    "androidx.fragment:fragment:aar:1.1.0",
+                    "androidx.core:core:aar:1.1.0",
+                    "com.google.android.gms:play-services-basement:aar:17.0.0"
                 ],
                 "dependencies": [
-                    "com.squareup.okio:okio:2.6.0",
-                    "org.jetbrains:annotations:13.0",
-                    "org.jetbrains.kotlin:kotlin-stdlib:1.3.71",
-                    "org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71"
+                    "androidx.lifecycle:lifecycle-runtime:aar:2.1.0",
+                    "androidx.collection:collection:jar:1.1.0",
+                    "androidx.annotation:annotation:1.1.0",
+                    "androidx.savedstate:savedstate:aar:1.0.0",
+                    "androidx.collection:collection:1.1.0",
+                    "com.google.android.gms:play-services-tasks:aar:17.0.0",
+                    "androidx.fragment:fragment:aar:1.1.0",
+                    "androidx.lifecycle:lifecycle-common:2.1.0",
+                    "androidx.lifecycle:lifecycle-viewmodel:aar:2.1.0",
+                    "androidx.lifecycle:lifecycle-livedata:aar:2.0.0",
+                    "androidx.customview:customview:aar:1.0.0",
+                    "androidx.arch.core:core-runtime:aar:2.0.0",
+                    "androidx.activity:activity:aar:1.0.0",
+                    "androidx.arch.core:core-common:2.1.0",
+                    "androidx.versionedparcelable:versionedparcelable:aar:1.1.0",
+                    "androidx.core:core:aar:1.1.0",
+                    "androidx.viewpager:viewpager:aar:1.0.0",
+                    "com.google.android.gms:play-services-basement:aar:17.0.0",
+                    "androidx.lifecycle:lifecycle-livedata-core:aar:2.0.0",
+                    "androidx.loader:loader:aar:1.0.0"
                 ],
-                "url": "https://jcenter.bintray.com/com/squareup/okhttp3/okhttp/4.7.2/okhttp-4.7.2.jar",
+                "url": "https://maven.google.com/com/google/android/gms/play-services-base/17.0.0/play-services-base-17.0.0.aar",
                 "mirror_urls": [
-                    "https://maven.google.com/com/squareup/okhttp3/okhttp/4.7.2/okhttp-4.7.2.jar",
-                    "https://jcenter.bintray.com/com/squareup/okhttp3/okhttp/4.7.2/okhttp-4.7.2.jar",
-                    "https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/4.7.2/okhttp-4.7.2.jar"
+                    "https://maven.google.com/com/google/android/gms/play-services-base/17.0.0/play-services-base-17.0.0.aar",
+                    "https://jcenter.bintray.com/com/google/android/gms/play-services-base/17.0.0/play-services-base-17.0.0.aar",
+                    "https://repo1.maven.org/maven2/com/google/android/gms/play-services-base/17.0.0/play-services-base-17.0.0.aar"
                 ],
-                "sha256": "6b64ca1d2069751242984537d5de2cbe627ae000430f5117c47d8cb3d272facd"
+                "sha256": "dd0980edf729e0d346e2b58e70801dc237c1aed0c7ab274fa3f1c8c8efc64cc7"
             },
             {
-                "coord": "com.squareup.okio:okio:2.6.0",
-                "file": "v1/https/jcenter.bintray.com/com/squareup/okio/okio/2.6.0/okio-2.6.0.jar",
+                "coord": "com.google.android.gms:play-services-basement:aar:17.0.0",
+                "file": "v1/https/maven.google.com/com/google/android/gms/play-services-basement/17.0.0/play-services-basement-17.0.0.aar",
                 "directDependencies": [
-                    "org.jetbrains.kotlin:kotlin-stdlib:1.3.71",
-                    "org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71"
+                    "androidx.collection:collection:jar:1.1.0",
+                    "androidx.core:core:aar:1.1.0",
+                    "androidx.fragment:fragment:aar:1.1.0"
                 ],
                 "dependencies": [
-                    "org.jetbrains:annotations:13.0",
-                    "org.jetbrains.kotlin:kotlin-stdlib:1.3.71",
-                    "org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71"
+                    "androidx.lifecycle:lifecycle-runtime:aar:2.1.0",
+                    "androidx.collection:collection:jar:1.1.0",
+                    "androidx.annotation:annotation:1.1.0",
+                    "androidx.savedstate:savedstate:aar:1.0.0",
+                    "androidx.collection:collection:1.1.0",
+                    "androidx.fragment:fragment:aar:1.1.0",
+                    "androidx.lifecycle:lifecycle-common:2.1.0",
+                    "androidx.lifecycle:lifecycle-viewmodel:aar:2.1.0",
+                    "androidx.lifecycle:lifecycle-livedata:aar:2.0.0",
+                    "androidx.customview:customview:aar:1.0.0",
+                    "androidx.arch.core:core-runtime:aar:2.0.0",
+                    "androidx.activity:activity:aar:1.0.0",
+                    "androidx.arch.core:core-common:2.1.0",
+                    "androidx.versionedparcelable:versionedparcelable:aar:1.1.0",
+                    "androidx.core:core:aar:1.1.0",
+                    "androidx.viewpager:viewpager:aar:1.0.0",
+                    "androidx.lifecycle:lifecycle-livedata-core:aar:2.0.0",
+                    "androidx.loader:loader:aar:1.0.0"
                 ],
-                "url": "https://jcenter.bintray.com/com/squareup/okio/okio/2.6.0/okio-2.6.0.jar",
+                "url": "https://maven.google.com/com/google/android/gms/play-services-basement/17.0.0/play-services-basement-17.0.0.aar",
                 "mirror_urls": [
-                    "https://maven.google.com/com/squareup/okio/okio/2.6.0/okio-2.6.0.jar",
-                    "https://jcenter.bintray.com/com/squareup/okio/okio/2.6.0/okio-2.6.0.jar",
-                    "https://repo1.maven.org/maven2/com/squareup/okio/okio/2.6.0/okio-2.6.0.jar"
+                    "https://maven.google.com/com/google/android/gms/play-services-basement/17.0.0/play-services-basement-17.0.0.aar",
+                    "https://jcenter.bintray.com/com/google/android/gms/play-services-basement/17.0.0/play-services-basement-17.0.0.aar",
+                    "https://repo1.maven.org/maven2/com/google/android/gms/play-services-basement/17.0.0/play-services-basement-17.0.0.aar"
                 ],
-                "sha256": "4d84ef686277b58eb05691ac19cd3befa3429a27274982ee65ea0f07044bcc00"
+                "sha256": "d324a1785bbc48bfe3639fc847cfd3cf43d49e967b5caf2794240a854557a39c"
             },
             {
-                "coord": "org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71",
-                "file": "v1/https/jcenter.bintray.com/org/jetbrains/kotlin/kotlin-stdlib-common/1.3.71/kotlin-stdlib-common-1.3.71.jar",
+                "coord": "com.google.android.gms:play-services-cronet:17.0.0",
+                "file": "v1/https/maven.google.com/com/google/android/gms/play-services-cronet/17.0.0/play-services-cronet-17.0.0.aar",
+                "directDependencies": [
+                    "com.google.android.gms:play-services-base:aar:17.0.0",
+                    "com.google.android.gms:play-services-basement:aar:17.0.0",
+                    "com.google.android.gms:play-services-tasks:aar:17.0.0",
+                    "org.chromium.net:cronet-api:aar:76.3809.111"
+                ],
+                "dependencies": [
+                    "androidx.lifecycle:lifecycle-runtime:aar:2.1.0",
+                    "androidx.collection:collection:jar:1.1.0",
+                    "androidx.annotation:annotation:1.1.0",
+                    "androidx.savedstate:savedstate:aar:1.0.0",
+                    "com.google.android.gms:play-services-base:aar:17.0.0",
+                    "androidx.collection:collection:1.1.0",
+                    "com.google.android.gms:play-services-tasks:aar:17.0.0",
+                    "androidx.fragment:fragment:aar:1.1.0",
+                    "androidx.lifecycle:lifecycle-common:2.1.0",
+                    "androidx.lifecycle:lifecycle-viewmodel:aar:2.1.0",
+                    "androidx.lifecycle:lifecycle-livedata:aar:2.0.0",
+                    "androidx.customview:customview:aar:1.0.0",
+                    "androidx.arch.core:core-runtime:aar:2.0.0",
+                    "androidx.activity:activity:aar:1.0.0",
+                    "org.chromium.net:cronet-api:aar:76.3809.111",
+                    "androidx.arch.core:core-common:2.1.0",
+                    "androidx.versionedparcelable:versionedparcelable:aar:1.1.0",
+                    "androidx.core:core:aar:1.1.0",
+                    "androidx.viewpager:viewpager:aar:1.0.0",
+                    "com.google.android.gms:play-services-basement:aar:17.0.0",
+                    "androidx.lifecycle:lifecycle-livedata-core:aar:2.0.0",
+                    "androidx.loader:loader:aar:1.0.0"
+                ],
+                "url": "https://maven.google.com/com/google/android/gms/play-services-cronet/17.0.0/play-services-cronet-17.0.0.aar",
+                "mirror_urls": [
+                    "https://maven.google.com/com/google/android/gms/play-services-cronet/17.0.0/play-services-cronet-17.0.0.aar",
+                    "https://jcenter.bintray.com/com/google/android/gms/play-services-cronet/17.0.0/play-services-cronet-17.0.0.aar",
+                    "https://repo1.maven.org/maven2/com/google/android/gms/play-services-cronet/17.0.0/play-services-cronet-17.0.0.aar"
+                ],
+                "sha256": "fa794550e20ca1777fd461338b195d8445fd75c009a990fe7d0eef52072a0bac"
+            },
+            {
+                "coord": "com.google.android.gms:play-services-tasks:aar:17.0.0",
+                "file": "v1/https/maven.google.com/com/google/android/gms/play-services-tasks/17.0.0/play-services-tasks-17.0.0.aar",
+                "directDependencies": [
+                    "com.google.android.gms:play-services-basement:aar:17.0.0"
+                ],
+                "dependencies": [
+                    "androidx.lifecycle:lifecycle-runtime:aar:2.1.0",
+                    "androidx.collection:collection:jar:1.1.0",
+                    "androidx.annotation:annotation:1.1.0",
+                    "androidx.savedstate:savedstate:aar:1.0.0",
+                    "androidx.collection:collection:1.1.0",
+                    "androidx.fragment:fragment:aar:1.1.0",
+                    "androidx.lifecycle:lifecycle-common:2.1.0",
+                    "androidx.lifecycle:lifecycle-viewmodel:aar:2.1.0",
+                    "androidx.lifecycle:lifecycle-livedata:aar:2.0.0",
+                    "androidx.customview:customview:aar:1.0.0",
+                    "androidx.arch.core:core-runtime:aar:2.0.0",
+                    "androidx.activity:activity:aar:1.0.0",
+                    "androidx.arch.core:core-common:2.1.0",
+                    "androidx.versionedparcelable:versionedparcelable:aar:1.1.0",
+                    "androidx.core:core:aar:1.1.0",
+                    "androidx.viewpager:viewpager:aar:1.0.0",
+                    "com.google.android.gms:play-services-basement:aar:17.0.0",
+                    "androidx.lifecycle:lifecycle-livedata-core:aar:2.0.0",
+                    "androidx.loader:loader:aar:1.0.0"
+                ],
+                "url": "https://maven.google.com/com/google/android/gms/play-services-tasks/17.0.0/play-services-tasks-17.0.0.aar",
+                "mirror_urls": [
+                    "https://maven.google.com/com/google/android/gms/play-services-tasks/17.0.0/play-services-tasks-17.0.0.aar",
+                    "https://jcenter.bintray.com/com/google/android/gms/play-services-tasks/17.0.0/play-services-tasks-17.0.0.aar",
+                    "https://repo1.maven.org/maven2/com/google/android/gms/play-services-tasks/17.0.0/play-services-tasks-17.0.0.aar"
+                ],
+                "sha256": "2e6d1738b73647f3fe7a038b9780b97717b3746eae258009197e36e7bf3112a5"
+            },
+            {
+                "coord": "com.google.code.findbugs:jsr305:3.0.1",
+                "file": "v1/https/jcenter.bintray.com/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar",
                 "directDependencies": [],
                 "dependencies": [],
-                "url": "https://jcenter.bintray.com/org/jetbrains/kotlin/kotlin-stdlib-common/1.3.71/kotlin-stdlib-common-1.3.71.jar",
+                "url": "https://jcenter.bintray.com/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar",
                 "mirror_urls": [
-                    "https://maven.google.com/org/jetbrains/kotlin/kotlin-stdlib-common/1.3.71/kotlin-stdlib-common-1.3.71.jar",
-                    "https://jcenter.bintray.com/org/jetbrains/kotlin/kotlin-stdlib-common/1.3.71/kotlin-stdlib-common-1.3.71.jar",
-                    "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.3.71/kotlin-stdlib-common-1.3.71.jar"
+                    "https://maven.google.com/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar",
+                    "https://jcenter.bintray.com/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar",
+                    "https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar"
                 ],
-                "sha256": "974f8a9b7bfce3d730a86efe0eab219a72621e8530f91e30c89f400ba98092ec"
+                "sha256": "c885ce34249682bc0236b4a7d56efcc12048e6135a5baf7a9cde8ad8cda13fcd"
             },
             {
-                "coord": "org.jetbrains.kotlin:kotlin-stdlib:1.3.71",
-                "file": "v1/https/jcenter.bintray.com/org/jetbrains/kotlin/kotlin-stdlib/1.3.71/kotlin-stdlib-1.3.71.jar",
-                "directDependencies": [
-                    "org.jetbrains:annotations:13.0",
-                    "org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71"
-                ],
-                "dependencies": [
-                    "org.jetbrains:annotations:13.0",
-                    "org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71"
-                ],
-                "url": "https://jcenter.bintray.com/org/jetbrains/kotlin/kotlin-stdlib/1.3.71/kotlin-stdlib-1.3.71.jar",
-                "mirror_urls": [
-                    "https://maven.google.com/org/jetbrains/kotlin/kotlin-stdlib/1.3.71/kotlin-stdlib-1.3.71.jar",
-                    "https://jcenter.bintray.com/org/jetbrains/kotlin/kotlin-stdlib/1.3.71/kotlin-stdlib-1.3.71.jar",
-                    "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.3.71/kotlin-stdlib-1.3.71.jar"
-                ],
-                "sha256": "5ace22b102a96425e4ac44e0558b927f3857b56a33cbc289cf1b70aee645e6a7"
-            },
-            {
-                "coord": "org.jetbrains:annotations:13.0",
-                "file": "v1/https/jcenter.bintray.com/org/jetbrains/annotations/13.0/annotations-13.0.jar",
+                "coord": "org.chromium.net:cronet-api:76.3809.111",
+                "file": "v1/https/maven.google.com/org/chromium/net/cronet-api/76.3809.111/cronet-api-76.3809.111.aar",
                 "directDependencies": [],
                 "dependencies": [],
-                "url": "https://jcenter.bintray.com/org/jetbrains/annotations/13.0/annotations-13.0.jar",
+                "url": "https://maven.google.com/org/chromium/net/cronet-api/76.3809.111/cronet-api-76.3809.111.aar",
                 "mirror_urls": [
-                    "https://maven.google.com/org/jetbrains/annotations/13.0/annotations-13.0.jar",
-                    "https://jcenter.bintray.com/org/jetbrains/annotations/13.0/annotations-13.0.jar",
-                    "https://repo1.maven.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar"
+                    "https://maven.google.com/org/chromium/net/cronet-api/76.3809.111/cronet-api-76.3809.111.aar",
+                    "https://jcenter.bintray.com/org/chromium/net/cronet-api/76.3809.111/cronet-api-76.3809.111.aar",
+                    "https://repo1.maven.org/maven2/org/chromium/net/cronet-api/76.3809.111/cronet-api-76.3809.111.aar"
                 ],
-                "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+                "sha256": "cfd85f4618b989285be4085343cfb8239cd13f4838dfc57e3c3e2881cb368432"
+            },
+            {
+                "coord": "org.chromium.net:cronet-common:76.3809.111",
+                "file": "v1/https/maven.google.com/org/chromium/net/cronet-common/76.3809.111/cronet-common-76.3809.111.aar",
+                "directDependencies": [
+                    "org.chromium.net:cronet-api:76.3809.111"
+                ],
+                "dependencies": [
+                    "org.chromium.net:cronet-api:76.3809.111"
+                ],
+                "url": "https://maven.google.com/org/chromium/net/cronet-common/76.3809.111/cronet-common-76.3809.111.aar",
+                "mirror_urls": [
+                    "https://maven.google.com/org/chromium/net/cronet-common/76.3809.111/cronet-common-76.3809.111.aar",
+                    "https://jcenter.bintray.com/org/chromium/net/cronet-common/76.3809.111/cronet-common-76.3809.111.aar",
+                    "https://repo1.maven.org/maven2/org/chromium/net/cronet-common/76.3809.111/cronet-common-76.3809.111.aar"
+                ],
+                "sha256": "994dc6edabec8baf701d32a02a197531448d753a283dc496872ffa7295343121"
+            },
+            {
+                "coord": "org.chromium.net:cronet-fallback:76.3809.111",
+                "file": "v1/https/maven.google.com/org/chromium/net/cronet-fallback/76.3809.111/cronet-fallback-76.3809.111.aar",
+                "directDependencies": [
+                    "com.google.code.findbugs:jsr305:3.0.1",
+                    "org.chromium.net:cronet-common:76.3809.111"
+                ],
+                "dependencies": [
+                    "org.chromium.net:cronet-common:76.3809.111",
+                    "com.google.code.findbugs:jsr305:3.0.1",
+                    "org.chromium.net:cronet-api:76.3809.111"
+                ],
+                "url": "https://maven.google.com/org/chromium/net/cronet-fallback/76.3809.111/cronet-fallback-76.3809.111.aar",
+                "mirror_urls": [
+                    "https://maven.google.com/org/chromium/net/cronet-fallback/76.3809.111/cronet-fallback-76.3809.111.aar",
+                    "https://jcenter.bintray.com/org/chromium/net/cronet-fallback/76.3809.111/cronet-fallback-76.3809.111.aar",
+                    "https://repo1.maven.org/maven2/org/chromium/net/cronet-fallback/76.3809.111/cronet-fallback-76.3809.111.aar"
+                ],
+                "sha256": "25a958ea9d631aa970b1559b64eac3a517965e98239c179e4e52fef5225ed367"
             }
         ],
         "version": "0.1.0",
-        "__AUTOGENERATED_FILE_DO_NOT_MODIFY_THIS_FILE_MANUALLY": -1001161382
+        "__AUTOGENERATED_FILE_DO_NOT_MODIFY_THIS_FILE_MANUALLY": 952041068
     }
 }

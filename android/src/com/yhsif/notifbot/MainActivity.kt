@@ -234,6 +234,9 @@ class MainActivity :
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    HttpSender.initEngine(this)
+
     setContentView(R.layout.main)
     findViewById<TextView>(R.id.hint).let { tv ->
       tv.setText(fromHtmlWrapper(getString(R.string.main_hint)))
@@ -260,26 +263,26 @@ class MainActivity :
     }
 
     magicDialog = AlertDialog.Builder(this)
-      .setTitle(R.string.magic_box)
-      .setView(view)
-      .create()
+    .setTitle(R.string.magic_box)
+    .setView(view)
+    .create()
 
     serviceDialog = AlertDialog.Builder(this)
-      .setCancelable(true)
-      .setIcon(R.mipmap.icon)
-      .setTitle(getString(R.string.no_service))
-      .setMessage(getString(
-        R.string.init_service_text,
-        getString(android.R.string.ok))
-      )
-      .setPositiveButton(
-        android.R.string.ok,
-        DialogInterface.OnClickListener() { dialog, _ ->
-          dialog.dismiss()
-          startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
-        }
-      )
-      .create()
+    .setCancelable(true)
+    .setIcon(R.mipmap.icon)
+    .setTitle(getString(R.string.no_service))
+    .setMessage(getString(
+      R.string.init_service_text,
+      getString(android.R.string.ok))
+    )
+    .setPositiveButton(
+      android.R.string.ok,
+      DialogInterface.OnClickListener() { dialog, _ ->
+        dialog.dismiss()
+        startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
+      }
+    )
+    .create()
 
     setSupportActionBar(findViewById<Toolbar>(R.id.app_bar))
   }
