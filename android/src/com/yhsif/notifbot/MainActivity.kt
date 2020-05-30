@@ -25,6 +25,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.edit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.text.Regex
@@ -119,9 +120,9 @@ class MainActivity :
             }
             val mutableSet = pkgSet.toMutableSet()
             mutableSet.add(pkg)
-            val editor = ctx.getSharedPreferences(PREF, 0).edit()
-            editor.putStringSet(KEY_PKGS, mutableSet)
-            editor.commit()
+            ctx.getSharedPreferences(PREF, 0).edit {
+                putStringSet(KEY_PKGS, mutableSet)
+            }
             showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name), icon)
         }
 
@@ -141,9 +142,9 @@ class MainActivity :
                 {
                     NotificationListener.cancelTelegramNotif(ctx)
                     showToast(ctx, ctx.getString(R.string.service_succeed))
-                    val editor = ctx.getSharedPreferences(PREF, 0).edit()
-                    editor.putString(KEY_SERVICE_URL, url)
-                    editor.commit()
+                    ctx.getSharedPreferences(PREF, 0).edit {
+                        putString(KEY_SERVICE_URL, url)
+                    }
                     serviceDialog.let { d ->
                         if (d.isShowing()) {
                             d.dismiss()
@@ -453,9 +454,9 @@ class MainActivity :
     fun removePkg(pkg: String) {
         val pkgSet = NotificationListener.getPkgSet(this).toMutableSet()
         pkgSet.remove(pkg)
-        val editor = getSharedPreferences(PREF, 0).edit()
-        editor.putStringSet(KEY_PKGS, pkgSet)
-        editor.commit()
+        getSharedPreferences(PREF, 0).edit {
+            putStringSet(KEY_PKGS, pkgSet)
+        }
     }
 
     fun refreshData() {

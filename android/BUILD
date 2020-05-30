@@ -23,6 +23,7 @@ kt_android_library(
     deps = [
         "@maven//:androidx_appcompat_appcompat",
         "@maven//:androidx_cardview_cardview",
+        "@maven//:androidx_core_core_ktx",
         "@maven//:androidx_recyclerview_recyclerview",
         "@maven//:com_google_android_gms_play_services_cronet",
         "@maven//:org_chromium_net_cronet_fallback",

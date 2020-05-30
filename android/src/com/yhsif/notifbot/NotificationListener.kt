@@ -15,6 +15,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.edit
 import java.security.SecureRandom
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -211,11 +212,11 @@ class NotificationListener : NotificationListenerService() {
             if (lastLabel == label && lastText == text) {
                 return true
             }
-            val editor = pref.edit()
-            editor.clear()
-            editor.putString(KEY_LABEL, label)
-            editor.putString(KEY_TEXT, text)
-            editor.commit()
+            pref.edit {
+                clear()
+                putString(KEY_LABEL, label)
+                putString(KEY_TEXT, text)
+            }
         }
         return false
     }
@@ -224,9 +225,9 @@ class NotificationListener : NotificationListenerService() {
         val map = retryQueueLock.withLock {
             val pref = getSharedPreferences(PREF_RETRY, 0)
             val map = pref.getAll()
-            val editor = pref.edit()
-            editor.clear()
-            editor.commit()
+            pref.edit {
+                clear()
+            }
             map
         }
         var result: MutableList<Triple<Long, String, String>> = mutableListOf()
@@ -245,13 +246,13 @@ class NotificationListener : NotificationListenerService() {
             override fun doInBackground(vararg unused: Unit) {
                 retryQueueLock.withLock {
                     val pref = getSharedPreferences(PREF_RETRY, 0)
-                    val editor = pref.edit()
                     var key = generateKey(time, label)
                     while (pref.contains(key)) {
                         key = generateKey(time, label)
                     }
-                    editor.putString(key, text)
-                    editor.commit()
+                    pref.edit {
+                        putString(key, text)
+                    }
                 }
             }
         }
