@@ -2,9 +2,7 @@ package com.yhsif.notifbot
 
 import android.content.Context
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Handler
-import android.util.Log
 
 import com.google.android.gms.net.CronetProviderInstaller
 import com.google.android.gms.tasks.Tasks
@@ -27,8 +25,6 @@ class HttpSender(
 ) : UrlRequest.Callback() {
 
   companion object {
-    private const val TAG = "NOTIFBOT_CRONET_DEBUG"
-
     private const val KEY_LABEL = "label"
     private const val KEY_MSG = "msg"
 
@@ -43,11 +39,6 @@ class HttpSender(
         Tasks.await(CronetProviderInstaller.installProvider(context))
         builder = CronetEngine.Builder(context)
       } catch (e: ExecutionException) {
-        Log.d(
-          TAG,
-          "Failed to init CronetEngine from gms",
-          if (e.cause != null) { e.cause } else { e }
-        )
         builder = JavaCronetProvider(context).createBuilder()
       }
       builder.enableHttp2(true).enableQuic(true).build()
@@ -88,7 +79,6 @@ class HttpSender(
             executor
           )
           reqBuilder.build().start()
-          Log.d(TAG, "started")
         }
       )
     }
@@ -101,7 +91,6 @@ class HttpSender(
             HttpSender({}, onFailure, {}),
             executor
           ).build().start()
-          Log.d(TAG, "started")
         }
       )
     }
@@ -116,7 +105,6 @@ class HttpSender(
   }
 
   override fun onRedirectReceived(req: UrlRequest, info: UrlResponseInfo?, newUrl: String) {
-    Log.d(TAG, "onRedirectReceived: new url: $newUrl")
     // Never follow redirects, but treat it as success
     req.cancel()
     runCallbackOnUiThread(onSuccess)
@@ -124,7 +112,6 @@ class HttpSender(
 
   override fun onResponseStarted(req: UrlRequest, info: UrlResponseInfo?) {
     val code = info?.getHttpStatusCode()
-    Log.d(TAG, "onResponseStarted: code: $code")
     if (code != null && code >= 200 && code < 400) {
       runCallbackOnUiThread(onSuccess)
     } else {
@@ -134,20 +121,13 @@ class HttpSender(
   }
 
   override fun onFailed(req: UrlRequest, info: UrlResponseInfo?, e: CronetException) {
-    Log.d(TAG, "onFailed", e)
     runCallbackOnUiThread(onNetFail)
   }
 
   // We don't care about the following functions
-  override fun onReadCompleted(req: UrlRequest, info: UrlResponseInfo?, buf: ByteBuffer) {
-    Log.d(TAG, "onReadCompleted")
-  }
+  override fun onReadCompleted(req: UrlRequest, info: UrlResponseInfo?, buf: ByteBuffer) {}
 
-  override fun onSucceeded(req: UrlRequest, info: UrlResponseInfo?) {
-    Log.d(TAG, "onSucceeded")
-  }
+  override fun onSucceeded(req: UrlRequest, info: UrlResponseInfo?) {}
 
-  override fun onCanceled(req: UrlRequest, info: UrlResponseInfo?) {
-    Log.d(TAG, "onCanceled")
-  }
+  override fun onCanceled(req: UrlRequest, info: UrlResponseInfo?) {}
 }
