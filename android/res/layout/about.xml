@@ -7,7 +7,7 @@
     >
   <ImageView
       android:id="@+id/about_icon"
-      android:src="@mipmap/icon"
+      android:src="@drawable/icon"
       android:layout_width="96dp"
       android:layout_height="96dp"
       android:layout_alignParentLeft="true"
