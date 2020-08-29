@@ -5,15 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-  <androidx.appcompat.widget.Toolbar
+  <com.google.android.material.appbar.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
+        app:title="@string/app_name"
+        app:menu="@menu/main"
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+      />
+  </com.google.android.material.appbar.AppBarLayout>
+  <!-- androidx.appcompat.widget.Toolbar
       android:id="@+id/app_bar"
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
       android:background="?attr/colorPrimary"
       android:elevation="4dp"
-      android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-      app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    />
+      android:theme="@style/ThemeOverlay.MaterialComponents.DayNight.ActionBar"
+      app:popupTheme="@style/ThemeOverlay.MaterialComponents.DayNight"
+    / -->
   <TextView
       android:id="@+id/hint"
       android:layout_width="match_parent"

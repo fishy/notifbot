@@ -3,7 +3,7 @@
   <item name="primary" type="color">#5C6BC0</item>
   <item name="primary_dark" type="color">#1A237E</item>
   <item name="accent" type="color">#FF9100</item>
-  <item name="even_background" type="color">#B0BEC5</item>
-  <item name="odd_background" type="color">#CFD8DC</item>
+  <item name="even_background" type="color">#78909C</item>
+  <item name="odd_background" type="color">#607D8B</item>
   <item name="adaptive_icon_background" type="color">#5C6BC0</item>
 </resources>
