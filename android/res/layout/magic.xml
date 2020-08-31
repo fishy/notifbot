@@ -12,6 +12,7 @@
       android:layout_height="wrap_content"
       android:padding="@dimen/margin_half"
       android:textAppearance="@android:style/TextAppearance.Medium"
+      android:textIsSelectable="true"
     />
   <LinearLayout
       android:orientation="horizontal"
