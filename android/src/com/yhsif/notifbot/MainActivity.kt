@@ -32,7 +32,8 @@ import kotlin.text.Regex
 
 class MainActivity :
     AppCompatActivity(),
-    View.OnClickListener, TextView.OnEditorActionListener {
+    View.OnClickListener,
+    TextView.OnEditorActionListener {
 
     companion object {
         const val PREF = "com.yhsif.notifbot"
@@ -156,10 +157,12 @@ class MainActivity :
                         .setCancelable(true)
                         .setIcon(R.mipmap.icon)
                         .setTitle(ctx.getString(R.string.service_failed_title))
-                        .setMessage(ctx.getString(
-                            R.string.service_failed_text,
-                            ctx.getString(android.R.string.ok)
-                        ))
+                        .setMessage(
+                            ctx.getString(
+                                R.string.service_failed_text,
+                                ctx.getString(android.R.string.ok)
+                            )
+                        )
                         .setPositiveButton(
                             android.R.string.ok,
                             DialogInterface.OnClickListener() { dialog, _ ->
@@ -271,9 +274,11 @@ class MainActivity :
             .setCancelable(true)
             .setIcon(R.mipmap.icon)
             .setTitle(getString(R.string.no_service))
-            .setMessage(getString(
-                R.string.init_service_text,
-                getString(android.R.string.ok))
+            .setMessage(
+                getString(
+                    R.string.init_service_text,
+                    getString(android.R.string.ok)
+                )
             )
             .setPositiveButton(
                 android.R.string.ok,
@@ -333,9 +338,11 @@ class MainActivity :
                         )
                     }
                 )
-                .setOnCancelListener(DialogInterface.OnCancelListener() { dialog ->
-                    onCancel(dialog)
-                })
+                .setOnCancelListener(
+                    DialogInterface.OnCancelListener() { dialog ->
+                        onCancel(dialog)
+                    }
+                )
                 .create()
                 .show()
         } else if (checkService) {
@@ -372,8 +379,13 @@ class MainActivity :
                     tv.setMovementMethod(LinkMovementMethod.getInstance())
                 }
                 view.findViewById<TextView>(R.id.about_title).setText(
-                    getString(R.string.about_title, getString(R.string.app_name)
-                ))
+                    getString(
+                        R.string.about_title,
+                        getString(
+                            R.string.app_name
+                        )
+                    )
+                )
                 AlertDialog.Builder(this)
                     .setTitle(R.string.about)
                     .setView(view)
@@ -403,10 +415,12 @@ class MainActivity :
                     .setCancelable(true)
                     .setIcon(data.icon)
                     .setTitle(R.string.dialog_title)
-                    .setMessage(getString(
-                        R.string.dialog_text,
-                        data.name,
-                        getString(R.string.app_name))
+                    .setMessage(
+                        getString(
+                            R.string.dialog_text,
+                            data.name,
+                            getString(R.string.app_name)
+                        )
                     )
                     .setNegativeButton(
                         R.string.dialog_no,

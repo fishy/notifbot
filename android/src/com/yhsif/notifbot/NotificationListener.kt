@@ -50,7 +50,8 @@ class NotificationListener : NotificationListenerService() {
                 channel.setDescription(ctx.getString(R.string.channel_desc))
                 channel.setShowBadge(false)
                 val manager = ctx.getSystemService(
-                    Context.NOTIFICATION_SERVICE) as NotificationManager
+                    Context.NOTIFICATION_SERVICE
+                ) as NotificationManager
                 manager.createNotificationChannel(channel)
             }
             CHANNEL_ID
@@ -126,13 +127,13 @@ class NotificationListener : NotificationListenerService() {
         val intent = Intent(Intent.ACTION_VIEW, MainActivity.TELEGRAM_URI)
         ctx = this
         val notifBuilder = NotificationCompat.Builder(this, channelId)
-        .setSmallIcon(R.drawable.icon_notif)
-        .setCategory(Notification.CATEGORY_ERROR)
-        .setContentTitle(getString(R.string.no_service))
-        .setContentText(getString(R.string.notif_text))
-        .setAutoCancel(true)
-        .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
-        .setVisibility(Notification.VISIBILITY_PUBLIC)
+            .setSmallIcon(R.drawable.icon_notif)
+            .setCategory(Notification.CATEGORY_ERROR)
+            .setContentTitle(getString(R.string.no_service))
+            .setContentText(getString(R.string.notif_text))
+            .setAutoCancel(true)
+            .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
         NotificationManagerCompat.from(this).notify(NOTIF_ID, notifBuilder.build())
     }
 
@@ -189,8 +190,10 @@ class NotificationListener : NotificationListenerService() {
             }
             // Sanity check
             val uri = Uri.parse(url)
-            if (uri.getScheme() == MainActivity.SCHEME_HTTPS &&
-                    uri.getHost() == MainActivity.SERVICE_HOST) {
+            if (
+                uri.getScheme() == MainActivity.SCHEME_HTTPS &&
+                uri.getHost() == MainActivity.SERVICE_HOST
+            ) {
                 HttpSender.send(url, label, text, onSuccess, onFailure, onNetFail)
             } else {
                 onFailure()
@@ -268,8 +271,10 @@ class NotificationListener : NotificationListenerService() {
         val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
         // Sanity check
         val uri = Uri.parse(url)
-        if (uri.getScheme() == MainActivity.SCHEME_HTTPS &&
-                uri.getHost() == MainActivity.SERVICE_HOST) {
+        if (
+            uri.getScheme() == MainActivity.SCHEME_HTTPS &&
+            uri.getHost() == MainActivity.SERVICE_HOST
+        ) {
             for (tuple in getAndClearRetryQueue()) {
                 val time = tuple.first
                 val label = tuple.second

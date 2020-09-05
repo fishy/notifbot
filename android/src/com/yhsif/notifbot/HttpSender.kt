@@ -5,16 +5,16 @@ import android.net.Uri
 import android.os.Handler
 import com.google.android.gms.net.CronetProviderInstaller
 import com.google.android.gms.tasks.Tasks
-import java.nio.ByteBuffer
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import org.chromium.net.CronetEngine
 import org.chromium.net.CronetException
 import org.chromium.net.UploadDataProviders
 import org.chromium.net.UrlRequest
 import org.chromium.net.UrlResponseInfo
 import org.chromium.net.impl.JavaCronetProvider
+import java.nio.ByteBuffer
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 class HttpSender(
     val onSuccess: () -> Unit,
