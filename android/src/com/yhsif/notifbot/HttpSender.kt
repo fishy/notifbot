@@ -29,7 +29,7 @@ class HttpSender(
         private val executor: Executor = Executors.newCachedThreadPool()
 
         private lateinit var context: Context
-        private lateinit var uiHandler: Handler
+        private var uiHandler: Handler = Handler()
 
         private val engine: CronetEngine by lazy {
             lateinit var builder: CronetEngine.Builder
@@ -43,13 +43,13 @@ class HttpSender(
         }
 
         fun initEngine(ctx: Context) {
-            if (!::uiHandler.isInitialized) {
+            if (!::context.isInitialized) {
                 context = ctx
-                uiHandler = Handler()
             }
         }
 
         fun send(
+            ctx: Context,
             url: String,
             label: String,
             msg: String,
@@ -57,6 +57,7 @@ class HttpSender(
             onFailure: () -> Unit,
             onNetFail: () -> Unit
         ) {
+            initEngine(ctx)
             executor.execute(
                 Runnable() {
                     val body = Uri.Builder()

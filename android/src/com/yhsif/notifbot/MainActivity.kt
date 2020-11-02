@@ -137,6 +137,7 @@ class MainActivity :
             }
             val url = "$SCHEME_HTTPS://${uri.getHost()}${uri.getPath()}"
             HttpSender.send(
+                ctx,
                 url,
                 ctx.getString(R.string.app_name),
                 ctx.getString(R.string.service_succeed),

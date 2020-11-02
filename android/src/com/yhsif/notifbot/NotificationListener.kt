@@ -194,7 +194,7 @@ class NotificationListener : NotificationListenerService() {
                 uri.getScheme() == MainActivity.SCHEME_HTTPS &&
                 uri.getHost() == MainActivity.SERVICE_HOST
             ) {
-                HttpSender.send(url, label, text, onSuccess, onFailure, onNetFail)
+                HttpSender.send(this, url, label, text, onSuccess, onFailure, onNetFail)
             } else {
                 onFailure()
             }
@@ -280,7 +280,7 @@ class NotificationListener : NotificationListenerService() {
                 val label = tuple.second
                 val text = tuple.third
                 val onNetFail = { addToRetryQueue(time, label, text) }
-                HttpSender.send(url, label, text, onSuccess, onFailure, onNetFail)
+                HttpSender.send(this, url, label, text, onSuccess, onFailure, onNetFail)
             }
         } else {
             onFailure()
