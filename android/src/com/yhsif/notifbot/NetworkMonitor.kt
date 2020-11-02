@@ -7,29 +7,29 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 
 class NetworkMonitor(
-    listener: NotificationListener
+  listener: NotificationListener
 ) : ConnectivityManager.NetworkCallback() {
-    val listener = listener
+  val listener = listener
 
-    val Req = NetworkRequest.Builder()
-        .addTransportType(NetworkCapabilities.TRANSPORT_BLUETOOTH)
-        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-        .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-        .addTransportType(NetworkCapabilities.TRANSPORT_VPN)
-        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-        .build()
+  val Req = NetworkRequest.Builder()
+    .addTransportType(NetworkCapabilities.TRANSPORT_BLUETOOTH)
+    .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+    .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+    .addTransportType(NetworkCapabilities.TRANSPORT_VPN)
+    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+    .build()
 
-    fun enable() {
-        val cm = listener.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.registerNetworkCallback(Req, this)
-    }
+  fun enable() {
+    val cm = listener.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    cm.registerNetworkCallback(Req, this)
+  }
 
-    fun disable() {
-        val cm = listener.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.unregisterNetworkCallback(this)
-    }
+  fun disable() {
+    val cm = listener.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    cm.unregisterNetworkCallback(this)
+  }
 
-    override fun onAvailable(network: Network?) {
-        listener.retry()
-    }
+  override fun onAvailable(network: Network?) {
+    listener.retry()
+  }
 }

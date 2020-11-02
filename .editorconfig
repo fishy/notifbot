@@ -13,6 +13,3 @@ continuation_indent_size = 2
 
 [*.go]
 indent_style = tab
-
-[*.kt]
-indent_size = 4
