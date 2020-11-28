@@ -1,1 +1,6 @@
+# Make sure that the python scripts in the toolchain don't complain about python
+# being python3.
+build --extra_toolchains=@rules_python//python:autodetecting_toolchain_nonstrict
+mobile-install --extra_toolchains=@rules_python//python:autodetecting_toolchain_nonstrict
+
 build:release -c opt
