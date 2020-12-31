@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3"
@@ -15,7 +14,6 @@ import (
 
 func sendMetrics(
 	ctx context.Context,
-	logger *log.Logger,
 	client *monitoring.MetricClient,
 	path string,
 	point *monitoringpb.Point,
@@ -40,32 +38,30 @@ func sendMetrics(
 			},
 		},
 	}); err != nil {
-		return fmt.Errorf("metrics: failed to write time series data: %v", err)
+		return fmt.Errorf("metrics: failed to write time series data: %w", err)
 	}
 
 	return nil
 }
 
-func sendMessageMetrics(data chatCounterMapType, logger *log.Logger) error {
+func sendMessageMetrics(ctx context.Context, data chatCounterMapType) error {
 	if len(data) == 0 {
 		return nil
 	}
 
 	start := time.Now()
 	defer func() {
-		logger.Printf(
-			"sendMessageMetrics for %d took %v",
-			len(data),
-			time.Since(start),
+		l(ctx).Infow(
+			"sendMessageMetrics done",
+			"size", len(data),
+			"took", time.Since(start),
 		)
 	}()
-
-	ctx := context.Background()
 
 	// Creates a client.
 	client, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
-		return fmt.Errorf("metrics: failed to create client: %v", err)
+		return fmt.Errorf("metrics: failed to create client: %w", err)
 	}
 
 	for id, count := range data {
@@ -84,7 +80,6 @@ func sendMessageMetrics(data chatCounterMapType, logger *log.Logger) error {
 
 		if err := sendMetrics(
 			ctx,
-			logger,
 			client,
 			"custom.googleapis.com/messages/count",
 			dataPoint,
@@ -98,7 +93,7 @@ func sendMessageMetrics(data chatCounterMapType, logger *log.Logger) error {
 
 	// Closes the client and flushes the data to Stackdriver.
 	if err := client.Close(); err != nil {
-		return fmt.Errorf("metrics: failed to close client: %v", err)
+		return fmt.Errorf("metrics: failed to close client: %w", err)
 	}
 
 	return nil

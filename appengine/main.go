@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -48,18 +47,15 @@ var urlRegexp = regexp.MustCompile(clientPrefix + `(\-?\d+)/(.+)`)
 
 var dsClient *datastore.Client
 
-// AppEngine log will auto add date and time, so there's no need to double log
-// them in our own logger.
-var (
-	infoLog  = log.New(os.Stdout, "I ", log.Lshortfile)
-	warnLog  = log.New(os.Stderr, "W ", log.Lshortfile)
-	errorLog = log.New(os.Stderr, "E ", log.Lshortfile)
-)
-
 func main() {
+	initLogger()
+
 	ctx := context.Background()
 	if err := initDatastoreClient(ctx); err != nil {
-		errorLog.Fatalf("Failed to get data store client: %v", err)
+		l(ctx).Fatalw(
+			"Failed to get data store client",
+			"err", err,
+		)
 	}
 	initBot(ctx)
 	initRedis(ctx)
@@ -74,11 +70,20 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		infoLog.Printf("Defaulting to port %s", port)
+		l(ctx).Warnw(
+			"Using default port",
+			"port", port,
+		)
 	}
-	infoLog.Printf("Listening on port %s", port)
+	l(ctx).Infow(
+		"Started listening",
+		"port", port,
+	)
 	go chatCounterMetricsLoop()
-	infoLog.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), mux))
+	l(ctx).Errorw(
+		"HTTP server stopped",
+		"err", http.ListenAndServe(fmt.Sprintf(":%s", port), mux),
+	)
 }
 
 func initDatastoreClient(ctx context.Context) error {
@@ -97,7 +102,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
+	ctx := logContext(r)
 
 	if !getToken().ValidateWebhookURL(r) {
 		http.NotFound(w, r)
@@ -105,14 +110,17 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Body == nil {
-		errorLog.Print("Empty webhook request body")
+		l(ctx).Error("Empty webhook request body")
 		http.NotFound(w, r)
 		return
 	}
 
 	update := new(Update)
 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		errorLog.Printf("Unable to decode json: %v", err)
+		l(ctx).Errorw(
+			"Unable to decode json",
+			"err", err,
+		)
 		http.NotFound(w, r)
 		return
 	}
@@ -187,7 +195,7 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		msg = fmt.Sprintf(msgTemplate, label, msg)
 	}
 	if getToken().SendMessage(ctx, id, msg) == http.StatusUnauthorized {
-		infoLog.Print("Invalidating secret cache and retrying...")
+		l(ctx).Info("Invalidating secret cache and retrying...")
 		initBot(ctx)
 		getToken().SendMessage(ctx, id, msg)
 	}

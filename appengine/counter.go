@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"sync"
 	"time"
 )
@@ -33,11 +34,16 @@ func (c *chatCounterType) Inc(id int64) {
 var chatCounter chatCounterType
 
 func chatCounterMetricsLoop() {
+	ctx := context.Background()
 	chatCounter.Get()
 	for range time.Tick(tickerTime) {
 		data := chatCounter.Get()
-		if err := sendMessageMetrics(data, infoLog); err != nil {
-			errorLog.Printf("%v\ndata: %v", err, data)
+		if err := sendMessageMetrics(ctx, data); err != nil {
+			l(ctx).Errorw(
+				"sendMessageMetrics failed",
+				"data", data,
+				"err", err,
+			)
 		}
 	}
 }

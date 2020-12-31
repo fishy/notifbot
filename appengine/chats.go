@@ -52,7 +52,11 @@ func (e *EntityChat) SaveDatastore(ctx context.Context) error {
 func (e *EntityChat) Delete(ctx context.Context) {
 	key := e.datastoreKey()
 	if err := dsClient.Delete(ctx, key); err != nil {
-		errorLog.Printf("Failed to delete datastore key %v: %v", key, err)
+		l(ctx).Errorw(
+			"Failed to delete datastore key",
+			"key", key,
+			"err", err,
+		)
 	}
 	var err error
 	redisKey := e.getKey()
@@ -62,7 +66,11 @@ func (e *EntityChat) Delete(ctx context.Context) {
 		err = ErrNoRedis
 	}
 	if err != nil {
-		errorLog.Printf("Failed to delete redis key %v: %v", redisKey, err)
+		l(ctx).Errorw(
+			"Failed to delete redis key",
+			"key", redisKey,
+			"err", err,
+		)
 	}
 }
 
@@ -90,16 +98,28 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 			return e
 		}
 		if !isNotExist(err) {
-			errorLog.Printf("Failed to get redis key %s: %v", key, err)
+			l(ctx).Errorw(
+				"Failed to get redis key",
+				"key", key,
+				"err", err,
+			)
 		}
 	}
 	key := e.datastoreKey()
 	if err := dsClient.Get(ctx, key, e); err != nil {
-		errorLog.Printf("Failed to get datastore key %v: %v", key, err)
+		l(ctx).Errorw(
+			"Failed to get datastore key",
+			"key", key,
+			"err", err,
+		)
 		return nil
 	}
 	if err := e.SaveMemcache(); err != nil {
-		errorLog.Printf("Failed to save redis key %s: %v", e.getKey(), err)
+		l(ctx).Errorw(
+			"Failed to save redis key",
+			"key", e.getKey(),
+			"err", err,
+		)
 	}
 	return e
 }
@@ -114,23 +134,31 @@ func NewChat(ctx context.Context, id int64) *EntityChat {
 		Token: randomString(ctx, tokenLength),
 	}
 	if err := e.SaveMemcache(); err != nil {
-		errorLog.Printf("Failed to save redis chat %d: %v", id, err)
+		l(ctx).Errorw(
+			"Failed to save chat to redis",
+			"id", id,
+			"err", err,
+		)
 	}
 	if err := e.SaveDatastore(ctx); err != nil {
-		errorLog.Printf("Failed to save datastore chat %d: %v", id, err)
+		l(ctx).Errorw(
+			"Failed to save chat to datastore",
+			"id", id,
+			"err", err,
+		)
 	}
 	return e
 }
 
-func randomString(ctx context.Context, len int) string {
-	buf := make([]byte, len)
+func randomString(ctx context.Context, size int) string {
+	buf := make([]byte, size)
 	n, err := rand.Read(buf)
-	if err != nil || n != len {
-		errorLog.Printf(
-			"Failed to generate random string: read %d/%d, err = %v",
-			n,
-			len,
-			err,
+	if err != nil || n != size {
+		l(ctx).Errorw(
+			"Failed to generate random string",
+			"read", n,
+			"want", size,
+			"err", err,
 		)
 	}
 	return hex.EncodeToString(buf)

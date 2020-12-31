@@ -17,12 +17,19 @@ func getRedis() (client *redis.Client, ok bool) {
 func initRedis(ctx context.Context) {
 	redisURL, err := getSecret(ctx, redisID)
 	if err != nil {
-		errorLog.Printf("Failed to init redis secret: %v", err)
+		l(ctx).Errorw(
+			"Failed to init redis secret",
+			"err", err,
+		)
 		return
 	}
 	opt, err := redis.ParseURL(redisURL)
 	if err != nil {
-		errorLog.Printf("Failed to parse redis url %q: %v", redisURL, err)
+		l(ctx).Errorw(
+			"Failed to parse redis url",
+			"url", redisURL,
+			"err", err,
+		)
 		return
 	}
 	redisValue.Store(redis.NewClient(opt))
