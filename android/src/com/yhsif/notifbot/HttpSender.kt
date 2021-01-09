@@ -6,7 +6,7 @@ import com.google.android.gms.net.CronetProviderInstaller
 import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.chromium.net.CronetEngine
@@ -17,8 +17,6 @@ import org.chromium.net.UrlResponseInfo
 import org.chromium.net.impl.JavaCronetProvider
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutionException
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 class HttpSender(
   val onSuccess: () -> Unit,
@@ -29,9 +27,6 @@ class HttpSender(
   companion object {
     private const val KEY_LABEL = "label"
     private const val KEY_MSG = "msg"
-
-    private val executor: Executor = Executors.newCachedThreadPool()
-    private val ioDispatcher = executor.asCoroutineDispatcher()
 
     private lateinit var context: Context
 
@@ -62,7 +57,7 @@ class HttpSender(
       onNetFail: () -> Unit
     ) {
       initEngine(ctx)
-      CoroutineScope(ioDispatcher).launch {
+      CoroutineScope(Dispatchers.IO).launch {
         val body = Uri.Builder()
           .appendQueryParameter(KEY_LABEL, label)
           .appendQueryParameter(KEY_MSG, msg)
@@ -72,28 +67,26 @@ class HttpSender(
         val reqBuilder = engine.newUrlRequestBuilder(
           url,
           HttpSender(onSuccess, onFailure, onNetFail),
-          executor
+          Dispatchers.IO.asExecutor(),
         )
         reqBuilder.setHttpMethod("POST")
         reqBuilder.addHeader("Content-Type", "application/x-www-form-urlencoded")
         reqBuilder.setUploadDataProvider(
           UploadDataProviders.create(body.toByteArray(), 0, body.length),
-          executor
+          Dispatchers.IO.asExecutor(),
         )
         reqBuilder.build().start()
       }
     }
 
     fun checkUrl(url: String, onFailure: () -> Unit) {
-      executor.execute(
-        Runnable() {
-          engine.newUrlRequestBuilder(
-            url,
-            HttpSender({}, onFailure, {}),
-            executor
-          ).build().start()
-        }
-      )
+      CoroutineScope(Dispatchers.IO).launch {
+        engine.newUrlRequestBuilder(
+          url,
+          HttpSender({}, onFailure, {}),
+          Dispatchers.IO.asExecutor(),
+        ).build().start()
+      }
     }
   }
 
@@ -113,7 +106,7 @@ class HttpSender(
       } else {
         onFailure()
       }
-      withContext(ioDispatcher) {
+      withContext(Dispatchers.IO) {
         req.cancel()
       }
     }
