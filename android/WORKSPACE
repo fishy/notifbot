@@ -58,8 +58,8 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 rules_pkg_dependencies()
 
 
-RULES_JVM_EXTERNAL_TAG = "3.3"
-RULES_JVM_EXTERNAL_SHA = "d85951a92c0908c80bd8551002d66cb23c3434409c814179c0ff026b53544dab"
+RULES_JVM_EXTERNAL_TAG = "4.0"
+RULES_JVM_EXTERNAL_SHA = "31701ad93dbfe544d597dbe62c9a1fdd76d81d8a9150c2bf1ecf928ecdf97169"
 
 http_archive(
     name = "rules_jvm_external",
@@ -94,18 +94,17 @@ load("@maven//:defs.bzl", "pinned_maven_install")
 pinned_maven_install()
 
 
-RULES_KOTLIN_TAG = "legacy-1.4.0-rc4"
-RULES_KOTLIN_SHA = "7aa74f8a0fbfeb136767c1c56943163d5835cfa0db6fc2b3c2e546197cf4dbcb"
+RULES_KOTLIN_TAG = "v1.5.0-alpha-3"
+RULES_KOTLIN_SHA = "eeae65f973b70896e474c57aa7681e444d7a5446d9ec0a59bb88c59fc263ff62"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
-    strip_prefix = "rules_kotlin-%s" % RULES_KOTLIN_TAG,
     urls = [
-        "https://github.com/bazelbuild/rules_kotlin/archive/%s.tar.gz" % RULES_KOTLIN_TAG,
+        "https://github.com/bazelbuild/rules_kotlin/releases/download/%s/rules_kotlin_release.tgz" % RULES_KOTLIN_TAG,
     ],
     sha256 = RULES_KOTLIN_SHA,
 )
 
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_register_toolchains")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories")
 kotlin_repositories()
-kt_register_toolchains()
+register_toolchains("//:kotlin_toolchain")
