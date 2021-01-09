@@ -3,6 +3,7 @@ package com.yhsif.notifbot
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import com.google.android.gms.net.CronetProviderInstaller
 import com.google.android.gms.tasks.Tasks
 import org.chromium.net.CronetEngine
@@ -29,7 +30,7 @@ class HttpSender(
     private val executor: Executor = Executors.newCachedThreadPool()
 
     private lateinit var context: Context
-    private var uiHandler: Handler = Handler()
+    private var uiHandler: Handler = Handler(Looper.getMainLooper())
 
     private val engine: CronetEngine by lazy {
       lateinit var builder: CronetEngine.Builder

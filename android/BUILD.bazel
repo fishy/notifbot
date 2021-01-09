@@ -39,5 +39,7 @@ kt_android_library(
         "@maven//:com_google_android_gms_play_services_cronet",
         "@maven//:com_google_android_material_material",
         "@maven//:org_chromium_net_cronet_fallback",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_android",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
     ],
 )

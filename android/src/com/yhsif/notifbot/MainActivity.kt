@@ -59,22 +59,13 @@ class MainActivity :
 
     lateinit var serviceDialog: AlertDialog
 
-    fun showToast(ctx: Context, text: String, icon: Drawable? = null) {
-      val toast = Toast.makeText(ctx, text, Toast.LENGTH_LONG)
-      toast.getView()?.findViewById<TextView>(android.R.id.message)?.let { v ->
-        val iconSize = ctx.getResources()
-          .getDimensionPixelSize(R.dimen.toast_icon_size)
-        val appIcon = ctx.getDrawable(R.mipmap.icon)
-        appIcon?.setBounds(0, 0, iconSize, iconSize)
-        icon?.setBounds(0, 0, iconSize, iconSize)
-
-        // App icon on the right and custom icon on the left
-        v.setCompoundDrawables(icon, null, appIcon, null)
-        v.setCompoundDrawablePadding(
-          ctx.getResources().getDimensionPixelSize(R.dimen.toast_padding)
-        )
-      }
-      toast.show()
+    fun showToast(ctx: Context, text: String) {
+      val msg = ctx.getString(
+        R.string.toast_text_template,
+        ctx.getString(R.string.app_name),
+        text,
+      )
+      Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
     }
 
     fun handleTextPackage(ctx: Context, text: String): Boolean {
@@ -104,19 +95,8 @@ class MainActivity :
       val name = NotificationListener.getPackageName(ctx, pkg, false)
       val pkgSet = NotificationListener.getPkgSet(ctx)
 
-      var icon: Drawable? = null
-      ctx.getPackageManager().let { pm ->
-        try {
-          pm.getApplicationInfo(pkg, 0).let { appInfo ->
-            icon = pm.getApplicationIcon(appInfo)
-          }
-        } catch (_: NameNotFoundException) {
-          // do nothing
-        }
-      }
-
       if (pkgSet.contains(pkg)) {
-        showToast(ctx, ctx.getString(R.string.receiver_pkg_exists, name), icon)
+        showToast(ctx, ctx.getString(R.string.receiver_pkg_exists, name))
         return
       }
       val mutableSet = pkgSet.toMutableSet()
@@ -124,7 +104,7 @@ class MainActivity :
       ctx.getSharedPreferences(PREF, 0).edit {
         putStringSet(KEY_PKGS, mutableSet)
       }
-      showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name), icon)
+      showToast(ctx, ctx.getString(R.string.receiver_added_pkg, name))
     }
 
     fun illegalText(ctx: Context, text: String) {

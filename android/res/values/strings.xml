@@ -6,6 +6,7 @@
 
   <string name="notif_reply">Quick reply</string>
 
+  <string name="toast_text_template">%1$s: %2$s</string>
   <string name="receiver_wrong_text">Cannot find app from \"%1$s\".</string>
   <string name="receiver_added_pkg">Added app %1$s.</string>
   <string name="receiver_pkg_exists">App %1$s was already added.</string>

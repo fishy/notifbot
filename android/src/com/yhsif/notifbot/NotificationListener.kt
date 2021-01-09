@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
@@ -16,6 +15,10 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.security.SecureRandom
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -118,6 +121,7 @@ class NotificationListener : NotificationListenerService() {
     }
   }
 
+  val uiScope = CoroutineScope(Dispatchers.Main)
   val retryQueueLock = ReentrantLock()
   val dupCheckLock = ReentrantLock()
   val rand = SecureRandom()
@@ -245,21 +249,24 @@ class NotificationListener : NotificationListenerService() {
   }
 
   fun addToRetryQueue(time: Long, label: String, text: String) {
-    val task = object : AsyncTask<Unit, Unit, Unit>() {
-      override fun doInBackground(vararg unused: Unit) {
-        retryQueueLock.withLock {
-          val pref = getSharedPreferences(PREF_RETRY, 0)
-          var key = generateKey(time, label)
-          while (pref.contains(key)) {
-            key = generateKey(time, label)
-          }
-          pref.edit {
-            putString(key, text)
-          }
+    uiScope.launch {
+      addToRetryQueueCoroutine(time, label, text)
+    }
+  }
+
+  private suspend fun addToRetryQueueCoroutine(time: Long, label: String, text: String) {
+    withContext(Dispatchers.Default) {
+      retryQueueLock.withLock {
+        val pref = getSharedPreferences(PREF_RETRY, 0)
+        var key = generateKey(time, label)
+        while (pref.contains(key)) {
+          key = generateKey(time, label)
+        }
+        pref.edit {
+          putString(key, text)
         }
       }
     }
-    task.execute()
   }
 
   fun generateKey(time: Long, label: String): String {

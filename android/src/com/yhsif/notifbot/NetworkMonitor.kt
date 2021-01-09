@@ -29,7 +29,7 @@ class NetworkMonitor(
     cm.unregisterNetworkCallback(this)
   }
 
-  override fun onAvailable(network: Network?) {
+  override fun onAvailable(network: Network) {
     listener.retry()
   }
 }
