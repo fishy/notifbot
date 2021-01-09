@@ -2,10 +2,13 @@ package com.yhsif.notifbot
 
 import android.content.Context
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import com.google.android.gms.net.CronetProviderInstaller
 import com.google.android.gms.tasks.Tasks
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.chromium.net.CronetEngine
 import org.chromium.net.CronetException
 import org.chromium.net.UploadDataProviders
@@ -28,9 +31,9 @@ class HttpSender(
     private const val KEY_MSG = "msg"
 
     private val executor: Executor = Executors.newCachedThreadPool()
+    private val ioDispatcher = executor.asCoroutineDispatcher()
 
     private lateinit var context: Context
-    private var uiHandler: Handler = Handler(Looper.getMainLooper())
 
     private val engine: CronetEngine by lazy {
       lateinit var builder: CronetEngine.Builder
@@ -59,28 +62,26 @@ class HttpSender(
       onNetFail: () -> Unit
     ) {
       initEngine(ctx)
-      executor.execute(
-        Runnable() {
-          val body = Uri.Builder()
-            .appendQueryParameter(KEY_LABEL, label)
-            .appendQueryParameter(KEY_MSG, msg)
-            .build()
-            .getEncodedQuery()!!
+      CoroutineScope(ioDispatcher).launch {
+        val body = Uri.Builder()
+          .appendQueryParameter(KEY_LABEL, label)
+          .appendQueryParameter(KEY_MSG, msg)
+          .build()
+          .getEncodedQuery()!!
 
-          val reqBuilder = engine.newUrlRequestBuilder(
-            url,
-            HttpSender(onSuccess, onFailure, onNetFail),
-            executor
-          )
-          reqBuilder.setHttpMethod("POST")
-          reqBuilder.addHeader("Content-Type", "application/x-www-form-urlencoded")
-          reqBuilder.setUploadDataProvider(
-            UploadDataProviders.create(body.toByteArray(), 0, body.length),
-            executor
-          )
-          reqBuilder.build().start()
-        }
-      )
+        val reqBuilder = engine.newUrlRequestBuilder(
+          url,
+          HttpSender(onSuccess, onFailure, onNetFail),
+          executor
+        )
+        reqBuilder.setHttpMethod("POST")
+        reqBuilder.addHeader("Content-Type", "application/x-www-form-urlencoded")
+        reqBuilder.setUploadDataProvider(
+          UploadDataProviders.create(body.toByteArray(), 0, body.length),
+          executor
+        )
+        reqBuilder.build().start()
+      }
     }
 
     fun checkUrl(url: String, onFailure: () -> Unit) {
@@ -94,34 +95,34 @@ class HttpSender(
         }
       )
     }
-
-    private fun runCallbackOnUiThread(callback: () -> Unit) {
-      uiHandler.post(
-        Runnable() {
-          callback()
-        }
-      )
-    }
   }
 
   override fun onRedirectReceived(req: UrlRequest, info: UrlResponseInfo?, newUrl: String) {
     // Never follow redirects, but treat it as success
     req.cancel()
-    runCallbackOnUiThread(onSuccess)
+    CoroutineScope(Dispatchers.Main).launch {
+      onSuccess()
+    }
   }
 
   override fun onResponseStarted(req: UrlRequest, info: UrlResponseInfo?) {
     val code = info?.getHttpStatusCode()
-    if (code != null && code >= 200 && code < 400) {
-      runCallbackOnUiThread(onSuccess)
-    } else {
-      runCallbackOnUiThread(onFailure)
+    CoroutineScope(Dispatchers.Main).launch {
+      if (code != null && code >= 200 && code < 400) {
+        onSuccess()
+      } else {
+        onFailure()
+      }
+      withContext(ioDispatcher) {
+        req.cancel()
+      }
     }
-    req.cancel()
   }
 
   override fun onFailed(req: UrlRequest, info: UrlResponseInfo?, e: CronetException) {
-    runCallbackOnUiThread(onNetFail)
+    CoroutineScope(Dispatchers.Main).launch {
+      onNetFail()
+    }
   }
 
   // We don't care about the following functions
