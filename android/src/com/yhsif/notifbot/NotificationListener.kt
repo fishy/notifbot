@@ -18,6 +18,7 @@ import androidx.core.content.edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.security.SecureRandom
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -35,7 +36,15 @@ class NotificationListener : NotificationListenerService() {
     private const val MAX_RANDOM_INT = 1000000
     private const val CHANNEL_ID = "service_connection_failure"
 
-    private val RE_KEY = Regex("""(\d+)-(.+)-(\d+)""")
+    private val RE_KEY4 = Regex("""(\d+?)-(.+?)-(\d+?)-(.+)""")
+    private val RE_KEY3 = Regex("""(\d+?)-(.+?)-(\d+?)""")
+
+    data class RetryTuple(
+      val time: Long,
+      val label: String,
+      val key: String?,
+      val text: String,
+    )
 
     var connected = false
     var startMain = false
@@ -124,26 +133,27 @@ class NotificationListener : NotificationListenerService() {
   val dupCheckLock = ReentrantLock()
   val rand = SecureRandom()
 
-  val onSuccess = { NotificationListener.cancelTelegramNotif(this) }
-  val onFailure = {
-    val intent = Intent(Intent.ACTION_VIEW, MainActivity.TELEGRAM_URI)
-    ctx = this
-    val notifBuilder = NotificationCompat.Builder(this, channelId)
-      .setSmallIcon(R.drawable.icon_notif)
-      .setCategory(Notification.CATEGORY_ERROR)
-      .setContentTitle(getString(R.string.no_service))
-      .setContentText(getString(R.string.notif_text))
-      .setAutoCancel(true)
-      .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
-      .setVisibility(Notification.VISIBILITY_PUBLIC)
-    NotificationManagerCompat.from(this).notify(NOTIF_ID, notifBuilder.build())
-  }
-
   var lastId: Int = 0
   val monitor: NetworkMonitor by lazy {
     val m = NetworkMonitor(this)
     m.enable()
     m
+  }
+
+  val onFailure: () -> Unit = {
+    GlobalScope.launch(Dispatchers.Main) {
+      val intent = Intent(Intent.ACTION_VIEW, MainActivity.TELEGRAM_URI)
+      ctx = this@NotificationListener
+      val notifBuilder = NotificationCompat.Builder(ctx, channelId)
+        .setSmallIcon(R.drawable.icon_notif)
+        .setCategory(Notification.CATEGORY_ERROR)
+        .setContentTitle(getString(R.string.no_service))
+        .setContentText(getString(R.string.notif_text))
+        .setAutoCancel(true)
+        .setContentIntent(PendingIntent.getActivity(ctx, 0, intent, 0))
+        .setVisibility(Notification.VISIBILITY_PUBLIC)
+      NotificationManagerCompat.from(ctx).notify(NOTIF_ID, notifBuilder.build())
+    }
   }
 
   override fun onListenerConnected() {
@@ -173,32 +183,48 @@ class NotificationListener : NotificationListenerService() {
     if (!connected) {
       return
     }
-    val pkg = sbn.getPackageName().toLowerCase()
-    if (checkPackage(pkgs, pkg, sbn)) {
-      val notif = sbn.getNotification()
-      val label = NotificationListener.getPackageName(this, pkg, true)
-      val text = NotificationListener.getNotifText(notif)
-      if (label == "" || text == "") {
-        return
-      }
-      if (checkDup(label, text)) {
-        return
-      }
+    GlobalScope.launch(Dispatchers.Default) forReturn@{
+      val pkg = sbn.getPackageName().toLowerCase()
+      if (checkPackage(pkgs, pkg, sbn)) {
+        val notif = sbn.getNotification()
+        val label =
+          NotificationListener.getPackageName(this@NotificationListener, pkg, true)
+        val text = NotificationListener.getNotifText(notif)
+        if (label == "" || text == "") {
+          return@forReturn
+        }
+        if (checkDup(label, text)) {
+          return@forReturn
+        }
 
-      val pref = getSharedPreferences(MainActivity.PREF, 0)
-      val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
-      val onNetFail = {
-        addToRetryQueue(System.currentTimeMillis(), label, text)
-      }
-      // Sanity check
-      val uri = Uri.parse(url)
-      if (
-        uri.getScheme() == MainActivity.SCHEME_HTTPS &&
-        uri.getHost() == MainActivity.SERVICE_HOST
-      ) {
-        HttpSender.send(this, url, label, text, onSuccess, onFailure, onNetFail)
-      } else {
-        onFailure()
+        val pref = getSharedPreferences(MainActivity.PREF, 0)
+        val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
+        val onNetFail = {
+          addToRetryQueue(
+            RetryTuple(
+              System.currentTimeMillis(),
+              label,
+              sbn.getKey(),
+              text,
+            ),
+          )
+        }
+        // Sanity check
+        val uri = Uri.parse(url)
+        if (
+          uri.getScheme() == MainActivity.SCHEME_HTTPS &&
+          uri.getHost() == MainActivity.SERVICE_HOST
+        ) {
+          HttpSender.send(
+            this@NotificationListener,
+            url,
+            label,
+            text,
+            onSuccess(sbn.getKey()),
+            onFailure,
+            onNetFail,
+          )
+        }
       }
     }
   }
@@ -226,7 +252,7 @@ class NotificationListener : NotificationListenerService() {
     return false
   }
 
-  fun getAndClearRetryQueue(): List<Triple<Long, String, String>> {
+  suspend fun getAndClearRetryQueue(): List<RetryTuple> {
     val map = retryQueueLock.withLock {
       val pref = getSharedPreferences(PREF_RETRY, 0)
       val map = pref.getAll()
@@ -235,54 +261,98 @@ class NotificationListener : NotificationListenerService() {
       }
       map
     }
-    var result: MutableList<Triple<Long, String, String>> = mutableListOf()
+    var result: MutableList<RetryTuple> = mutableListOf()
     for ((k, v) in map.toSortedMap()) {
-      RE_KEY.matchEntire(k)?.groupValues?.let { group ->
-        val time = group.get(1)
-        val label = group.get(2)
-        result.add(Triple(time.toLong(), label, v as String))
+      val group4 = RE_KEY4.matchEntire(k)?.groupValues
+      if (group4 != null) {
+        result.add(
+          RetryTuple(
+            group4.get(1).toLong(), // time
+            group4.get(2), // label
+            group4.get(4), // key
+            v as String, // text
+          ),
+        )
+      } else {
+        RE_KEY3.matchEntire(k)?.groupValues?.let { group ->
+          result.add(
+            RetryTuple(
+              group.get(1).toLong(), // time
+              group.get(2), // label
+              null, // key
+              v as String, // text
+            ),
+          )
+        }
       }
     }
     return result
   }
 
-  fun addToRetryQueue(time: Long, label: String, text: String) {
+  fun addToRetryQueue(tuple: RetryTuple) {
     GlobalScope.launch(Dispatchers.Default) {
       retryQueueLock.withLock {
         val pref = getSharedPreferences(PREF_RETRY, 0)
-        var key = generateKey(time, label)
+        var key = generateKey(tuple.time, tuple.label, tuple.key)
         while (pref.contains(key)) {
-          key = generateKey(time, label)
+          key = generateKey(tuple.time, tuple.label, tuple.key)
         }
         pref.edit {
-          putString(key, text)
+          putString(key, tuple.text)
         }
       }
     }
   }
 
-  fun generateKey(time: Long, label: String): String {
-    return "%015d-%s-%d".format(time, label, rand.nextInt(MAX_RANDOM_INT))
+  fun generateKey(time: Long, label: String, key: String?): String =
+    if (key != null) {
+      "%015d-%s-%d-%s".format(time, label, rand.nextInt(MAX_RANDOM_INT), key)
+    } else {
+      "%015d-%s-%d".format(time, label, rand.nextInt(MAX_RANDOM_INT))
+    }
+
+  suspend fun retry() {
+    withContext(Dispatchers.Default) {
+      val pref = getSharedPreferences(MainActivity.PREF, 0)
+      val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
+      // Sanity check
+      val uri = Uri.parse(url)
+      if (
+        uri.getScheme() == MainActivity.SCHEME_HTTPS &&
+        uri.getHost() == MainActivity.SERVICE_HOST
+      ) {
+        for (tuple in getAndClearRetryQueue()) {
+          val (_, label, key, text) = tuple
+          val onNetFail = { addToRetryQueue(tuple) }
+          HttpSender.send(
+            this@NotificationListener,
+            url,
+            label,
+            text,
+            onSuccess(key),
+            onFailure,
+            onNetFail,
+          )
+        }
+      } else {
+        onFailure()
+      }
+    }
   }
 
-  fun retry() {
-    val pref = getSharedPreferences(MainActivity.PREF, 0)
-    val url = pref.getString(MainActivity.KEY_SERVICE_URL, "")!!
-    // Sanity check
-    val uri = Uri.parse(url)
-    if (
-      uri.getScheme() == MainActivity.SCHEME_HTTPS &&
-      uri.getHost() == MainActivity.SERVICE_HOST
-    ) {
-      for (tuple in getAndClearRetryQueue()) {
-        val time = tuple.first
-        val label = tuple.second
-        val text = tuple.third
-        val onNetFail = { addToRetryQueue(time, label, text) }
-        HttpSender.send(this, url, label, text, onSuccess, onFailure, onNetFail)
+  fun onSuccess(key: String? = null): () -> Unit {
+    return {
+      GlobalScope.launch(Dispatchers.Main) {
+        NotificationListener.cancelTelegramNotif(this@NotificationListener)
+        if (key != null && connected && dismissNotification()) {
+          cancelNotification(key)
+        }
       }
-    } else {
-      onFailure()
     }
+  }
+
+  fun dismissNotification(): Boolean {
+    // TODO: add settings for it
+    return false
   }
 }

@@ -5,6 +5,9 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class NetworkMonitor(
   listener: NotificationListener,
@@ -30,6 +33,8 @@ class NetworkMonitor(
   }
 
   override fun onAvailable(network: Network) {
-    listener.retry()
+    GlobalScope.launch(Dispatchers.Default) {
+      listener.retry()
+    }
   }
 }
