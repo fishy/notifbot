@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/pref_tag_about"
+    >
+  <PreferenceCategory
+      android:title="@string/about"
+      >
+    <Preference
+        android:title="@string/about_title"
+        android:summary="@string/about_summary"
+        android:icon="@drawable/icon"
+        >
+      <intent
+          android:action="android.intent.action.VIEW"
+          android:data="https://github.com/fishy/notifbot"
+        />
+    </Preference>
+  </PreferenceCategory>
+  <PreferenceCategory
+      android:title="@string/credits"
+      >
+    <Preference
+        android:summary="@string/credit_icon"
+        >
+      <intent
+          android:action="android.intent.action.VIEW"
+          android:data="https://material.io/resources/icons/"
+        />
+    </Preference>
+  </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

@@ -4,8 +4,6 @@
   <string name="service_name">NotifBotService</string>
   <string name="share_receiver_name">Add to NotifBot</string>
 
-  <string name="notif_reply">Quick reply</string>
-
   <string name="toast_text_template">%1$s: %2$s</string>
   <string name="receiver_wrong_text">Cannot find app from \"%1$s\".</string>
   <string name="receiver_added_pkg">Added app %1$s.</string>
@@ -31,25 +29,30 @@
   <string name="perm_yes">Continue</string>
   <string name="perm_no">No thanks</string>
 
+  <string name="settings">Settings</string>
+  <string name="pref_title_auto_dismiss">Auto dismiss notifications</string>
+  <string name="pref_desc_auto_dismiss_yes">
+    Auto dismiss notifications after they are successfully sent to cloud service.
+  </string>
+  <string name="pref_desc_auto_dismiss_no">
+    Do not auto dismiss notifications.
+  </string>
+
+  <string name="pref_tag_about">pref_about</string>
+  <string name="pref_header_about">About</string>
+  <string name="pref_header_about_summary">NotifBot v0.6.3</string>
+
   <string name="about">About</string>
   <string name="about_title">
-    %1$s v0.6.3 by Yuxuan \'fishy\' Wang
+    NotifBot v0.6.3 by Yuxuan \'fishy\' Wang
   </string>
-  <string name="about_text">
-    This is an
-    &lt;a href="https://github.com/fishy/notifbot">Open Source project&lt;/a>.
-    &lt;br />
-    &lt;br />
-
-    Credits:
-    &lt;br />
-    &lt;br />
-
-    Part of the icon was from
-    &lt;a href="https://material.io/icons/">Material Design Icons&lt;/a>,
-    used under
-    &lt;a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License&lt;/a>.
-    &lt;br />
+  <string name="about_summary">
+    This is an Open Source project.
+  </string>
+  <string name="credits">Credits</string>
+  <string name="credit_icon">
+    Part of the icon was from Material Design Icons,
+    used under Apache License.
   </string>
 
   <string name="magic_box">Magic Box</string>

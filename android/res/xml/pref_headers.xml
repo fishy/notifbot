@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+  <Preference
+      android:key="@string/pref_tag_about"
+      android:title="@string/pref_header_about"
+      android:summary="@string/pref_header_about_summary"
+      android:fragment="com.yhsif.notifbot.settings.AboutPreferenceFragment"
+      android:icon="@drawable/icon"
+    />
+  <SwitchPreference
+      android:defaultValue="false"
+      android:key="auto_dismiss"
+      android:title="@string/pref_title_auto_dismiss"
+      android:summary="@string/pref_desc_auto_dismiss_no"
+    />
+</androidx.preference.PreferenceScreen>

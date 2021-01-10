@@ -15,6 +15,8 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
+import androidx.preference.PreferenceManager
+import com.yhsif.notifbot.settings.SettingsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -351,8 +353,9 @@ class NotificationListener : NotificationListenerService() {
     }
   }
 
-  fun dismissNotification(): Boolean {
-    // TODO: add settings for it
-    return false
-  }
+  fun dismissNotification(): Boolean =
+    PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+      SettingsActivity.KEY_AUTO_DISMISS,
+      SettingsActivity.DEFAULT_AUTO_DISMISS,
+    )
 }

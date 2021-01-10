@@ -28,6 +28,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yhsif.notifbot.settings.SettingsActivity
 import kotlin.text.Regex
 
 class MainActivity :
@@ -353,33 +354,13 @@ class MainActivity :
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     when (item.getItemId()) {
-      R.id.action_about -> {
-        val view = getLayoutInflater().inflate(R.layout.about, null)
-        view.findViewById<TextView>(R.id.about_text).let { tv ->
-          tv.setText(fromHtmlWrapper(getString(R.string.about_text)))
-          tv.setMovementMethod(LinkMovementMethod.getInstance())
-        }
-        view.findViewById<TextView>(R.id.about_title).setText(
-          getString(
-            R.string.about_title,
-            getString(
-              R.string.app_name,
-            ),
-          )
-        )
-        AlertDialog.Builder(this)
-          .setTitle(R.string.about)
-          .setView(view)
-          .create()
-          .show()
-        return true
-      }
-      R.id.action_box -> {
+      R.id.action_settings ->
+        startActivity(Intent(this, SettingsActivity::class.java))
+      R.id.action_box ->
         magicDialog.show()
-        return true
-      }
       else -> return super.onOptionsItemSelected(item)
     }
+    return true
   }
 
   // for View.OnClickListener

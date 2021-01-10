@@ -57,6 +57,12 @@
       </intent-filter>
     </activity>
 
+    <activity
+        android:name=".settings.SettingsActivity"
+        android:label="@string/settings"
+        android:theme="@style/Settings"
+      />
+
     <service
         android:name=".NotificationListener"
         android:label="@string/service_name"
