@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import com.google.android.gms.net.CronetProviderInstaller
 import com.google.android.gms.tasks.Tasks
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,7 +57,7 @@ class HttpSender(
       onNetFail: () -> Unit,
     ) {
       initEngine(ctx)
-      CoroutineScope(Dispatchers.IO).launch {
+      GlobalScope.launch(Dispatchers.IO) {
         val body = Uri.Builder()
           .appendQueryParameter(KEY_LABEL, label)
           .appendQueryParameter(KEY_MSG, msg)
@@ -80,7 +80,7 @@ class HttpSender(
     }
 
     fun checkUrl(url: String, onFailure: () -> Unit) {
-      CoroutineScope(Dispatchers.IO).launch {
+      GlobalScope.launch(Dispatchers.IO) {
         engine.newUrlRequestBuilder(
           url,
           HttpSender({}, onFailure, {}),
@@ -93,14 +93,14 @@ class HttpSender(
   override fun onRedirectReceived(req: UrlRequest, info: UrlResponseInfo?, newUrl: String) {
     // Never follow redirects, but treat it as success
     req.cancel()
-    CoroutineScope(Dispatchers.Main).launch {
+    GlobalScope.launch(Dispatchers.Main) {
       onSuccess()
     }
   }
 
   override fun onResponseStarted(req: UrlRequest, info: UrlResponseInfo?) {
     val code = info?.getHttpStatusCode()
-    CoroutineScope(Dispatchers.Main).launch {
+    GlobalScope.launch(Dispatchers.Main) {
       if (code != null && code >= 200 && code < 400) {
         onSuccess()
       } else {
@@ -113,7 +113,7 @@ class HttpSender(
   }
 
   override fun onFailed(req: UrlRequest, info: UrlResponseInfo?, e: CronetException) {
-    CoroutineScope(Dispatchers.Main).launch {
+    GlobalScope.launch(Dispatchers.Main) {
       onNetFail()
     }
   }

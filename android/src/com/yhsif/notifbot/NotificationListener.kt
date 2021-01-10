@@ -15,8 +15,8 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.security.SecureRandom
 import java.util.concurrent.locks.ReentrantLock
@@ -247,7 +247,7 @@ class NotificationListener : NotificationListenerService() {
   }
 
   fun addToRetryQueue(time: Long, label: String, text: String) {
-    CoroutineScope(Dispatchers.Default).launch {
+    GlobalScope.launch(Dispatchers.Default) {
       retryQueueLock.withLock {
         val pref = getSharedPreferences(PREF_RETRY, 0)
         var key = generateKey(time, label)
