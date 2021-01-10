@@ -18,7 +18,6 @@ import androidx.core.content.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.security.SecureRandom
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -48,12 +47,12 @@ class NotificationListener : NotificationListenerService() {
         val channel = NotificationChannel(
           CHANNEL_ID,
           ctx.getString(R.string.channel_name),
-          NotificationManager.IMPORTANCE_DEFAULT
+          NotificationManager.IMPORTANCE_DEFAULT,
         )
         channel.setDescription(ctx.getString(R.string.channel_desc))
         channel.setShowBadge(false)
         val manager = ctx.getSystemService(
-          Context.NOTIFICATION_SERVICE
+          Context.NOTIFICATION_SERVICE,
         ) as NotificationManager
         manager.createNotificationChannel(channel)
       }
@@ -101,7 +100,7 @@ class NotificationListener : NotificationListenerService() {
       val title = getFirstString(
         notif.extras,
         Notification.EXTRA_TITLE,
-        Notification.EXTRA_TITLE_BIG
+        Notification.EXTRA_TITLE_BIG,
       )
       val text = getFirstString(
         notif.extras,
@@ -109,7 +108,7 @@ class NotificationListener : NotificationListenerService() {
         Notification.EXTRA_TEXT,
         Notification.EXTRA_SUMMARY_TEXT,
         Notification.EXTRA_SUB_TEXT,
-        Notification.EXTRA_INFO_TEXT
+        Notification.EXTRA_INFO_TEXT,
       )
       if (title == "") {
         return text
@@ -121,7 +120,6 @@ class NotificationListener : NotificationListenerService() {
     }
   }
 
-  val uiScope = CoroutineScope(Dispatchers.Main)
   val retryQueueLock = ReentrantLock()
   val dupCheckLock = ReentrantLock()
   val rand = SecureRandom()
@@ -165,7 +163,7 @@ class NotificationListener : NotificationListenerService() {
 
   override fun onNotificationPosted(
     sbn: StatusBarNotification,
-    rm: NotificationListenerService.RankingMap
+    rm: NotificationListenerService.RankingMap,
   ) {
     HttpSender.initEngine(this)
     handleNotif(NotificationListener.getPkgSet(this), sbn)
@@ -208,7 +206,7 @@ class NotificationListener : NotificationListenerService() {
   fun checkPackage(
     pkgs: Set<String>,
     pkg: String,
-    sbn: StatusBarNotification
+    sbn: StatusBarNotification,
   ): Boolean = pkg != PKG_SELF && pkgs.contains(pkg) && !sbn.isOngoing()
 
   fun checkDup(label: String, text: String): Boolean {
@@ -249,13 +247,7 @@ class NotificationListener : NotificationListenerService() {
   }
 
   fun addToRetryQueue(time: Long, label: String, text: String) {
-    uiScope.launch {
-      addToRetryQueueCoroutine(time, label, text)
-    }
-  }
-
-  private suspend fun addToRetryQueueCoroutine(time: Long, label: String, text: String) {
-    withContext(Dispatchers.Default) {
+    CoroutineScope(Dispatchers.Default).launch {
       retryQueueLock.withLock {
         val pref = getSharedPreferences(PREF_RETRY, 0)
         var key = generateKey(time, label)

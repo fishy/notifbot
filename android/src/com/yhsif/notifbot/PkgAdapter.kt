@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class PkgAdapter(
   var list: MutableList<PkgData>,
-  val listener: View.OnClickListener
+  val listener: View.OnClickListener,
 ) : RecyclerView.Adapter<PkgViewHolder>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, vt: Int): PkgViewHolder {

@@ -7,7 +7,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 
 class NetworkMonitor(
-  listener: NotificationListener
+  listener: NotificationListener,
 ) : ConnectivityManager.NetworkCallback() {
   val listener = listener
 

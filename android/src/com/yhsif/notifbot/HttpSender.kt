@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException
 class HttpSender(
   val onSuccess: () -> Unit,
   val onFailure: () -> Unit,
-  val onNetFail: () -> Unit
+  val onNetFail: () -> Unit,
 ) : UrlRequest.Callback() {
 
   companion object {
@@ -54,7 +54,7 @@ class HttpSender(
       msg: String,
       onSuccess: () -> Unit,
       onFailure: () -> Unit,
-      onNetFail: () -> Unit
+      onNetFail: () -> Unit,
     ) {
       initEngine(ctx)
       CoroutineScope(Dispatchers.IO).launch {

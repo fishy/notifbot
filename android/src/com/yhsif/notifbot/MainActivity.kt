@@ -141,7 +141,7 @@ class MainActivity :
             .setMessage(
               ctx.getString(
                 R.string.service_failed_text,
-                ctx.getString(android.R.string.ok)
+                ctx.getString(android.R.string.ok),
               )
             )
             .setPositiveButton(
@@ -149,12 +149,12 @@ class MainActivity :
               DialogInterface.OnClickListener() { dialog, _ ->
                 dialog.dismiss()
                 ctx.startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
-              }
+              },
             )
             .create()
             .show()
         },
-        { showToast(ctx, ctx.getString(R.string.service_net_fail)) }
+        { showToast(ctx, ctx.getString(R.string.service_net_fail)) },
       )
       return true
     }
@@ -258,15 +258,15 @@ class MainActivity :
       .setMessage(
         getString(
           R.string.init_service_text,
-          getString(android.R.string.ok)
-        )
+          getString(android.R.string.ok),
+        ),
       )
       .setPositiveButton(
         android.R.string.ok,
         DialogInterface.OnClickListener() { dialog, _ ->
           dialog.dismiss()
           startActivity(Intent(Intent.ACTION_VIEW, TELEGRAM_URI))
-        }
+        },
       )
       .create()
 
@@ -307,7 +307,7 @@ class MainActivity :
           R.string.perm_no,
           DialogInterface.OnClickListener() { dialog, _ ->
             onCancel(dialog)
-          }
+          },
         )
         .setPositiveButton(
           R.string.perm_yes,
@@ -315,9 +315,9 @@ class MainActivity :
             dialog.dismiss()
             NotificationListener.startMain = true
             startActivity(
-              Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+              Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
             )
-          }
+          },
         )
         .setOnCancelListener(
           DialogInterface.OnCancelListener() { dialog ->
@@ -363,8 +363,8 @@ class MainActivity :
           getString(
             R.string.about_title,
             getString(
-              R.string.app_name
-            )
+              R.string.app_name,
+            ),
           )
         )
         AlertDialog.Builder(this)
@@ -400,14 +400,14 @@ class MainActivity :
             getString(
               R.string.dialog_text,
               data.name,
-              getString(R.string.app_name)
-            )
+              getString(R.string.app_name),
+            ),
           )
           .setNegativeButton(
             R.string.dialog_no,
             DialogInterface.OnClickListener() { dialog, _ ->
               dialog.dismiss()
-            }
+            },
           )
           .setPositiveButton(
             R.string.dialog_yes,
@@ -415,7 +415,7 @@ class MainActivity :
               removePkg(data.pkg)
               a.remove(i)
               dialog.dismiss()
-            }
+            },
           )
           .create()
           .show()
@@ -473,7 +473,7 @@ class MainActivity :
   fun createPkgData(
     pm: PackageManager,
     pkg: String,
-    defIcon: Drawable
+    defIcon: Drawable,
   ): PkgData {
     var name = pkg
     var icon = defIcon
