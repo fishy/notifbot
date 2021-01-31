@@ -35,6 +35,8 @@ class NotificationListener : NotificationListenerService() {
     private const val PREF_LAST = "com.yhsif.notifbot.last"
     private const val KEY_LABEL = "label"
     private const val KEY_TEXT = "text"
+    private const val KEY_TIMESTAMP = "timestamp"
+    private const val DEDUP_TIME_WINDOW = 5000L // 5 seconds
     private const val MAX_RANDOM_INT = 1000000
     private const val CHANNEL_ID = "service_connection_failure"
 
@@ -239,16 +241,22 @@ class NotificationListener : NotificationListenerService() {
 
   fun checkDup(label: String, text: String): Boolean {
     dupCheckLock.withLock {
+      val now = System.currentTimeMillis()
       val pref = getSharedPreferences(PREF_LAST, 0)
-      val lastLabel = pref.getString(KEY_LABEL, "")
-      val lastText = pref.getString(KEY_TEXT, "")
-      if (lastLabel == label && lastText == text) {
+      if (
+        true &&
+        (pref.getString(KEY_LABEL, "") == label) &&
+        (pref.getString(KEY_TEXT, "") == text) &&
+        ((now - pref.getLong(KEY_TIMESTAMP, 0L)) < DEDUP_TIME_WINDOW) &&
+        true
+      ) {
         return true
       }
       pref.edit {
         clear()
         putString(KEY_LABEL, label)
         putString(KEY_TEXT, text)
+        putLong(KEY_TIMESTAMP, now)
       }
     }
     return false
