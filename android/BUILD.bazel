@@ -23,6 +23,7 @@ android_binary(
     deps = [
         ":notifbot",
     ],
+    dexopts = ["--force-jumbo"],
 )
 
 kt_android_library(
