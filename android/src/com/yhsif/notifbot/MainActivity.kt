@@ -61,11 +61,15 @@ class MainActivity :
     lateinit var serviceDialog: AlertDialog
 
     fun showToast(ctx: Context, text: String) {
-      val msg = ctx.getString(
-        R.string.toast_text_template,
-        ctx.getString(R.string.app_name),
-        text,
-      )
+      val msg = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        text
+      } else {
+        ctx.getString(
+          R.string.toast_text_template,
+          ctx.getString(R.string.app_name),
+          text,
+        )
+      }
       Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
     }
 

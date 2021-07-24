@@ -6,7 +6,7 @@
     android:versionName="0.7.1"
     >
 
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="30" />
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31" />
 
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
@@ -28,6 +28,7 @@
         android:name="MainActivity"
         android:theme="@style/Theme"
         android:label="@string/app_name"
+        android:exported="true"
         >
 
       <intent-filter>
@@ -49,6 +50,7 @@
         android:name="ShareReceiver"
         android:theme="@android:style/Theme.NoDisplay"
         android:label="@string/share_receiver_name"
+        android:exported="true"
         >
       <intent-filter>
         <action android:name="android.intent.action.SEND" />
@@ -67,6 +69,7 @@
         android:name=".NotificationListener"
         android:label="@string/service_name"
         android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        android:exported="true"
         >
       <intent-filter>
         <action android:name="android.service.notification.NotificationListenerService" />
