@@ -1,10 +1,5 @@
 workspace(name = "notifbot")
 
-android_sdk_repository(
-    name = "androidsdk",
-    api_level = 31,
-)
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 
@@ -108,6 +103,14 @@ http_archive(
     ],
     sha256 = RULES_ANDROID_SHA,
     strip_prefix = "rules_android-%s" % RULES_ANDROID_TAG[1:],
+)
+
+load("@rules_android//android:rules.bzl", "android_sdk_repository")
+android_sdk_repository(
+    name = "androidsdk",
+    api_level = 31,
+    # This is the latest version with dx.jar
+    build_tools_version = "30.0.3",
 )
 
 
