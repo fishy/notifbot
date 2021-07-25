@@ -3,6 +3,7 @@ load(
     "define_kt_toolchain",
     "kt_android_library",
 )
+load("@rules_android//android:rules.bzl", "android_binary")
 
 define_kt_toolchain(
     name = "kotlin_toolchain",
