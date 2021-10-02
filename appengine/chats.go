@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/datastore"
+	"google.golang.org/appengine/v2/memcache"
 )
 
 const (
@@ -15,9 +16,6 @@ const (
 	chatKind    = "notifbotchats"
 	tokenLength = 16
 )
-
-// ErrNoRedis is the error returned when no redis is available.
-var ErrNoRedis = errors.New("no redis available")
 
 // EntityChat is the entity of a chat/token stored in datastore.
 type EntityChat struct {
@@ -33,12 +31,12 @@ func (e *EntityChat) datastoreKey() *datastore.Key {
 	return datastore.NameKey(chatKind, e.getKey(), nil)
 }
 
-// SaveMemcache saves this token into redis.
-func (e *EntityChat) SaveMemcache() error {
-	if client, ok := getRedis(); ok {
-		return client.Set(e.getKey(), e.Token, 0).Err()
-	}
-	return ErrNoRedis
+// SaveMemcache saves this token into memcache.
+func (e *EntityChat) SaveMemcache(ctx context.Context) error {
+	return memcache.Set(ctx, &memcache.Item{
+		Key:   e.getKey(),
+		Value: []byte(e.Token),
+	})
 }
 
 // SaveDatastore saves this token into datastore.
@@ -48,7 +46,7 @@ func (e *EntityChat) SaveDatastore(ctx context.Context) error {
 	return err
 }
 
-// Delete deletes this chat token from both datastore and redis.
+// Delete deletes this chat token from both datastore and memcache.
 func (e *EntityChat) Delete(ctx context.Context) {
 	key := e.datastoreKey()
 	if err := dsClient.Delete(ctx, key); err != nil {
@@ -58,17 +56,10 @@ func (e *EntityChat) Delete(ctx context.Context) {
 			"err", err,
 		)
 	}
-	var err error
-	redisKey := e.getKey()
-	if client, ok := getRedis(); ok {
-		err = client.Del(redisKey).Err()
-	} else {
-		err = ErrNoRedis
-	}
-	if err != nil {
+	if err := memcache.Delete(ctx, e.getKey()); err != nil && !errors.Is(err, memcache.ErrCacheMiss) {
 		l(ctx).Errorw(
-			"Failed to delete redis key",
-			"key", redisKey,
+			"Failed to delete memcache key",
+			"key", e.getKey(),
 			"err", err,
 		)
 	}
@@ -90,20 +81,17 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 	e := &EntityChat{
 		Chat: id,
 	}
-	if redisClient, ok := getRedis(); ok {
-		key := e.getKey()
-		value, err := redisClient.Get(key).Result()
-		if err == nil {
-			e.Token = value
-			return e
-		}
-		if !isNotExist(err) {
-			l(ctx).Errorw(
-				"Failed to get redis key",
-				"key", key,
-				"err", err,
-			)
-		}
+	value, err := memcache.Get(ctx, e.getKey())
+	if err == nil {
+		e.Token = string(value.Value)
+		return e
+	}
+	if !errors.Is(err, memcache.ErrCacheMiss) {
+		l(ctx).Errorw(
+			"Failed to get memcache key",
+			"key", e.getKey(),
+			"err", err,
+		)
 	}
 	key := e.datastoreKey()
 	if err := dsClient.Get(ctx, key, e); err != nil {
@@ -114,9 +102,9 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 		)
 		return nil
 	}
-	if err := e.SaveMemcache(); err != nil {
+	if err := e.SaveMemcache(ctx); err != nil {
 		l(ctx).Errorw(
-			"Failed to save redis key",
+			"Failed to save memcache key",
 			"key", e.getKey(),
 			"err", err,
 		)
@@ -133,9 +121,9 @@ func NewChat(ctx context.Context, id int64) *EntityChat {
 		Chat:  id,
 		Token: randomString(ctx, tokenLength),
 	}
-	if err := e.SaveMemcache(); err != nil {
+	if err := e.SaveMemcache(ctx); err != nil {
 		l(ctx).Errorw(
-			"Failed to save chat to redis",
+			"Failed to save chat to memcache",
 			"id", id,
 			"err", err,
 		)

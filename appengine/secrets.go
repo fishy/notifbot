@@ -10,7 +10,6 @@ import (
 
 const (
 	tokenID = "telegram-token"
-	redisID = "redis-url"
 
 	nameTemplate = "projects/%s/secrets/%s/versions/latest"
 )

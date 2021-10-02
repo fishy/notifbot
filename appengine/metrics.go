@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	monitoring "cloud.google.com/go/monitoring/apiv3"
-	googlepb "github.com/golang/protobuf/ptypes/timestamp"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func sendMetrics(
@@ -21,7 +21,7 @@ func sendMetrics(
 ) error {
 	// Writes time series data.
 	if err := client.CreateTimeSeries(ctx, &monitoringpb.CreateTimeSeriesRequest{
-		Name: monitoring.MetricProjectPath(getProjectID()),
+		Name: "projects/" + getProjectID(),
 		TimeSeries: []*monitoringpb.TimeSeries{
 			{
 				Metric: &metricpb.Metric{
@@ -67,7 +67,7 @@ func sendMessageMetrics(ctx context.Context, data chatCounterMapType) error {
 	for id, count := range data {
 		dataPoint := &monitoringpb.Point{
 			Interval: &monitoringpb.TimeInterval{
-				EndTime: &googlepb.Timestamp{
+				EndTime: &timestamppb.Timestamp{
 					Seconds: time.Now().Unix(),
 				},
 			},

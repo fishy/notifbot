@@ -5,17 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
 	"cloud.google.com/go/datastore"
+	"google.golang.org/appengine/v2"
 )
 
 const (
-	errNoToken = "no telebot token"
-
 	globalURLPrefix = `https://notification-bot.appspot.com`
 	webhookPrefix   = `/w/`
 	clientPrefix    = `/c/`
@@ -58,32 +56,15 @@ func main() {
 		)
 	}
 	initBot(ctx)
-	initRedis(ctx)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", rootHandler)
-	mux.HandleFunc(webhookPrefix, webhookHandler)
-	mux.HandleFunc(clientPrefix, clientHandler)
-	mux.HandleFunc("/_ah/health", healthCheckHandler)
-	mux.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		l(ctx).Warnw(
-			"Using default port",
-			"port", port,
-		)
-	}
-	l(ctx).Infow(
-		"Started listening",
-		"port", port,
-	)
+	http.HandleFunc("/", rootHandler)
+	http.HandleFunc(webhookPrefix, webhookHandler)
+	http.HandleFunc(clientPrefix, clientHandler)
+	http.HandleFunc("/_ah/health", healthCheckHandler)
+	http.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
 	go chatCounterMetricsLoop()
-	l(ctx).Errorw(
-		"HTTP server stopped",
-		"err", http.ListenAndServe(fmt.Sprintf(":%s", port), mux),
-	)
+
+	appengine.Main()
 }
 
 func initDatastoreClient(ctx context.Context) error {
@@ -157,8 +138,10 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func clientHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := logContext(r)
+
 	groups := urlRegexp.FindStringSubmatch(r.URL.Path)
-	if groups == nil || len(groups) == 0 {
+	if len(groups) == 0 {
 		http.NotFound(w, r)
 		return
 	}
@@ -170,7 +153,6 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 
 	chatCounter.Inc(id)
 
-	ctx := context.Background()
 	chat := GetChat(ctx, id)
 	if chat == nil || chat.Token != groups[2] {
 		http.NotFound(w, r)
