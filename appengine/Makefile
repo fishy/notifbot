@@ -6,7 +6,7 @@ p=notification-bot
 
 deploy:
 	$(GO) mod tidy
-	# $(GO) mod vendor
+	$(GO) mod vendor
 	$(GO) test
 	$(GCLOUD) beta app deploy --project=$(p)
 	rm -Rf vendor/
