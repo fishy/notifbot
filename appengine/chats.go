@@ -95,7 +95,11 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 	}
 	key := e.datastoreKey()
 	if err := dsClient.Get(ctx, key, e); err != nil {
-		l(ctx).Errorw(
+		logger := l(ctx).Errorw
+		if errors.Is(err, datastore.ErrNoSuchEntity) {
+			logger = l(ctx).Infow
+		}
+		logger(
 			"Failed to get datastore key",
 			"key", key,
 			"err", err,
