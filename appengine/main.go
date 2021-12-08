@@ -150,6 +150,7 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+	ctx = logContextWith(ctx, "chat-id", id)
 
 	chatCounter.Inc(id)
 

@@ -44,3 +44,9 @@ func logContext(r *http.Request) context.Context {
 		}),
 	))
 }
+
+func logContextWith(ctx context.Context, kv ...interface{}) context.Context {
+	logger := l(ctx)
+	logger = logger.With(kv...)
+	return context.WithValue(ctx, zapKey, logger)
+}
