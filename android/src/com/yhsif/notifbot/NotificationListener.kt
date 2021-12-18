@@ -188,7 +188,7 @@ class NotificationListener : NotificationListenerService() {
       return
     }
     GlobalScope.launch(Dispatchers.Default) forReturn@{
-      val pkg = sbn.getPackageName().toLowerCase()
+      val pkg = sbn.getPackageName().lowercase()
       if (checkPackage(pkgs, pkg, sbn)) {
         val notif = sbn.getNotification()
         val label =

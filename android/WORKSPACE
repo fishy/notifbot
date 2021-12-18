@@ -80,9 +80,9 @@ maven_install(
         "androidx.fragment:fragment-ktx:1.3.6",
         "androidx.preference:preference:1.1.1",
         "androidx.recyclerview:recyclerview:1.2.1",
-        "com.google.android.gms:play-services-cronet:17.0.1",
+        "com.google.android.gms:play-services-cronet:18.0.0",
         "com.google.android.material:material:1.4.0",
-        "org.chromium.net:cronet-fallback:76.3809.111",
+        "org.chromium.net:cronet-fallback:95.4638.50",
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3",
     ],
     maven_install_json = "@notifbot//:maven_install.json",
@@ -119,9 +119,9 @@ android_sdk_repository(
     build_tools_version = "30.0.3",
 )
 
-RULES_KOTLIN_TAG = "v1.5.0-alpha-3"
+RULES_KOTLIN_TAG = "v1.5.0-beta-4"
 
-RULES_KOTLIN_SHA = "eeae65f973b70896e474c57aa7681e444d7a5446d9ec0a59bb88c59fc263ff62"
+RULES_KOTLIN_SHA = "6cbd4e5768bdfae1598662e40272729ec9ece8b7bded8f0d2c81c8ff96dc139d"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
@@ -131,7 +131,7 @@ http_archive(
     ],
 )
 
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories")
+load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories")
 
 kotlin_repositories()
 

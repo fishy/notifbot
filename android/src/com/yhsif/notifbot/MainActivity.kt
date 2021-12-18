@@ -448,7 +448,7 @@ class MainActivity :
       adapter.let { a ->
         a.list = prev
           .map() { createPkgData(pm, it, defIcon) }
-          .sortedBy() { it.name.toLowerCase() }
+          .sortedBy() { it.name.lowercase() }
           .toMutableList()
         a.notifyDataSetChanged()
       }

@@ -1,15 +1,11 @@
-load(
-    "@io_bazel_rules_kotlin//kotlin:kotlin.bzl",
-    "define_kt_toolchain",
-    "kt_android_library",
-)
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "define_kt_toolchain")
 load("@rules_android//android:rules.bzl", "android_binary")
 
 define_kt_toolchain(
     name = "kotlin_toolchain",
-    api_version = "1.4",  # "1.1", "1.2", "1.3", or "1.4"
+    api_version = "1.5",  # "1.1", "1.2", "1.3", "1.4", "1.5", or "1.6"
     jvm_target = "11",  # "1.6", "1.8", "9", "10", "11", "12", or "13",
-    language_version = "1.4",  # "1.1", "1.2", "1.3", or "1.4"
+    language_version = "1.5",  # "1.1", "1.2", "1.3", "1.4", "1.5", or "1.6"
 )
 
 PACKAGE = "com.yhsif.notifbot"
@@ -17,6 +13,8 @@ PACKAGE = "com.yhsif.notifbot"
 MANIFEST = "AndroidManifest.xml"
 
 MANIFEST_VALUES = {"PACKAGE": PACKAGE}
+
+load("@io_bazel_rules_kotlin//kotlin:android.bzl", "kt_android_library")
 
 android_binary(
     name = "app",
