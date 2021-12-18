@@ -154,7 +154,7 @@ class NotificationListener : NotificationListenerService() {
         .setContentTitle(getString(R.string.no_service))
         .setContentText(getString(R.string.notif_text))
         .setAutoCancel(true)
-        .setContentIntent(PendingIntent.getActivity(ctx, 0, intent, 0))
+        .setContentIntent(PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE))
         .setVisibility(Notification.VISIBILITY_PUBLIC)
       NotificationManagerCompat.from(ctx).notify(NOTIF_ID, notifBuilder.build())
     }
