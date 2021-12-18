@@ -40,11 +40,11 @@
 
   <string name="pref_tag_about">pref_about</string>
   <string name="pref_header_about">About</string>
-  <string name="pref_header_about_summary">NotifBot v0.7.2</string>
+  <string name="pref_header_about_summary">NotifBot v0.7.3</string>
 
   <string name="about">About</string>
   <string name="about_title">
-    NotifBot v0.7.2 by Yuxuan \'fishy\' Wang
+    NotifBot v0.7.3 by Yuxuan \'fishy\' Wang
   </string>
   <string name="about_summary">
     This is an Open Source project.
