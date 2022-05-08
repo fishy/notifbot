@@ -1,5 +1,4 @@
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "define_kt_toolchain")
-load("@rules_android//android:rules.bzl", "android_binary")
 
 define_kt_toolchain(
     name = "kotlin_toolchain",
