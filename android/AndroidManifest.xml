@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="${PACKAGE}"
-    android:versionCode="30"
-    android:versionName="0.7.6"
+    android:versionCode="31"
+    android:versionName="0.8.0"
     >
 
   <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31" />
