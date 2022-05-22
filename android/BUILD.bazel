@@ -15,16 +15,33 @@ MANIFEST_VALUES = {"PACKAGE": PACKAGE}
 
 load("@io_bazel_rules_kotlin//kotlin:android.bzl", "kt_android_library")
 
-android_binary(
-    name = "app",
-    custom_package = PACKAGE,
-    dexopts = ["--force-jumbo"],
-    manifest = MANIFEST,
-    manifest_values = MANIFEST_VALUES,
-    deps = [
-        ":notifbot",
-    ],
+load(
+    "@rules_oppia_android//:oppia_android_application.bzl",
+    "declare_deployable_application",
+    "oppia_android_application",
 )
+
+declare_deployable_application(
+    name = "install",
+    aab_target = "//:debug",
+)
+
+[
+    oppia_android_application(
+        name = name,
+        config_file = "//:bundle_config.pb.json",
+        custom_package = PACKAGE,
+        dexopts = ["--force-jumbo"],
+        manifest = MANIFEST,
+        manifest_values = MANIFEST_VALUES,
+        proguard_generate_mapping = False,
+        shrink_resources = release,
+        deps = [
+            ":notifbot",
+        ],
+    )
+    for name, release in (("debug", False), ("release", True))
+]
 
 kt_android_library(
     name = "notifbot",

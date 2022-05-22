@@ -7,7 +7,7 @@ android_sdk_repository(
     build_tools_version = "30.0.3",
 )
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 
 RULES_JVM_EXTERNAL_TAG = "4.2"
 
@@ -67,3 +67,28 @@ load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories")
 kotlin_repositories()
 
 register_toolchains("//:kotlin_toolchain")
+
+BUNDLE_TOOL_TAG = "1.10.0"
+
+BUNDLE_TOOL_SHA = "a5eee8fd22628c3f45662492498d3da38faf2bf2c64d425911492a5db6bc081c"
+
+http_jar(
+    name = "android_bundletool",
+    sha256 = BUNDLE_TOOL_SHA,
+    urls = [
+        "https://github.com/google/bundletool/releases/download/%s/bundletool-all-%s.jar" % (BUNDLE_TOOL_TAG, BUNDLE_TOOL_TAG),
+    ],
+)
+
+RULES_OPPIA_ANDROID_TAG = "v0.6"
+
+RULES_OPPIA_ANDROID_SHA = "1d465ed74c32b98472401373305d57daca22de940ba5469acde4b0380c0cda4f"
+
+http_archive(
+    name = "rules_oppia_android",
+    sha256 = RULES_OPPIA_ANDROID_SHA,
+    strip_prefix = "oppia-android-%s" % RULES_OPPIA_ANDROID_TAG[1:],
+    urls = [
+        "https://github.com/oppia/oppia-android/archive/%s.zip" % RULES_OPPIA_ANDROID_TAG,
+    ],
+)

@@ -1,8 +1,3 @@
-# Make sure that the python scripts in the toolchain don't complain about python
-# being python3.
-build --extra_toolchains=@rules_python//python:autodetecting_toolchain_nonstrict
-mobile-install --extra_toolchains=@rules_python//python:autodetecting_toolchain_nonstrict
-
 # --noincremental_dexing is required for dexopts = ["--force-jumbo"] in
 # android_binary rule to work: https://github.com/bazelbuild/bazel/issues/9383.
 build --noincremental_dexing

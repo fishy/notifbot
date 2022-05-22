@@ -1,5 +1,7 @@
 bazel-*
 *.apk
+*.apk
+*.aab
 local.properties
 release.jks
-app.apk.idsig
+upload.jks
