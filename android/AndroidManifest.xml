@@ -42,6 +42,8 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="http" android:host="notification-bot.appspot.com" />
         <data android:scheme="https" android:host="notification-bot.appspot.com" />
+        <data android:scheme="http" android:host="notifbot.fishy.me" />
+        <data android:scheme="https" android:host="notifbot.fishy.me" />
       </intent-filter>
 
     </activity>

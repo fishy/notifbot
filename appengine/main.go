@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	globalURLPrefix = `https://notification-bot.appspot.com`
+	globalURLPrefix = `https://notifbot.fishy.me`
 	webhookPrefix   = `/w/`
 	clientPrefix    = `/c/`
 

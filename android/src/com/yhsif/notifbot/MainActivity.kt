@@ -40,14 +40,17 @@ class MainActivity :
     const val PREF = "com.yhsif.notifbot"
     const val KEY_PKGS = "packages"
     const val KEY_SERVICE_URL = "service"
-    const val SERVICE_HOST = "notification-bot.appspot.com"
+    const val SERVICE_HOST = "notifbot.fishy.me"
+    const val SERVICE_HOST_2 = "notification-bot.appspot.com"
     const val PREFIX_APP_ID = "market://details?id="
+
     // For google play url.
     // The URL should be either
     // http(s)://play.google.com/store/apps/details?id=<package_name>
     // or
     // market://details?id=<package_name>
     const val PLAY_HOST = "play.google.com"
+
     const val QUERY_ID = "id"
     const val SCHEME_MARKET = "market"
 
@@ -117,7 +120,7 @@ class MainActivity :
     }
 
     fun handleTextService(ctx: Context, uri: Uri): Boolean {
-      if (uri.getHost() != SERVICE_HOST) {
+      if (uri.getHost() != SERVICE_HOST && uri.getHost() != SERVICE_HOST_2) {
         return false
       }
       val url = "$SCHEME_HTTPS://${uri.getHost()}${uri.getPath()}"
@@ -147,7 +150,7 @@ class MainActivity :
               ctx.getString(
                 R.string.service_failed_text,
                 ctx.getString(android.R.string.ok),
-              )
+              ),
             )
             .setPositiveButton(
               android.R.string.ok,
@@ -327,7 +330,7 @@ class MainActivity :
         .setOnCancelListener(
           DialogInterface.OnCancelListener() { dialog ->
             onCancel(dialog)
-          }
+          },
         )
         .create()
         .show()
@@ -340,7 +343,10 @@ class MainActivity :
         tryClip(this)
       }
       val uri = Uri.parse(url)
-      if (uri.getScheme() == SCHEME_HTTPS && uri.getHost() == SERVICE_HOST) {
+      if (
+        uri.getScheme() == SCHEME_HTTPS &&
+        (uri.getHost() == SERVICE_HOST || uri.getHost() == SERVICE_HOST_2)
+      ) {
         HttpSender.checkUrl(url, onFailure)
       } else {
         onFailure()
