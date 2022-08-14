@@ -85,6 +85,7 @@ func sendMessageMetrics(ctx context.Context, data chatCounterMapType) error {
 			dataPoint,
 			map[string]string{
 				"chat_id": fmt.Sprintf("%d", id),
+				"from":    "appengine",
 			},
 		); err != nil {
 			return err

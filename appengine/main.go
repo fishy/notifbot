@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -15,19 +14,12 @@ import (
 
 const (
 	globalURLPrefix = `https://notifbot.fishy.me`
-	webhookPrefix   = `/w/`
 	clientPrefix    = `/c/`
 
 	fieldLabel = "label"
 	fieldMsg   = "msg"
 
-	playURL        = `https://play.google.com/store/apps/details?id=com.yhsif.notifbot`
-	unsupportedMsg = `unsupported message/command`
-	downloadMsg    = `Download NotifBot Android app at: ` + playURL
-	startMsg       = `Please open this URL in NotifBot app (or copy paste this whole message into the Magic Box of the app): `
-	startErrMsg    = `Failed to generate token, please try again later.`
-	stopMsg        = `Connection deleted.`
-	stopErrMsg     = `You did not run /start command yet.`
+	playURL = `https://play.google.com/store/apps/details?id=com.yhsif.notifbot`
 
 	msgTemplate = "From %s:\n%s"
 
@@ -58,7 +50,6 @@ func main() {
 	initBot(ctx)
 
 	http.HandleFunc("/", rootHandler)
-	http.HandleFunc(webhookPrefix, webhookHandler)
 	http.HandleFunc(clientPrefix, clientHandler)
 	http.HandleFunc("/_ah/health", healthCheckHandler)
 	http.HandleFunc("/.well-known/assetlinks.json", verifyHandler)
@@ -80,61 +71,6 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 func verifyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	fmt.Fprint(w, verifyContent)
-}
-
-func webhookHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := logContext(r)
-
-	if !getToken().ValidateWebhookURL(r) {
-		http.NotFound(w, r)
-		return
-	}
-
-	if r.Body == nil {
-		l(ctx).Error("Empty webhook request body")
-		http.NotFound(w, r)
-		return
-	}
-
-	update := new(Update)
-	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		l(ctx).Errorw(
-			"Unable to decode json",
-			"err", err,
-		)
-		http.NotFound(w, r)
-		return
-	}
-
-	// In group chats the commands will be in the format of
-	// "/command@AndroidNotificationBot"
-	text := strings.Split(update.Message.Text, "@")
-	if len(text) == 0 {
-		// Should not happen but just in case
-		replyMessage(ctx, w, update.Message, unsupportedMsg, true)
-	} else {
-		switch text[0] {
-		default:
-			replyMessage(ctx, w, update.Message, unsupportedMsg, true)
-		case "/download":
-			replyMessage(ctx, w, update.Message, downloadMsg, false)
-		case "/start":
-			chat := NewChat(ctx, update.Message.Chat.ID)
-			if chat == nil {
-				replyMessage(ctx, w, update.Message, startErrMsg, true)
-				return
-			}
-			replyMessage(ctx, w, update.Message, startMsg+chat.GetURL(), false)
-		case "/stop":
-			chat := GetChat(ctx, update.Message.Chat.ID)
-			if chat == nil {
-				replyMessage(ctx, w, update.Message, stopErrMsg, true)
-				return
-			}
-			chat.Delete(ctx)
-			replyMessage(ctx, w, update.Message, stopMsg, false)
-		}
-	}
 }
 
 func clientHandler(w http.ResponseWriter, r *http.Request) {
@@ -187,23 +123,4 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
-}
-
-func replyMessage(
-	ctx context.Context,
-	w http.ResponseWriter,
-	orig Message,
-	msg string,
-	quote bool,
-) {
-	reply := ReplyMessage{
-		Method: "sendMessage",
-		ChatID: orig.Chat.ID,
-		Text:   msg,
-	}
-	if quote {
-		reply.ReplyTo = orig.ID
-	}
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reply)
 }

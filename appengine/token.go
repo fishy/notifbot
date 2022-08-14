@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
-	"crypto/sha512"
-	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -26,9 +23,6 @@ var httpClient http.Client
 
 type telegramToken struct {
 	Token string
-
-	hashOnce   sync.Once
-	hashPrefix string
 }
 
 func (bot *telegramToken) String() string {
@@ -78,7 +72,7 @@ func (bot *telegramToken) PostRequest(
 		return
 	}
 	if resp.StatusCode != http.StatusOK {
-		buf, _ := ioutil.ReadAll(resp.Body)
+		buf, _ := io.ReadAll(resp.Body)
 		l(ctx).Errorw(
 			"PostRequest got non-200",
 			"endpoint", endpoint,
@@ -99,36 +93,6 @@ func (bot *telegramToken) SendMessage(
 	return bot.PostRequest(ctx, "sendMessage", values)
 }
 
-func (bot *telegramToken) initHashPrefix(ctx context.Context) {
-	bot.hashOnce.Do(func() {
-		hash := sha512.Sum512_224([]byte(bot.String()))
-		bot.hashPrefix = webhookPrefix + base64.URLEncoding.EncodeToString(hash[:])
-		l(ctx).Infof("hashPrefix == %s", bot.hashPrefix)
-	})
-}
-
-func (bot *telegramToken) getWebhookURL(ctx context.Context) string {
-	bot.initHashPrefix(ctx)
-	return fmt.Sprintf("%s%s", globalURLPrefix, bot.hashPrefix)
-}
-
-// ValidateWebhookURL validates whether requested URI in request matches hash
-// path.
-func (bot *telegramToken) ValidateWebhookURL(r *http.Request) bool {
-	bot.initHashPrefix(r.Context())
-	return r.URL.Path == bot.hashPrefix
-}
-
-// SetWebhook sets webhook with telegram.
-func (bot *telegramToken) SetWebhook(ctx context.Context) int {
-	bot.initHashPrefix(ctx)
-
-	values := url.Values{}
-	values.Add("url", bot.getWebhookURL(ctx))
-	values.Add("max_connections", fmt.Sprintf("%d", webhookMaxConn))
-	return bot.PostRequest(ctx, "setWebhook", values)
-}
-
 // initBot initializes botToken.
 func initBot(ctx context.Context) {
 	secret, err := getSecret(ctx, tokenID)
@@ -141,7 +105,6 @@ func initBot(ctx context.Context) {
 	tokenValue.Store(&telegramToken{
 		Token: secret,
 	})
-	getToken().SetWebhook(ctx)
 }
 
 func getToken() *telegramToken {

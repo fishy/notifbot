@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -15,7 +14,7 @@ func DrainAndClose(r io.ReadCloser) {
 	if r == nil {
 		return
 	}
-	io.Copy(ioutil.Discard, r)
+	io.Copy(io.Discard, r)
 	r.Close()
 }
 

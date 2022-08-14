@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"fmt"
 
@@ -37,32 +35,6 @@ func (e *EntityChat) SaveMemcache(ctx context.Context) error {
 		Key:   e.getKey(),
 		Value: []byte(e.Token),
 	})
-}
-
-// SaveDatastore saves this token into datastore.
-func (e *EntityChat) SaveDatastore(ctx context.Context) error {
-	key := e.datastoreKey()
-	_, err := dsClient.Put(ctx, key, e)
-	return err
-}
-
-// Delete deletes this chat token from both datastore and memcache.
-func (e *EntityChat) Delete(ctx context.Context) {
-	key := e.datastoreKey()
-	if err := dsClient.Delete(ctx, key); err != nil {
-		l(ctx).Errorw(
-			"Failed to delete datastore key",
-			"key", key,
-			"err", err,
-		)
-	}
-	if err := memcache.Delete(ctx, e.getKey()); err != nil && !errors.Is(err, memcache.ErrCacheMiss) {
-		l(ctx).Errorw(
-			"Failed to delete memcache key",
-			"key", e.getKey(),
-			"err", err,
-		)
-	}
 }
 
 // GetURL returns the url for this chat.
@@ -114,44 +86,4 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 		)
 	}
 	return e
-}
-
-// NewChat creates a new chat token and saves it into db.
-func NewChat(ctx context.Context, id int64) *EntityChat {
-	if e := GetChat(ctx, id); e != nil {
-		return e
-	}
-	e := &EntityChat{
-		Chat:  id,
-		Token: randomString(ctx, tokenLength),
-	}
-	if err := e.SaveMemcache(ctx); err != nil {
-		l(ctx).Errorw(
-			"Failed to save chat to memcache",
-			"id", id,
-			"err", err,
-		)
-	}
-	if err := e.SaveDatastore(ctx); err != nil {
-		l(ctx).Errorw(
-			"Failed to save chat to datastore",
-			"id", id,
-			"err", err,
-		)
-	}
-	return e
-}
-
-func randomString(ctx context.Context, size int) string {
-	buf := make([]byte, size)
-	n, err := rand.Read(buf)
-	if err != nil || n != size {
-		l(ctx).Errorw(
-			"Failed to generate random string",
-			"read", n,
-			"want", size,
-			"err", err,
-		)
-	}
-	return hex.EncodeToString(buf)
 }
