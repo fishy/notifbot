@@ -79,11 +79,15 @@ class HttpSender(
       }
     }
 
-    fun checkUrl(url: String, onFailure: () -> Unit) {
+    fun checkUrl(url: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
       GlobalScope.launch(Dispatchers.IO) {
         engine.newUrlRequestBuilder(
           url,
-          HttpSender({}, onFailure, {}),
+          HttpSender(
+            onSuccess,
+            onFailure,
+            {},
+          ),
           Dispatchers.IO.asExecutor(),
         ).build().start()
       }

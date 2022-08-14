@@ -123,7 +123,7 @@ class MainActivity :
       if (uri.getHost() != SERVICE_HOST && uri.getHost() != SERVICE_HOST_2) {
         return false
       }
-      val url = "$SCHEME_HTTPS://${uri.getHost()}${uri.getPath()}"
+      val url = "$SCHEME_HTTPS://${SERVICE_HOST}${uri.getPath()}"
       HttpSender.send(
         ctx,
         url,
@@ -337,17 +337,24 @@ class MainActivity :
     } else if (checkService) {
       // Check service url
       val pref = getSharedPreferences(PREF, 0)
-      val url = pref.getString(KEY_SERVICE_URL, "")!!
+      var url = pref.getString(KEY_SERVICE_URL, "")!!
       val onFailure = {
         serviceDialog.show()
         tryClip(this)
       }
-      val uri = Uri.parse(url)
-      if (
-        uri.getScheme() == SCHEME_HTTPS &&
-        (uri.getHost() == SERVICE_HOST || uri.getHost() == SERVICE_HOST_2)
-      ) {
-        HttpSender.checkUrl(url, onFailure)
+      var uri = Uri.parse(url)
+      var onSuccess = {}
+      if (uri.getHost() == SERVICE_HOST_2) {
+        uri = uri.buildUpon().authority(SERVICE_HOST).build()
+        url = uri.toString()
+        onSuccess = {
+          pref.edit {
+            putString(KEY_SERVICE_URL, url)
+          }
+        }
+      }
+      if (uri.getScheme() == SCHEME_HTTPS && uri.getHost() == SERVICE_HOST) {
+        HttpSender.checkUrl(url, onSuccess, onFailure)
       } else {
         onFailure()
       }
