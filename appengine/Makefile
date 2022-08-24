@@ -6,10 +6,8 @@ p=notification-bot
 
 deploy:
 	$(GO) mod tidy
-	$(GO) mod vendor
 	$(GO) test
 	$(GCLOUD) app deploy --project=$(p)
-	rm -Rf vendor/
 
 tail:
 	$(GCLOUD) app logs tail -s default --project=$(p)
