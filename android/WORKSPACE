@@ -9,9 +9,8 @@ android_sdk_repository(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 
-RULES_JVM_EXTERNAL_TAG = "4.2"
-
-RULES_JVM_EXTERNAL_SHA = "cd1a77b7b02e8e008439ca76fd34f5b07aecb8c752961f9640dea15e9e5ba1ca"
+RULES_JVM_EXTERNAL_TAG = "4.4.2"
+RULES_JVM_EXTERNAL_SHA = "735602f50813eb2ea93ca3f5e43b1959bd80b213b836a07a62a29d757670b77b"
 
 http_archive(
     name = "rules_jvm_external",
@@ -26,16 +25,16 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
-        "androidx.activity:activity:1.4.0",
-        "androidx.appcompat:appcompat:1.3.1",
+        "androidx.activity:activity:1.4.0",     # 1.6.0
+        "androidx.appcompat:appcompat:1.3.1",   # 1.5.1
         "androidx.cardview:cardview:1.0.0",
-        "androidx.core:core-ktx:1.7.0",
-        "androidx.fragment:fragment-ktx:1.4.1",
-        "androidx.preference:preference:1.1.1",
+        "androidx.core:core-ktx:1.7.0",         # 1.9.0
+        "androidx.fragment:fragment-ktx:1.4.1", # 1.5.3
+        "androidx.preference:preference:1.1.1", # 1.2.0
         "androidx.recyclerview:recyclerview:1.2.1",
         "com.google.android.gms:play-services-cronet:18.0.1",
-        "com.google.android.material:material:1.6.0",
-        "org.chromium.net:cronet-fallback:101.4951.41",
+        "com.google.android.material:material:1.6.1",
+        "org.chromium.net:cronet-fallback:105.5195.68",
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3",
     ],
     maven_install_json = "@notifbot//:maven_install.json",
@@ -50,9 +49,8 @@ load("@maven//:defs.bzl", "pinned_maven_install")
 
 pinned_maven_install()
 
-RULES_KOTLIN_TAG = "1.6.0-RC-1"
-
-RULES_KOTLIN_SHA = "f1a4053eae0ea381147f5056bb51e396c5c494c7f8d50d0dee4cc2f9d5c701b0"
+RULES_KOTLIN_TAG = "v1.6.0"
+RULES_KOTLIN_SHA = "a57591404423a52bd6b18ebba7979e8cd2243534736c5c94d35c89718ea38f94"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
@@ -68,9 +66,8 @@ kotlin_repositories()
 
 register_toolchains("//:kotlin_toolchain")
 
-BUNDLE_TOOL_TAG = "1.10.0"
-
-BUNDLE_TOOL_SHA = "a5eee8fd22628c3f45662492498d3da38faf2bf2c64d425911492a5db6bc081c"
+BUNDLE_TOOL_TAG = "1.11.2"
+BUNDLE_TOOL_SHA = "302656eb8d9c8ee0b45d0d0c5e72e5c901097eddf3d60699697603d6a2227df8"
 
 http_jar(
     name = "android_bundletool",
@@ -80,9 +77,8 @@ http_jar(
     ],
 )
 
-RULES_OPPIA_ANDROID_TAG = "v0.6"
-
-RULES_OPPIA_ANDROID_SHA = "1d465ed74c32b98472401373305d57daca22de940ba5469acde4b0380c0cda4f"
+RULES_OPPIA_ANDROID_TAG = "v0.7"
+RULES_OPPIA_ANDROID_SHA = "62e8d1f997a8a6b5ada27276e6c57a872b5eeaf3c89548d5a45981484e14ac96"
 
 http_archive(
     name = "rules_oppia_android",
