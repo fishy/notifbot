@@ -29,8 +29,6 @@ const (
 	stopMsg        = `Connection deleted.`
 	stopErrMsg     = `You did not run /start command yet.`
 
-	msgTemplate = "From %s:\n%s"
-
 	verifyContent = `[{
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
@@ -182,16 +180,15 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	label := r.FormValue(fieldLabel)
 	msg := r.FormValue(fieldMsg)
-	if label == "" || msg == "" {
+	if msg == "" {
 		http.NotFound(w, r)
 		return
 	}
-	if !strings.HasPrefix(strings.TrimSpace(msg), strings.TrimSpace(label)) {
+	if label := strings.TrimSpace(r.FormValue(fieldLabel)); !strings.HasPrefix(strings.TrimSpace(msg), label) {
 		// For some apps, the notification title will just be app name, so only add
 		// label when that's not the case to avoid repetition.
-		msg = fmt.Sprintf(msgTemplate, label, msg)
+		msg = fmt.Sprintf("From %s:\n%s", label, msg)
 	}
 	if getToken().SendMessage(ctx, id, msg) == http.StatusUnauthorized {
 		l(ctx).Info("Invalidating secret cache and retrying...")
