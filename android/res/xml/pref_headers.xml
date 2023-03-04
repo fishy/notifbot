@@ -15,4 +15,10 @@
       android:title="@string/pref_title_auto_dismiss"
       android:summary="@string/pref_desc_auto_dismiss_no"
     />
+  <SwitchPreference
+      android:defaultValue="true"
+      android:key="send_label"
+      android:title="@string/pref_title_send_label"
+      android:summary="@string/pref_desc_send_label_no"
+    />
 </androidx.preference.PreferenceScreen>

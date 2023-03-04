@@ -16,6 +16,8 @@ public class SettingsActivity :
   companion object {
     public const val KEY_AUTO_DISMISS = "auto_dismiss"
     public const val DEFAULT_AUTO_DISMISS = false
+    public const val KEY_SEND_LABEL = "send_label"
+    public const val DEFAULT_SEND_LABEL = true
 
     val prefBinder = object : Preference.OnPreferenceChangeListener {
       override fun onPreferenceChange(
@@ -29,6 +31,15 @@ public class SettingsActivity :
                 R.string.pref_desc_auto_dismiss_yes
               } else {
                 R.string.pref_desc_auto_dismiss_no
+              },
+            )
+          }
+          KEY_SEND_LABEL -> {
+            pref.setSummary(
+              if (value == true) {
+                R.string.pref_desc_send_label_yes
+              } else {
+                R.string.pref_desc_send_label_no
               },
             )
           }

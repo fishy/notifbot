@@ -37,6 +37,13 @@
   <string name="pref_desc_auto_dismiss_no">
     Do not auto dismiss notifications.
   </string>
+  <string name="pref_title_send_label">Show app name in Telegram messages</string>
+  <string name="pref_desc_send_label_yes">
+    Also show app name with notification content in Telegram messages.
+  </string>
+  <string name="pref_desc_send_label_no">
+    Do not show app name in Telegram messages, only show notification content.
+  </string>
 
   <string name="pref_tag_about">pref_about</string>
   <string name="pref_header_about">About</string>

@@ -16,11 +16,19 @@ class PrefsFragment : BasePreferenceFragment() {
     setPreferencesFromResource(R.xml.pref_headers, rootKey)
     setHasOptionsMenu(true)
 
-    val pref: Preference? = findPreference(SettingsActivity.KEY_AUTO_DISMISS)
-    if (pref != null) {
+    val prefAutoDismiss: Preference? = findPreference(SettingsActivity.KEY_AUTO_DISMISS)
+    if (prefAutoDismiss != null) {
       SettingsActivity.bindPreferenceSummaryToBoolean(
-        pref,
+        prefAutoDismiss,
         SettingsActivity.DEFAULT_AUTO_DISMISS,
+      )
+    }
+
+    val prefSendLabel: Preference? = findPreference(SettingsActivity.KEY_SEND_LABEL)
+    if (prefSendLabel != null) {
+      SettingsActivity.bindPreferenceSummaryToBoolean(
+        prefSendLabel,
+        SettingsActivity.DEFAULT_SEND_LABEL,
       )
     }
   }

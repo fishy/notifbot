@@ -191,10 +191,17 @@ class NotificationListener : NotificationListenerService() {
       val pkg = sbn.getPackageName().lowercase()
       if (checkPackage(pkgs, pkg, sbn)) {
         val notif = sbn.getNotification()
-        val label =
+        val sendLabel = PreferenceManager.getDefaultSharedPreferences(this@NotificationListener).getBoolean(
+          SettingsActivity.KEY_SEND_LABEL,
+          SettingsActivity.DEFAULT_SEND_LABEL,
+        )
+        val label = if (sendLabel) {
           NotificationListener.getPackageName(this@NotificationListener, pkg, true)
+        } else {
+          ""
+        }
         val text = NotificationListener.getNotifText(notif)
-        if (label == "" || text == "") {
+        if (text == "") {
           return@forReturn
         }
         if (checkDup(label, text)) {
