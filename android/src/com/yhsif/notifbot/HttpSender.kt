@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.chromium.net.CronetEngine
 import org.chromium.net.CronetException
-import org.chromium.net.UploadDataProviders
 import org.chromium.net.UrlRequest
 import org.chromium.net.UrlResponseInfo
+import org.chromium.net.apihelpers.UploadDataProviders
 import org.chromium.net.impl.JavaCronetProvider
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutionException

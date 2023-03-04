@@ -3,14 +3,12 @@ workspace(name = "notifbot")
 android_sdk_repository(
     name = "androidsdk",
     api_level = 31,
-    # This is the latest version with dx.jar
-    build_tools_version = "30.0.3",
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 
-RULES_JVM_EXTERNAL_TAG = "4.4.2"
-RULES_JVM_EXTERNAL_SHA = "735602f50813eb2ea93ca3f5e43b1959bd80b213b836a07a62a29d757670b77b"
+RULES_JVM_EXTERNAL_TAG = "4.5"
+RULES_JVM_EXTERNAL_SHA = "b17d7388feb9bfa7f2fa09031b32707df529f26c91ab9e5d909eb1676badd9a6"
 
 http_archive(
     name = "rules_jvm_external",
@@ -33,8 +31,8 @@ maven_install(
         "androidx.preference:preference:1.1.1", # 1.2.0
         "androidx.recyclerview:recyclerview:1.2.1",
         "com.google.android.gms:play-services-cronet:18.0.1",
-        "com.google.android.material:material:1.6.1",
-        "org.chromium.net:cronet-fallback:105.5195.68",
+        "com.google.android.material:material:1.6.1", # 1.8.0
+        "org.chromium.net:cronet-fallback:108.5359.79",
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3",
     ],
     maven_install_json = "@notifbot//:maven_install.json",
@@ -49,8 +47,8 @@ load("@maven//:defs.bzl", "pinned_maven_install")
 
 pinned_maven_install()
 
-RULES_KOTLIN_TAG = "v1.6.0"
-RULES_KOTLIN_SHA = "a57591404423a52bd6b18ebba7979e8cd2243534736c5c94d35c89718ea38f94"
+RULES_KOTLIN_TAG = "v1.7.1"
+RULES_KOTLIN_SHA = "fd92a98bd8a8f0e1cdcb490b93f5acef1f1727ed992571232d33de42395ca9b3"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
@@ -66,8 +64,8 @@ kotlin_repositories()
 
 register_toolchains("//:kotlin_toolchain")
 
-BUNDLE_TOOL_TAG = "1.11.2"
-BUNDLE_TOOL_SHA = "302656eb8d9c8ee0b45d0d0c5e72e5c901097eddf3d60699697603d6a2227df8"
+BUNDLE_TOOL_TAG = "1.14.0"
+BUNDLE_TOOL_SHA = "e740e7d38562c5e8d87cc817548b2db94e42802e9a0774fdf674e758ff79694d"
 
 http_jar(
     name = "android_bundletool",
