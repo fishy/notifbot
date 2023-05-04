@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"runtime/debug"
 	"strconv"
 	"strings"
 
 	"cloud.google.com/go/datastore"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -46,12 +48,23 @@ var dsClient *datastore.Client
 func main() {
 	initLogger()
 
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		slog.Debug(
+			"Read build info",
+			"string", bi.String(),
+			"json", bi,
+		)
+	} else {
+		slog.Warn("Unable to read build info")
+	}
+
 	ctx := context.Background()
 	if err := initDatastoreClient(ctx); err != nil {
-		l(ctx).Fatalw(
+		l(ctx).Error(
 			"Failed to get data store client",
 			"err", err,
 		)
+		os.Exit(1)
 	}
 	initBot(ctx)
 
@@ -65,17 +78,17 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		l(ctx).Warnw(
+		l(ctx).Warn(
 			"Using default port",
 			"port", port,
 		)
 	}
-	l(ctx).Infow(
+	l(ctx).Info(
 		"Started listening",
 		"port", port,
 	)
 
-	l(ctx).Infow(
+	l(ctx).Info(
 		"HTTP server returned",
 		"err", http.ListenAndServe(fmt.Sprintf(":%s", port), nil),
 	)
@@ -112,7 +125,7 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	update := new(Update)
 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		l(ctx).Errorw(
+		l(ctx).Error(
 			"Unable to decode json",
 			"err", err,
 		)

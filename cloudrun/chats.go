@@ -41,10 +41,10 @@ func (e *EntityChat) SaveDatastore(ctx context.Context) error {
 func (e *EntityChat) Delete(ctx context.Context) {
 	key := e.datastoreKey()
 	if err := dsClient.Delete(ctx, key); err != nil {
-		l(ctx).Errorw(
+		l(ctx).Error(
 			"Failed to delete datastore key",
-			"key", key,
 			"err", err,
+			"key", key,
 		)
 	}
 }
@@ -67,14 +67,14 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 	}
 	key := e.datastoreKey()
 	if err := dsClient.Get(ctx, key, e); err != nil {
-		logger := l(ctx).Errorw
+		logger := l(ctx).Error
 		if errors.Is(err, datastore.ErrNoSuchEntity) {
-			logger = l(ctx).Infow
+			logger = l(ctx).Info
 		}
 		logger(
 			"Failed to get datastore key",
-			"key", key,
 			"err", err,
+			"key", key,
 		)
 		return nil
 	}
@@ -91,10 +91,10 @@ func NewChat(ctx context.Context, id int64) *EntityChat {
 		Token: randomString(ctx, tokenLength),
 	}
 	if err := e.SaveDatastore(ctx); err != nil {
-		l(ctx).Errorw(
+		l(ctx).Error(
 			"Failed to save chat to datastore",
-			"id", id,
 			"err", err,
+			"id", id,
 		)
 	}
 	return e
@@ -104,11 +104,11 @@ func randomString(ctx context.Context, size int) string {
 	buf := make([]byte, size)
 	n, err := rand.Read(buf)
 	if err != nil || n != size {
-		l(ctx).Errorw(
+		l(ctx).Error(
 			"Failed to generate random string",
+			"err", err,
 			"read", n,
 			"want", size,
-			"err", err,
 		)
 	}
 	return hex.EncodeToString(buf)

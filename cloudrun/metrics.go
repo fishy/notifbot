@@ -6,9 +6,9 @@ import (
 	"time"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -51,7 +51,7 @@ func sendMessageMetrics(ctx context.Context, data chatCounterMapType) error {
 
 	start := time.Now()
 	defer func() {
-		l(ctx).Infow(
+		l(ctx).Info(
 			"sendMessageMetrics done",
 			"size", len(data),
 			"took", time.Since(start),

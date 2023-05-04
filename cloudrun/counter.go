@@ -39,10 +39,10 @@ func chatCounterMetricsLoop() {
 	for range time.Tick(tickerTime) {
 		data := chatCounter.Get()
 		if err := sendMessageMetrics(ctx, data); err != nil {
-			l(ctx).Errorw(
+			l(ctx).Error(
 				"sendMessageMetrics failed",
-				"data", data,
 				"err", err,
+				"data", data,
 			)
 		}
 	}
