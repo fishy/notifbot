@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/datastore"
+	"go.yhsif.com/ctxslog"
 	"golang.org/x/exp/slog"
 )
 
@@ -60,7 +61,8 @@ func main() {
 
 	ctx := context.Background()
 	if err := initDatastoreClient(ctx); err != nil {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"Failed to get data store client",
 			"err", err,
 		)
@@ -78,17 +80,20 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		l(ctx).Warn(
+		slog.WarnCtx(
+			ctx,
 			"Using default port",
 			"port", port,
 		)
 	}
-	l(ctx).Info(
+	slog.InfoCtx(
+		ctx,
 		"Started listening",
 		"port", port,
 	)
 
-	l(ctx).Info(
+	slog.InfoCtx(
+		ctx,
 		"HTTP server returned",
 		"err", http.ListenAndServe(fmt.Sprintf(":%s", port), nil),
 	)
@@ -118,14 +123,15 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Body == nil {
-		l(ctx).Error("Empty webhook request body")
+		slog.ErrorCtx(ctx, "Empty webhook request body")
 		http.NotFound(w, r)
 		return
 	}
 
 	update := new(Update)
 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"Unable to decode json",
 			"err", err,
 		)
@@ -177,7 +183,8 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	ctx = logContextWith(ctx, "chat-id", id)
+
+	ctx = ctxslog.Attach(ctx, "chat-id", id)
 
 	chatCounter.Inc(id)
 
@@ -204,7 +211,7 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 		msg = fmt.Sprintf("From %s:\n%s", label, msg)
 	}
 	if getToken().SendMessage(ctx, id, msg) == http.StatusUnauthorized {
-		l(ctx).Info("Invalidating secret cache and retrying...")
+		slog.InfoCtx(ctx, "Invalidating secret cache and retrying...")
 		initBot(ctx)
 		getToken().SendMessage(ctx, id, msg)
 	}

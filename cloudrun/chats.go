@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/datastore"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -41,7 +42,8 @@ func (e *EntityChat) SaveDatastore(ctx context.Context) error {
 func (e *EntityChat) Delete(ctx context.Context) {
 	key := e.datastoreKey()
 	if err := dsClient.Delete(ctx, key); err != nil {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"Failed to delete datastore key",
 			"err", err,
 			"key", key,
@@ -67,11 +69,13 @@ func GetChat(ctx context.Context, id int64) *EntityChat {
 	}
 	key := e.datastoreKey()
 	if err := dsClient.Get(ctx, key, e); err != nil {
-		logger := l(ctx).Error
+		level := slog.LevelError
 		if errors.Is(err, datastore.ErrNoSuchEntity) {
-			logger = l(ctx).Info
+			level = slog.LevelInfo
 		}
-		logger(
+		slog.Log(
+			ctx,
+			level,
 			"Failed to get datastore key",
 			"err", err,
 			"key", key,
@@ -91,7 +95,8 @@ func NewChat(ctx context.Context, id int64) *EntityChat {
 		Token: randomString(ctx, tokenLength),
 	}
 	if err := e.SaveDatastore(ctx); err != nil {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"Failed to save chat to datastore",
 			"err", err,
 			"id", id,
@@ -104,7 +109,8 @@ func randomString(ctx context.Context, size int) string {
 	buf := make([]byte, size)
 	n, err := rand.Read(buf)
 	if err != nil || n != size {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"Failed to generate random string",
 			"err", err,
 			"read", n,

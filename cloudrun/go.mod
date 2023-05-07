@@ -5,6 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/datastore v1.11.0
 	cloud.google.com/go/monitoring v1.13.0
+	go.yhsif.com/ctxslog v0.0.0-20230507072145-32072731fd3b
 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 	google.golang.org/protobuf v1.30.0

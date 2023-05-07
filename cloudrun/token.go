@@ -13,6 +13,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -46,7 +48,8 @@ func (bot *telegramToken) PostRequest(
 ) (code int) {
 	start := time.Now()
 	defer func() {
-		l(ctx).Info(
+		slog.InfoCtx(
+			ctx,
 			"PostRequest: HTTP POST done",
 			"endpoint", endpoint,
 			"took", time.Since(start),
@@ -59,7 +62,8 @@ func (bot *telegramToken) PostRequest(
 		strings.NewReader(params.Encode()),
 	)
 	if err != nil {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"Failed to construct http request",
 			"err", err,
 		)
@@ -71,7 +75,8 @@ func (bot *telegramToken) PostRequest(
 		defer DrainAndClose(resp.Body)
 	}
 	if err != nil {
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"PostRequest failed",
 			"err", err,
 			"endpoint", endpoint,
@@ -80,7 +85,8 @@ func (bot *telegramToken) PostRequest(
 	}
 	if resp.StatusCode != http.StatusOK {
 		buf, _ := io.ReadAll(resp.Body)
-		l(ctx).Error(
+		slog.ErrorCtx(
+			ctx,
 			"PostRequest got non-200",
 			"endpoint", endpoint,
 			"code", resp.StatusCode,
@@ -104,7 +110,7 @@ func (bot *telegramToken) initHashPrefix(ctx context.Context) {
 	bot.hashOnce.Do(func() {
 		hash := sha512.Sum512_224([]byte(bot.String()))
 		bot.hashPrefix = webhookPrefix + base64.URLEncoding.EncodeToString(hash[:])
-		l(ctx).Info(fmt.Sprintf("hashPrefix == %s", bot.hashPrefix))
+		slog.InfoCtx(ctx, fmt.Sprintf("hashPrefix == %s", bot.hashPrefix))
 	})
 }
 
