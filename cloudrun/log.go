@@ -10,14 +10,17 @@ import (
 )
 
 func initLogger() {
-	logger := slog.New(ctxslog.ContextHandler(slog.HandlerOptions{
-		AddSource: true,
-		Level:     slog.LevelDebug,
-		ReplaceAttr: ctxslog.ChainReplaceAttr(
-			ctxslog.GCPKeys,
-			ctxslog.StringDuration,
-		),
-	}.NewJSONHandler(os.Stderr)))
+	logger := slog.New(ctxslog.ContextHandler(slog.NewJSONHandler(
+		os.Stderr,
+		&slog.HandlerOptions{
+			AddSource: true,
+			Level:     slog.LevelDebug,
+			ReplaceAttr: ctxslog.ChainReplaceAttr(
+				ctxslog.GCPKeys,
+				ctxslog.StringDuration,
+			),
+		}),
+	))
 	if v, ok := os.LookupEnv("VERSION_TAG"); ok {
 		logger = logger.With(slog.String("v", v))
 	}
