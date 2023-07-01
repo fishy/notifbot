@@ -2,9 +2,9 @@ load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "define_kt_toolchain")
 
 define_kt_toolchain(
     name = "kotlin_toolchain",
-    api_version = "1.6",
+    api_version = "1.8",
     jvm_target = "11",
-    language_version = "1.6",
+    language_version = "1.8",
 )
 
 PACKAGE = "com.yhsif.notifbot"

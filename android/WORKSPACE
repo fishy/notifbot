@@ -7,15 +7,15 @@ android_sdk_repository(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 
-RULES_JVM_EXTERNAL_TAG = "4.5"
-RULES_JVM_EXTERNAL_SHA = "b17d7388feb9bfa7f2fa09031b32707df529f26c91ab9e5d909eb1676badd9a6"
+RULES_JVM_EXTERNAL_TAG = "5.3"
+RULES_JVM_EXTERNAL_SHA = "d31e369b854322ca5098ea12c69d7175ded971435e55c18dd9dd5f29cc5249ac"
 
 http_archive(
     name = "rules_jvm_external",
     sha256 = RULES_JVM_EXTERNAL_SHA,
     strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
     urls = [
-        "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+        "https://github.com/bazelbuild/rules_jvm_external/releases/download/%s/rules_jvm_external-%s.tar.gz" % (RULES_JVM_EXTERNAL_TAG, RULES_JVM_EXTERNAL_TAG),
     ],
 )
 
@@ -28,7 +28,7 @@ maven_install(
         "androidx.cardview:cardview:1.0.0",
         "androidx.core:core-ktx:1.7.0",         # 1.9.0
         "androidx.fragment:fragment-ktx:1.4.1", # 1.5.3
-        "androidx.preference:preference:1.1.1", # 1.2.0
+        "androidx.preference:preference:1.2.0", # 1.1.1
         "androidx.recyclerview:recyclerview:1.2.1",
         "com.google.android.gms:play-services-cronet:18.0.1",
         "com.google.android.material:material:1.6.1", # 1.8.0
@@ -47,8 +47,8 @@ load("@maven//:defs.bzl", "pinned_maven_install")
 
 pinned_maven_install()
 
-RULES_KOTLIN_TAG = "v1.7.1"
-RULES_KOTLIN_SHA = "fd92a98bd8a8f0e1cdcb490b93f5acef1f1727ed992571232d33de42395ca9b3"
+RULES_KOTLIN_TAG = "v1.8"
+RULES_KOTLIN_SHA = "01293740a16e474669aba5b5a1fe3d368de5832442f164e4fbfc566815a8bc3a"
 
 http_archive(
     name = "io_bazel_rules_kotlin",
@@ -64,8 +64,8 @@ kotlin_repositories()
 
 register_toolchains("//:kotlin_toolchain")
 
-BUNDLE_TOOL_TAG = "1.14.0"
-BUNDLE_TOOL_SHA = "e740e7d38562c5e8d87cc817548b2db94e42802e9a0774fdf674e758ff79694d"
+BUNDLE_TOOL_TAG = "1.15.1"
+BUNDLE_TOOL_SHA = "aec9dc64fb25acc64eb668b45c0ec6a0ebba30db4a2e084b61b7af0a7380a0e1"
 
 http_jar(
     name = "android_bundletool",
