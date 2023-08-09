@@ -2,28 +2,24 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"os"
 
 	"go.yhsif.com/ctxslog"
-	"golang.org/x/exp/slog"
 )
 
 func initLogger() {
-	logger := slog.New(ctxslog.ContextHandler(ctxslog.JSONCallstackHandler(
-		slog.NewJSONHandler(
-			os.Stderr,
-			&slog.HandlerOptions{
-				AddSource: true,
-				Level:     slog.LevelDebug,
-				ReplaceAttr: ctxslog.ChainReplaceAttr(
-					ctxslog.GCPKeys,
-					ctxslog.StringDuration,
-				),
-			},
-		),
-		slog.LevelError,
-	)))
+	logger := ctxslog.New(
+		ctxslog.WithAddSource(true),
+		ctxslog.WithLevel(slog.LevelDebug),
+		ctxslog.WithCallstack(slog.LevelError),
+		ctxslog.WithReplaceAttr(ctxslog.ChainReplaceAttr(
+			ctxslog.GCPKeys,
+			ctxslog.StringDuration,
+			ctxslog.StringInt,
+		)),
+	)
 	if v, ok := os.LookupEnv("VERSION_TAG"); ok {
 		logger = logger.With(slog.String("v", v))
 	}

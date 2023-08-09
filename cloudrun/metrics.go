@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
-	"golang.org/x/exp/slog"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -52,7 +52,7 @@ func sendMessageMetrics(ctx context.Context, data chatCounterMapType) error {
 
 	start := time.Now()
 	defer func() {
-		slog.InfoCtx(
+		slog.InfoContext(
 			ctx,
 			"sendMessageMetrics done",
 			"size", len(data),

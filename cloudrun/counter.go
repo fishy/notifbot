@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"sync"
 	"time"
-
-	"golang.org/x/exp/slog"
 )
 
 const tickerTime = time.Second * 10
@@ -41,7 +40,7 @@ func chatCounterMetricsLoop() {
 	for range time.Tick(tickerTime) {
 		data := chatCounter.Get()
 		if err := sendMessageMetrics(ctx, data); err != nil {
-			slog.ErrorCtx(
+			slog.ErrorContext(
 				ctx,
 				"sendMessageMetrics failed",
 				"err", err,

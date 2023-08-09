@@ -6,9 +6,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"cloud.google.com/go/datastore"
-	"golang.org/x/exp/slog"
 )
 
 const (
@@ -42,7 +42,7 @@ func (e *EntityChat) SaveDatastore(ctx context.Context) error {
 func (e *EntityChat) Delete(ctx context.Context) {
 	key := e.datastoreKey()
 	if err := dsClient.Delete(ctx, key); err != nil {
-		slog.ErrorCtx(
+		slog.ErrorContext(
 			ctx,
 			"Failed to delete datastore key",
 			"err", err,
@@ -95,7 +95,7 @@ func NewChat(ctx context.Context, id int64) *EntityChat {
 		Token: randomString(ctx, tokenLength),
 	}
 	if err := e.SaveDatastore(ctx); err != nil {
-		slog.ErrorCtx(
+		slog.ErrorContext(
 			ctx,
 			"Failed to save chat to datastore",
 			"err", err,
@@ -109,7 +109,7 @@ func randomString(ctx context.Context, size int) string {
 	buf := make([]byte, size)
 	n, err := rand.Read(buf)
 	if err != nil || n != size {
-		slog.ErrorCtx(
+		slog.ErrorContext(
 			ctx,
 			"Failed to generate random string",
 			"err", err,
