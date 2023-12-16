@@ -132,6 +132,7 @@ func (bot *telegramToken) SetWebhook(ctx context.Context) int {
 	values := url.Values{}
 	values.Add("url", bot.getWebhookURL(ctx))
 	values.Add("max_connections", fmt.Sprintf("%d", webhookMaxConn))
+	values.Add("allowed_updates", `["message"]`)
 	return bot.PostRequest(ctx, "setWebhook", values)
 }
 
