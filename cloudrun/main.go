@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -41,6 +42,13 @@ const (
   }
 }]`
 )
+
+const (
+	botNameEnv     = "BOT_NAME"
+	defaultBotName = "AndroidNotificationBot"
+)
+
+var botName = defaultBotName
 
 var urlRegexp = regexp.MustCompile(clientPrefix + `(\-?\d+)/(.+)`)
 
@@ -146,7 +154,12 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 		// Should not happen but just in case
 		replyMessage(ctx, w, update.Message, unsupportedMsg, true)
 	} else {
-		switch text[0] {
+		if len(text) >= 2 && strings.TrimSpace(text[1]) != botName {
+			// A command for another bot, ignore it
+			io.WriteString(w, `OK`)
+			return
+		}
+		switch strings.TrimSpace(text[0]) {
 		default:
 			replyMessage(ctx, w, update.Message, unsupportedMsg, true)
 		case "/download":

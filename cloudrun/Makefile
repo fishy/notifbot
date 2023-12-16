@@ -15,6 +15,8 @@ version_tag=$(shell echo $(full_git_version) | cut -c1-12)
 
 .PHONY: deploy
 
+# if you deploy your own bot, override BOT_NAME env with your bot's name.
+# default is AndroidNotificationBot.
 deploy:
 	@echo Building $(docker_image)...
 	$(gcloud) builds submit --tag $(docker_image)

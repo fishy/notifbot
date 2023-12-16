@@ -138,6 +138,10 @@ func (bot *telegramToken) SetWebhook(ctx context.Context) int {
 
 // initBot initializes botToken.
 func initBot(ctx context.Context) {
+	if v := os.Getenv(botNameEnv); v != "" {
+		botName = v
+	}
+
 	secret := os.Getenv("SECRET_TELEGRAM_TOKEN")
 	tokenValue.Store(&telegramToken{
 		Token: secret,
