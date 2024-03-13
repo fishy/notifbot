@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/monitoring v1.16.3
 	go.yhsif.com/ctxslog v1.0.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
