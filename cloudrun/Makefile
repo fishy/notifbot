@@ -24,6 +24,9 @@ deploy:
 	$(gcloud) run deploy --image $(docker_image) \
 		--platform managed \
 		--allow-unauthenticated \
+		--execution-environment gen2 \
+		--cpu 1 \
+		--memory 512Mi \
 		--region $(region) $(cloudrunname) \
 		--update-env-vars CLOUD_PROJECT_ID=$(project) \
 		--update-env-vars VERSION_TAG=$(version_tag) \
