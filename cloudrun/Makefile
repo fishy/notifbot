@@ -24,10 +24,10 @@ deploy:
 	$(gcloud) run deploy --image $(docker_image) \
 		--platform managed \
 		--allow-unauthenticated \
-		--execution-environment gen2 \
-		--cpu 1 \
-		--memory 512Mi \
 		--region $(region) $(cloudrunname) \
+		--execution-environment gen1 \
+		--cpu 1 \
+		--memory 128Mi \
 		--update-env-vars CLOUD_PROJECT_ID=$(project) \
 		--update-env-vars VERSION_TAG=$(version_tag) \
 		--set-secrets "SECRET_TELEGRAM_TOKEN=$(secret_telegram_token):latest"
