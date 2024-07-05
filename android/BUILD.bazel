@@ -1,10 +1,8 @@
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "define_kt_toolchain")
-
-define_kt_toolchain(
-    name = "kotlin_toolchain",
-    api_version = "1.8",
-    jvm_target = "11",
-    language_version = "1.8",
+load("@rules_kotlin//kotlin:android.bzl", "kt_android_library")
+load(
+    "@rules_oppia_android//:oppia_android_application.bzl",
+    "declare_deployable_application",
+    "oppia_android_application",
 )
 
 PACKAGE = "com.yhsif.notifbot"
@@ -12,14 +10,6 @@ PACKAGE = "com.yhsif.notifbot"
 MANIFEST = "AndroidManifest.xml"
 
 MANIFEST_VALUES = {"PACKAGE": PACKAGE}
-
-load("@io_bazel_rules_kotlin//kotlin:android.bzl", "kt_android_library")
-
-load(
-    "@rules_oppia_android//:oppia_android_application.bzl",
-    "declare_deployable_application",
-    "oppia_android_application",
-)
 
 declare_deployable_application(
     name = "install",
@@ -40,7 +30,10 @@ declare_deployable_application(
             ":notifbot",
         ],
     )
-    for name, release in (("debug", False), ("release", True))
+    for name, release in (
+        ("debug", False),
+        ("release", True),
+    )
 ]
 
 kt_android_library(

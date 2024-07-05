@@ -2,4 +2,4 @@
 
 set -e
 
-bazel run @unpinned_maven//:pin
+REPIN=1 bazel run @maven//:pin
