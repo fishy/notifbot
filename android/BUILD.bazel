@@ -1,8 +1,16 @@
 load("@rules_kotlin//kotlin:android.bzl", "kt_android_library")
+load("@rules_kotlin//kotlin:kotlin.bzl", "define_kt_toolchain")
 load(
     "@rules_oppia_android//:oppia_android_application.bzl",
     "declare_deployable_application",
     "oppia_android_application",
+)
+
+define_kt_toolchain(
+    name = "kotlin_toolchain",
+    api_version = "1.9",
+    jvm_target = "17",
+    language_version = "1.9",
 )
 
 PACKAGE = "com.yhsif.notifbot"

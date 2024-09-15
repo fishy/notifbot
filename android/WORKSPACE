@@ -5,6 +5,8 @@ android_sdk_repository(
     api_level = 34,
 )
 
+register_toolchains("//:kotlin_toolchain")
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 
 BUNDLE_TOOL_TAG = "1.17.0"

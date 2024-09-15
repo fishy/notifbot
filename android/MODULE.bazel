@@ -5,8 +5,8 @@
 # For more details, please check https://github.com/bazelbuild/bazel/issues/18958
 ###############################################################################
 
-bazel_dep(name = "rules_kotlin", version = "1.9.6")
-bazel_dep(name = "rules_jvm_external", version = "6.1")
+bazel_dep(name = "rules_kotlin", version = "2.0.0")
+bazel_dep(name = "rules_jvm_external", version = "6.3")
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 maven.install(
