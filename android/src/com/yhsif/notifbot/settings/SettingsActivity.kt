@@ -1,7 +1,11 @@
 package com.yhsif.notifbot.settings
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.preference.Preference
@@ -63,12 +67,28 @@ public class SettingsActivity :
           .getBoolean(preference.getKey(), defaultValue),
       )
     }
+
+    public fun adjustPaddingFor35Plus(ctx: Context, view: View) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        // Add additional 46dx padding to top for api 35+,
+        // as they no longer auto add the padding for the action bar nor menu bar.
+        val dp = 46f
+        val px = TypedValue.applyDimension(
+          TypedValue.COMPLEX_UNIT_DIP,
+          dp,
+          ctx.resources.displayMetrics,
+        )
+        view.setPadding(0, px.toInt(), 0, 0)
+      }
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setupActionBar()
     setContentView(R.layout.settings)
+
+    adjustPaddingFor35Plus(this, findViewById<View>(R.id.fragment_container))
 
     if (savedInstanceState == null) {
       var frag = getSupportFragmentManager().findFragmentByTag(

@@ -230,6 +230,8 @@ class MainActivity :
     HttpSender.initEngine(this)
 
     setContentView(R.layout.main)
+    SettingsActivity.adjustPaddingFor35Plus(this, findViewById(R.id.main_view))
+
     findViewById<TextView>(R.id.hint).let { tv ->
       tv.setText(fromHtmlWrapper(getString(R.string.main_hint)))
       tv.setMovementMethod(LinkMovementMethod.getInstance())

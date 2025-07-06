@@ -2,18 +2,18 @@ workspace(name = "notifbot")
 
 android_sdk_repository(
     name = "androidsdk",
-    api_level = 34,
+    api_level = 36,
 )
 
 register_toolchains("//:kotlin_toolchain")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 
-BUNDLE_TOOL_TAG = "1.17.0"
+BUNDLE_TOOL_TAG = "1.18.1"
 
 http_jar(
     name = "android_bundletool",
-    integrity = "sha256-VOvuHx3oNn2a0mtGcr+yl2sLEhQuFdaD/HuOJU/GzBs=",
+    integrity = "sha256-Z1eGSTmDeH/6EVUL23wHFWeaROFkPz/5gKUp6cgiWVw=",
     urls = [
         "https://github.com/google/bundletool/releases/download/%s/bundletool-all-%s.jar" % (BUNDLE_TOOL_TAG, BUNDLE_TOOL_TAG),
     ],
