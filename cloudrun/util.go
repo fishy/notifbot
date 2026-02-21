@@ -21,14 +21,14 @@ func DrainAndClose(r io.ReadCloser) {
 // Update is a update from telegram webhook.
 type Update struct {
 	ID      int64   `json:"update_id,omitempty"`
-	Message Message `json:"message,omitempty"`
+	Message Message `json:"message,omitzero"`
 }
 
 // Message is a telegram message.
 type Message struct {
 	ID   int64  `json:"message_id,omitempty"`
-	From User   `json:"from,omitempty"`
-	Chat Chat   `json:"chat,omitempty"`
+	From User   `json:"from,omitzero"`
+	Chat Chat   `json:"chat,omitzero"`
 	Date int64  `json:"date,omitempty"`
 	Text string `json:"text,omitempty"`
 }
