@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"log/slog"
@@ -137,7 +137,7 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	update := new(Update)
-	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
+	if err := json.UnmarshalRead(r.Body, update); err != nil {
 		slog.ErrorContext(
 			ctx,
 			"Unable to decode json",
@@ -251,5 +251,5 @@ func replyMessage(
 		reply.ReplyTo = orig.ID
 	}
 	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reply)
+	json.MarshalWrite(w, reply)
 }
