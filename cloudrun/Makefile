@@ -19,7 +19,7 @@ version_tag=$(shell echo $(full_git_version) | cut -c1-12)
 # default is AndroidNotificationBot.
 deploy:
 	@echo Building $(docker_image)...
-	$(gcloud) builds submit --tag $(docker_image)
+	$(gcloud) builds submit --worker-release=regular --tag=$(docker_image)
 	@echo Pushing to Google Cloud Run...
 	$(gcloud) run deploy --image $(docker_image) \
 		--platform managed \
